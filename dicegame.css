@@ -1,0 +1,42 @@
+@charset "UTF-8";
+
+/*
+ Filename:    dicegame.css
+ Course:      CWEB 190 (Internet Programming/Web Applications 1)
+ Instructor:  Derrick Danyluk
+ Date:        January 2026
+ Purpose:     Assignment #1 Sample Solution
+ */
+
+[id*="image"] {
+    height: 100px;
+    width: 100px;
+}
+#tblRolls td {
+    text-align: center;
+}
+table {
+    margin: auto;
+}
+
+h1,
+h2,
+p,
+div {
+    text-align: center;
+}
+/* classes for hiding and displaying the reset button */
+.hidden {
+    display: none;
+}
+.displayed {
+    display: inline;
+}
+
+#hScore {
+    color: crimson;
+}
+#pRolled,
+#pRollScore {
+    color: forestgreen;
+}
