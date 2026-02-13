@@ -231,6 +231,6 @@ function restartGame() {
     // Re-enable dice and reset images
     setDiceState(true);
     for (let i = 0; i < 6; i++) {
-        allDice[i].src = "../images/dice" + (i + 1) + ".png";
+        allDice[i].src = "dice" + (i + 1) + ".png";
     }
 }
