@@ -51,7 +51,7 @@ function rollDice() {
         // Generate random values during animation
         for (let i = 0; i < 6; i++) {
             let tempValue = Math.floor(Math.random() * 6) + 1;
-            allDice[i].src = "../images/dice" + tempValue + ".png";
+            allDice[i].src = "dice" + tempValue + ".png";
         }
 
         iterations++;
@@ -63,7 +63,7 @@ function rollDice() {
             // Generate final roll values
             for (let i = 0; i < 6; i++) {
                 diceValues[i] = Math.floor(Math.random() * 6) + 1;
-                allDice[i].src = "../images/dice" + diceValues[i] + ".png";
+                allDice[i].src = "dice" + diceValues[i] + ".png";
             }
 
             // Process the completed roll
