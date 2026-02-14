@@ -166,16 +166,16 @@ function checkWinCondition() {
     }
 
     if (countOnes === 6) {
-        endGame(" SIX 1's! AUTOMATIC WIN! ");
+        endGame("🎉 SIX 1's! AUTOMATIC WIN! 🎉");
     }
     if (overallScore === 5000) {
-        endGame(" YOU WIN! You reached exactly 5000 points! ");
+        endGame("🎉 YOU WIN! You reached exactly 5000 points! 🎉");
     }
     if (overallScore > 5000) {
         endGame(
             "😞 YOU LOSE! You went over 5000 points. You had " +
                 overallScore +
-                " points.",
+                " points."
         );
     }
 }
