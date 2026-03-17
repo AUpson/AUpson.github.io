@@ -186,6 +186,7 @@
   .tag-4 { color: #4f9eff; background: #4f9eff14; border: 1px solid #4f9eff2a; }
   .tag-5 { color: #3ecf8e; background: #3ecf8e14; border: 1px solid #3ecf8e2a; }
   .tag-6 { color: #f5a623; background: #f5a62314; border: 1px solid #f5a6232a; }
+  .tag-7 { color: #b06aff; background: #b06aff14; border: 1px solid #b06aff2a; }
 
   .q-type-tag {
     font-family: var(--mono);
@@ -464,11 +465,11 @@
 <!-- START -->
 <div id="start-screen" class="screen active">
   <div class="start-card">
-    <h2>// COOS Quiz Review</h2>
+    <h2>// quiz_config</h2>
     <div class="info-grid">
       <div class="info-cell"><span class="num">30</span><span class="lbl">questions per run</span></div>
-      <div class="info-cell"><span class="num">27</span><span class="lbl">multiple choice</span></div>
-      <div class="info-cell"><span class="num">3</span><span class="lbl">written answer</span></div>
+      <div class="info-cell"><span class="num">80</span><span class="lbl">MC in pool</span></div>
+      <div class="info-cell"><span class="num">20</span><span class="lbl">written in pool</span></div>
     </div>
     <div class="module-pills">
       <span class="pill pill-4">Module 4 — Storage &amp; File Servers</span>
@@ -861,13 +862,183 @@ const ALL_QUESTIONS = [
    q:"In Windows Server Backup, a 'system state' backup captures:",
    o:["All volumes on the server","The registry, boot files, Active Directory (on DCs), and COM+ class registration database","Only the OS volume","All user data shares"],c:1,
    exp:"System state backs up the components needed to restore Windows operational state: registry, boot files, COM+ database, and on Domain Controllers, Active Directory. It does NOT cover user data volumes."},
+,
+
+  // ─── MODULE 7 MC (20 questions) ───
+  {m:7,type:'mc',
+   q:"Hyper-V Replica keeps the replica VM powered off while the primary runs. This makes it a solution for:",
+   o:["High availability with automatic failover","Disaster recovery requiring manual failover","Synchronous block-level storage replication","Live VM load balancing across two sites"],c:1,
+   exp:"Hyper-V Replica is DR, not HA. The replica VM stays powered off until an admin manually initiates a failover -- there is no automatic detection or response to primary failures."},
+
+  {m:7,type:'mc',
+   q:"When Hyper-V hosts are in untrusted or different domains, which authentication method is required for Hyper-V Replica?",
+   o:["Kerberos (HTTP)","NTLM integrated Windows auth","Certificate-based authentication (HTTPS)","Anonymous HTTP"],c:2,
+   exp:"Kerberos requires a trusted domain relationship. For workgroup or untrusted-domain hosts, certificate-based HTTPS authentication must be used to secure the replication channel."},
+
+  {m:7,type:'mc',
+   q:"What is the shortest replication interval available in Hyper-V Replica?",
+   o:["5 seconds","15 seconds","30 seconds","2 minutes"],c:2,
+   exp:"Hyper-V Replica supports three intervals: 30 seconds, 5 minutes, or 15 minutes. 30 seconds is the minimum."},
+
+  {m:7,type:'mc',
+   q:"A planned failover requires the primary VM to be shut down first so that:",
+   o:["The Kerberos ticket used for replication can be released","Any remaining unreplicated data is sent before switching, ensuring zero data loss","The replica server can acquire the shared SAN LUN","The VM configuration file on the replica can be updated"],c:1,
+   exp:"Shutting down the primary lets Hyper-V flush and transmit all pending changes before completing the failover, guaranteeing a zero-data-loss cutover."},
+
+  {m:7,type:'mc',
+   q:"During an unplanned failover, the failover is initiated at the replica site because:",
+   o:["The replica always initiates failover regardless of the scenario","The primary VM is unavailable and cannot initiate anything","The administrator prefers to manage failover from a secondary location","Azure Site Recovery requires failover from the replica"],c:1,
+   exp:"In an unplanned failover the primary has failed and is unreachable, so the admin must trigger failover from the replica. Data loss may occur since the latest changes may not have replicated."},
+
+  {m:7,type:'mc',
+   q:"A test failover in Hyper-V Replica is non-disruptive because it:",
+   o:["Shuts down the primary in a controlled way before testing","Creates a temporary VM from a checkpoint in an isolated network without affecting ongoing replication","Uses a dedicated test NIC on the replica host","Suspends checkpointing on the primary during the test window"],c:1,
+   exp:"Test failover spins up a temporary VM from a replica checkpoint in an isolated environment. The real replica stays off and replication between primary and replica continues uninterrupted."},
+
+  {m:7,type:'mc',
+   q:"Hyper-V Replica is configured at which level of granularity?",
+   o:["Per Hyper-V host","Per cluster node","Per virtual machine","Per virtual hard disk file"],c:2,
+   exp:"Replication is enabled per VM. Each VM independently specifies its replica server, authentication, frequency, which VHDs to replicate, and recovery point settings."},
+
+  {m:7,type:'mc',
+   q:"Extended replication in Hyper-V Replica allows replication from the secondary site to a:",
+   o:["Fourth backup host","Tertiary (third) location","Azure Blob storage account directly","Local tape library via iSCSI"],c:1,
+   exp:"Hyper-V supports chaining replication to a third location, providing an additional DR layer beyond the standard primary-to-secondary setup."},
+
+  {m:7,type:'mc',
+   q:"Which firewall rule must be configured on the Hyper-V replica server?",
+   o:["Allow outbound SMB on port 445","Allow inbound Hyper-V Replica HTTP or HTTPS traffic","Allow inbound RDP on port 3389","Allow outbound Live Migration traffic on port 6600"],c:1,
+   exp:"Windows Defender Firewall on the replica server must permit inbound Hyper-V Replica traffic -- port 80 for Kerberos/HTTP, port 443 for certificate/HTTPS -- so the primary can push changes."},
+
+  {m:7,type:'mc',
+   q:"Hyper-V Replica uses asynchronous replication. In the worst case, the replica lags the primary by:",
+   o:["One full replication interval (30 seconds to 15 minutes depending on configuration)","Zero -- it is always in sync","24 hours -- it syncs once per day","Exactly 1 hour"],c:0,
+   exp:"Async replication batches writes and ships them at the configured interval without blocking primary VM I/O. The replica can lag by up to one full interval worth of changes."},
+
+  {m:7,type:'mc',
+   q:"Azure Site Recovery extends Hyper-V Replica by adding which capability?",
+   o:["Asynchronous replication of VM disk writes","Orchestrated recovery plans with Azure as the failover target","Kerberos authentication for secure replication","A 30-second replication frequency option"],c:1,
+   exp:"ASR adds recovery plan orchestration, non-disruptive test failovers, Azure as the recovery site, and centralized monitoring -- none of which are in standalone Hyper-V Replica."},
+
+  {m:7,type:'mc',
+   q:"Azure Site Recovery can protect which combination of workloads?",
+   o:["Hyper-V VMs in VMM clouds only","Hyper-V VMs, VMware VMs, and physical Windows or Linux servers","Azure-native VMs only","Only servers running Windows Server 2022"],c:1,
+   exp:"ASR protects Hyper-V VMs (standalone or VMM-managed), VMware VMs, and physical servers running Windows or Linux -- making it platform-agnostic for DR."},
+
+  {m:7,type:'mc',
+   q:"Why does copying a live volume produce an unreliable backup?",
+   o:["Copied files lose their NTFS permissions","Files being written during the copy may be captured mid-write or skipped if locked","The copy does not preserve folder timestamps","Copying requires SMB, which throttles transfer speed"],c:1,
+   exp:"A live copy captures data in a moving state -- files may change mid-copy, locked files may be skipped, and some writes may be partially captured. VSS solves this by briefly quiescing state before snapshotting."},
+
+  {m:7,type:'mc',
+   q:"A VSS writer's primary job during a backup is to:",
+   o:["Create the volume snapshot","Copy the snapshot to backup media","Flush application in-memory data to disk before the snapshot is taken","Allocate shadow-copy disk space"],c:2,
+   exp:"VSS writers (SQL, Hyper-V, AD DS) instruct their application to commit all in-memory data to disk when notified that a snapshot is coming, ensuring the on-disk state is complete and consistent."},
+
+  {m:7,type:'mc',
+   q:"Which VSS component physically creates and maintains the volume snapshot?",
+   o:["VSS requestor","VSS writer","VSS provider","VSS coordinator"],c:2,
+   exp:"The VSS provider creates the snapshot and maintains the shadow-copy area. Windows includes a built-in copy-on-write provider; storage vendors may supply their own hardware providers."},
+
+  {m:7,type:'mc',
+   q:"Windows Server Backup cannot back up remote servers because it is:",
+   o:["Licensed only for local use","A single-server, agentless tool with no central management or remote backup capability","Blocked by Windows Firewall on remote hosts","Incompatible with SMB 3.x network shares"],c:1,
+   exp:"Windows Server Backup has no agent framework and no central console. It operates only on the local server. Multi-server environments need MABS or a third-party enterprise backup product."},
+
+  {m:7,type:'mc',
+   q:"A differential backup grows larger over time because it captures all changes since:",
+   o:["The most recent backup of any type","The most recent full backup","The previous differential","The server was last restarted"],c:1,
+   exp:"Differential backups include everything changed since the last full backup. As more changes accumulate between full backups, each differential grows larger. Restore needs only the last full + latest differential."},
+
+  {m:7,type:'mc',
+   q:"Restoring from an incremental backup chain requires:",
+   o:["Only the most recent incremental","The last full backup and the most recent incremental only","The last full backup plus every subsequent incremental in sequence","Any single incremental that contains the needed files"],c:2,
+   exp:"Incremental restore applies the full backup first, then each incremental in order. Missing any link in the chain produces an incomplete restore."},
+
+  {m:7,type:'mc',
+   q:"A host-level online VM backup in Hyper-V requires the guest VM to have:",
+   o:["A Generation 2 config and Dynamic Memory","VSS support and the Hyper-V Backup Integration Service","A fixed VHDX disk and an external virtual switch","Live Migration capability and access to a CSV"],c:1,
+   exp:"Online host-level backup keeps VMs running. The guest needs VSS and the Backup Integration Service so the Hyper-V host VSS can coordinate a quiesce of guest data before snapshotting."},,
+
+  {m:6,type:'mc',
+   q:"Cluster-Aware Updating (CAU) patches cluster nodes by:",
+   o:["Updating all nodes at the same time in one maintenance window","Draining workloads off each node, patching and rebooting it, then moving to the next","Snapshotting all VMs before applying any updates","Downloading patches only to the primary node then distributing them"],c:1,
+   exp:"CAU performs rolling updates: it migrates workloads off one node at a time, applies updates and reboots, confirms the node is healthy, then repeats for the next node -- keeping the cluster available throughout."},
+
+  {m:7,type:'written',
+   q:"Explain the difference between a planned failover and an unplanned failover in Hyper-V Replica. Include the required state of the primary VM and whether data loss can occur for each.",
+   model:"Planned failover: Initiated by the admin before a known event such as scheduled maintenance. The primary VM must be SHUT DOWN before initiating. Hyper-V sends any remaining unreplicated data to the replica, then starts the replica VM. Result: zero data loss.\n\nUnplanned failover: Initiated at the replica when the primary fails unexpectedly and is unreachable. No final sync occurs because the primary is down. Failover is triggered from the replica site. Result: potential data loss -- changes made after the last completed replication cycle were never delivered to the replica."},
+
+  {m:7,type:'written',
+   q:"Describe the three VSS components (requestor, writer, provider) and the specific role each plays in producing a consistent backup.",
+   model:"VSS Requestor: The backup application (Windows Server Backup, Azure Backup agent). It calls VSS to initiate the snapshot and, once the snapshot is ready, copies its contents to the backup destination.\n\nVSS Writer: An app-specific component (SQL writer, Hyper-V writer, AD DS writer). When VSS signals an imminent snapshot, the writer instructs its application to flush all in-memory data and uncommitted transactions to disk, ensuring a complete, consistent on-disk state is captured.\n\nVSS Provider: Creates and maintains the volume snapshot. It briefly prevents new writes while capturing the point-in-time snapshot (lasting only seconds), then allows normal I/O to resume. Windows includes a built-in copy-on-write provider; storage vendors may supply their own hardware providers."},
+
+  {m:7,type:'written',
+   q:"Compare host-level and guest-level backup for Hyper-V VMs. What does each capture, what are the requirements, and what are the trade-offs?",
+   model:"Host-level backup: Performed from the Hyper-V host. Captures the entire VM including configuration (.vmcx), virtual disk files, and checkpoints. Online mode keeps VMs running (requires VSS and Hyper-V Backup Integration Service in the guest); offline mode briefly pauses VMs during the snapshot. Centrally manages all VMs on the host. Advantage: full VM restore including hardware configuration.\n\nGuest-level backup: A backup agent runs inside the VM, treating it like a physical server. Captures OS, applications, and user data visible from inside the VM. Does NOT capture VM configuration or Hyper-V metadata. Advantage: granular file/folder restore, familiar physical-server workflow. Disadvantage: agents must be deployed and maintained inside every VM separately."},
+
+  {m:7,type:'written',
+   q:"What is Azure Site Recovery and how does it go beyond built-in Hyper-V Replica? Name at least three capabilities ASR adds.",
+   model:"Azure Site Recovery (ASR) is a Microsoft managed DR-as-a-service that uses Azure as the recovery target and adds orchestration on top of Hyper-V Replica's replication mechanism.\n\nThree capabilities ASR adds:\n1. Recovery Plans: Scripted, ordered failover sequences for multiple VMs with customizable pre- and post-failover automation steps.\n2. Non-disruptive Test Failover: Starts VMs in an isolated Azure network to validate recovery procedures without affecting production replication.\n3. Azure as Recovery Target: Replicates on-premises VMs to Azure instead of requiring a second on-premises site, eliminating secondary datacenter hardware costs.\n\nASR also supports VMware VMs and physical servers, provides centralized monitoring and alerting via Azure Monitor, and supports workload migration scenarios."},
+
+  {m:7,type:'written',
+   q:"Describe full, differential, and incremental backup types. For each, state what data is captured and what is needed to perform a complete restore.",
+   model:"Full backup: Captures all selected data regardless of previous backups. Restore: only the most recent full backup is needed. Slowest to create and consumes the most storage per job, but simplest to restore.\n\nDifferential backup: Captures all data changed since the most recent full backup. Grows larger each day as more changes accumulate. Restore: the last full backup plus the most recent differential -- only two pieces required.\n\nIncremental backup: Captures only data changed since the most recent backup of any type. Each job is small and fast. Restore: the last full backup plus every subsequent incremental in sequence -- a more complex restore process, but the smallest daily backup footprint."},
+
+  {m:7,type:'written',
+   q:"Describe the MARS agent versus Microsoft Azure Backup Server (MABS). How do they differ in capability and when would you choose each?",
+   model:"MARS agent: A lightweight agent installed on individual Windows servers. Backs up files, folders, and system state directly to an Azure Recovery Services vault. Maximum frequency: 3 times per day for files and folders, once per day for system state. Simple to deploy for small environments.\n\nMABS: A dedicated Windows Server installation based on the System Center DPM engine, available free with an Azure subscription. Provides centralized, agent-based backup for multiple servers and complex workloads including SQL Server, Exchange, SharePoint, Hyper-V, and Active Directory. Backs up first to local disk for fast recovery, then offloads to Azure for long-term retention. Supports backup intervals as frequent as every 15 minutes for some workloads.\n\nChoose MARS: small number of servers needing file, folder, or system state protection sent directly to Azure.\nChoose MABS: multiple servers, application-consistent backup for SQL or Exchange, frequent backup intervals, or fast local-disk recovery requirements."},
+
+  {m:7,type:'written',
+   q:"Explain the four deployment scenarios supported by Hyper-V Replica and give a brief use case for each.",
+   model:"1. Standalone to Standalone: One Hyper-V host replicates to another standalone host. Use case: simple DR for small environments -- e.g. a branch office server replicating to headquarters.\n\n2. Cluster to Standalone: A Hyper-V failover cluster replicates to a standalone host. Use case: a production HA cluster replicating to a lower-cost DR host that does not need to be a full cluster.\n\n3. Standalone to Cluster: A standalone host replicates into a Hyper-V cluster. Use case: a single production server sending its replica to a clustered DR site for higher replica availability.\n\n4. Cluster to Cluster: One Hyper-V cluster replicates to another cluster. Use case: two enterprise datacenters each running clustered production and DR infrastructure for maximum availability at both ends."},
+
+  {m:4,type:'written',
+   q:"Explain how the Volume Shadow Copy Service (VSS) enables consistent backups in Windows Server. Walk through the sequence of events from when backup starts until the application can resume normal writes.",
+   model:"1. Windows Server Backup (VSS requestor) calls the VSS service to initiate a backup.\n2. VSS notifies all registered VSS writers (SQL, Hyper-V, AD DS, Exchange, etc.) that a snapshot is imminent.\n3. Each writer instructs its application to flush all in-memory data and uncommitted transactions to disk, ensuring a complete, consistent on-disk state.\n4. VSS briefly freezes new writes to the volume -- this pause lasts only seconds.\n5. The VSS provider captures the point-in-time volume snapshot.\n6. Applications immediately resume normal read and write operations.\n7. The VSS requestor copies the snapshot contents to the backup destination at its own pace, without impacting the live volume or applications."},
+
+  {m:4,type:'written',
+   q:"Describe NTFS permissions vs share permissions and explain how effective permissions are calculated when both apply. Provide a concrete example.",
+   model:"NTFS permissions are set at the file system level and apply whether the resource is accessed locally or over the network. Share permissions apply only to network access through a file share.\n\nWhen both types apply over the network, Windows calculates the effective permission as the MOST RESTRICTIVE intersection of the two permission sets. A Deny entry always overrides Allow regardless of the calculation.\n\nExample: A user has Modify (NTFS) and Read (share) permission on a shared folder.\n- Local access: only NTFS applies, so effective = Modify.\n- Network access: both apply, most restrictive wins, so effective = Read.\nThe user can modify files when sitting at the server but can only read them when connecting remotely through the share."},
+
+  {m:4,type:'written',
+   q:"Explain what Data Deduplication does, how it operates at the chunk level, and identify one workload that benefits and one that does not -- with reasoning for each.",
+   model:"Data Deduplication identifies and removes redundant data across files on a volume. It splits files into variable-length chunks, computes a hash for each chunk, and stores only one copy of each unique chunk in a chunk store on the volume. Duplicate chunks are replaced with lightweight pointers to the single stored copy, reducing physical disk consumption.\n\nBenefits: VDI (Virtual Desktop Infrastructure) image libraries -- many VMs share an identical OS base image, so the duplicate OS blocks are stored only once, achieving very high space savings.\n\nDoes not benefit: Live transactional SQL Server databases -- database pages change constantly and are mostly unique. Chunks rarely repeat across the file, so deduplication achieves minimal space savings and adds I/O overhead from the chunk processing pipeline."},
+
+  {m:4,type:'written',
+   q:"Explain what iSCSI is, describe the roles of the iSCSI target and initiator, and explain how iSCSI differs from SMB file sharing.",
+   model:"iSCSI (Internet Small Computer System Interface) encapsulates SCSI storage commands within TCP/IP packets, allowing servers to access remote storage over a standard Ethernet network as if it were a locally attached block device.\n\niSCSI Target: The server-side component that exposes one or more LUNs (Logical Unit Numbers -- raw storage volumes) over the network. In Windows Server, the iSCSI Target Server role provides this.\n\niSCSI Initiator: The client-side component that connects to a target and presents the LUN to the operating system as a local disk. The initiator's OS manages its own file system on the raw block device.\n\nDifference from SMB: SMB is a file-level protocol -- the server manages the file system and clients access named files and folders through a share. iSCSI is a block-level protocol -- the client receives raw disk blocks and is fully responsible for its own file system on top of them. iSCSI is used when the client needs full disk control (e.g. cluster shared storage, raw database volumes); SMB is used for concurrent multi-client file access."},
+
+  {m:5,type:'written',
+   q:"Describe Guarded Fabric. What problem does it solve and what are its two core protection mechanisms for Shielded VMs?",
+   model:"Guarded Fabric protects sensitive VM workloads from being accessed or tampered with by compromised Hyper-V administrators, rogue fabric hosts, or attackers with physical access to host hardware -- a zero-trust model for the virtualization infrastructure.\n\nTwo core mechanisms:\n1. Host Guardian Service (HGS) with TPM-based attestation: HGS is a hardened server that validates each Hyper-V host's TPM measurements against a known-good baseline. Only hosts that pass attestation receive the encryption key needed to start Shielded VMs. A host that fails attestation cannot unlock or run Shielded VMs.\n2. BitLocker disk encryption: Shielded VM virtual disks and state are encrypted with BitLocker. Keys are held by HGS and released only to attested hosts. Even if an admin copies the VHDX files, they cannot decrypt or start the VM on an untrusted host."},
+
+  {m:5,type:'written',
+   q:"Compare Windows Server containers and Hyper-V isolated containers. Describe the isolation difference and explain when you would choose each.",
+   model:"Windows Server containers: Share the host OS kernel. Isolation is provided through Windows namespaces and job objects. Lightweight and fast to start. Suitable when all container workloads are trusted and can safely share a kernel.\n\nHyper-V isolated containers: Each container runs inside a minimal, lightweight VM with its own kernel instance. This creates a hardware-level isolation boundary -- even a kernel exploit in one container cannot affect the host kernel or other containers.\n\nChoose Windows Server containers when: maximizing density and startup speed is the priority and all workloads are trusted (e.g. internal dev/test or single-tenant application hosting).\n\nChoose Hyper-V containers when: running untrusted or multi-tenant workloads where a kernel vulnerability in one container must not be allowed to affect others (e.g. container hosting for external customers or highly regulated workloads)."},
+
+  {m:5,type:'written',
+   q:"Explain the Kubernetes control plane and worker node architecture. What is the purpose of each component, and what is a Pod?",
+   model:"Control Plane: Makes global decisions about the cluster.\n- API server: Entry point for all management commands (kubectl, portals).\n- Scheduler: Assigns Pods to worker nodes based on resource availability and constraints.\n- Controller Manager: Runs controllers that reconcile desired vs actual cluster state (e.g. restart failed Pods, maintain replica counts).\n- etcd: Distributed key-value store holding all cluster configuration and state.\n\nWorker Nodes: Run container workloads. Each node runs:\n- kubelet: Node agent that receives Pod specs from the control plane, instructs the container runtime to start containers, and reports node and Pod health back.\n- Container runtime: Executes containers (e.g. containerd).\n- kube-proxy: Manages network rules enabling Pod-to-Pod and external-to-Pod communication.\n\nPod: The smallest deployable unit in Kubernetes -- one or more tightly coupled containers that share a network namespace, storage volumes, and are always scheduled together on the same worker node."},
+
+  {m:6,type:'written',
+   q:"Explain quorum in a Windows failover cluster, why it is necessary, and describe how a file share witness helps -- especially in a stretched cluster.",
+   model:"Quorum is a voting mechanism that determines which nodes form the authoritative active cluster when nodes lose communication with each other. It prevents split-brain: two isolated network partitions each believing they are the active cluster and simultaneously writing to shared storage, causing data corruption.\n\nEach node receives one vote. The cluster continues running as long as a majority of votes are reachable. In a two-node cluster, neither node alone has a majority if the other fails -- a tie results in both stopping. A witness provides an additional vote to break ties.\n\nIn a stretched cluster spanning two sites, the file share witness is placed at a neutral third location such as Azure. If Site A loses connectivity to Site B, the site that can still reach the witness achieves a majority vote and keeps running. The site that cannot reach the witness stops cluster services, preventing split-brain across geographically separated nodes."},
+
+  {m:6,type:'written',
+   q:"Describe host clustering and guest clustering for Hyper-V VMs. What level of failover does each provide and how do they complement each other?",
+   model:"Host clustering (VM HA): The Windows Failover Cluster runs at the Hyper-V layer. If a host node fails, the cluster automatically restarts the affected VMs on surviving hosts. This takes minutes (VM restart plus OS boot). It protects against host hardware failure but the application inside the VM is unavailable during the restart.\n\nGuest clustering: A Windows Failover Cluster is installed inside VMs. The clustered application (SQL Server, file server) detects its own failure and fails over between the VMs in seconds -- without waiting for a VM restart. The VMs themselves keep running on their host nodes.\n\nHow they complement each other: Guest clustering provides sub-minute application-level HA. Host clustering provides VM-level protection against host hardware failures. Used together: if an application fails inside a VM, guest clustering recovers it in seconds. If the host itself fails, host clustering restarts the VMs, and guest clustering then automatically re-establishes the application role."},
+
+  {m:6,type:'written',
+   q:"Explain Storage Replica in a stretched cluster. What does it replicate, what are the two replication modes, and when would you choose each?",
+   model:"Storage Replica replicates storage volumes between sites at the block level -- independent of file system or workload type, so any content (VMs, files, databases) is protected.\n\nSynchronous mode: Every write on the source waits for the destination to confirm receipt before being acknowledged to the application. Guarantees RPO of zero -- no data loss. Adds write latency equal to the round-trip network time to the remote site. Choose for low-latency links such as same metropolitan area, campus, or dedicated fiber connections.\n\nAsynchronous mode: Writes are acknowledged locally without waiting for the remote site. Changes are queued and shipped in the background. Some recent data may not have transferred if a failure occurs (non-zero RPO). Choose for geographically distant sites where synchronous replication latency would be unacceptable for production workloads."},
 ];
 
 // ── QUIZ ENGINE ──────────────────────────────────────────────────
 const MC_POOL   = ALL_QUESTIONS.filter(q => q.type === 'mc');
 const WR_POOL   = ALL_QUESTIONS.filter(q => q.type === 'written');
 const QUIZ_SIZE = 30;
-const WRITTEN_COUNT = 3;
+const WRITTEN_COUNT = 5;
 
 let quizQuestions = [];
 let current = 0;
