@@ -446,6 +446,18 @@
     letter-spacing: 0.05em;
   }
   .restart-btn:hover { background: var(--accent2); }
+  .missed-section { margin-top: 28px; text-align: left; }
+  .missed-title { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 14px; }
+  .missed-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; margin-bottom: 12px; }
+  .missed-item-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .missed-mod-tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; flex-shrink: 0; }
+  .missed-type-tag { font-family: var(--mono); font-size: 10px; color: var(--amber); background: #f5a62312; border: 1px solid #f5a62330; padding: 2px 8px; border-radius: 4px; }
+  .missed-q { font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.55; margin-bottom: 10px; }
+  .missed-your-answer { font-size: 12px; color: var(--red); background: #f36b6b0d; border: 1px solid #f36b6b30; border-radius: 6px; padding: 7px 11px; margin-bottom: 7px; display: flex; gap: 8px; align-items: baseline; }
+  .missed-correct-answer { font-size: 12px; color: var(--green); background: #3ecf8e0d; border: 1px solid #3ecf8e30; border-radius: 6px; padding: 7px 11px; margin-bottom: 10px; display: flex; gap: 8px; align-items: baseline; }
+  .missed-answer-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; flex-shrink: 0; opacity: 0.7; }
+  .missed-exp { font-size: 12px; color: var(--muted); line-height: 1.65; border-left: 2px solid var(--accent); padding-left: 10px; }
+  .missed-written-model { font-size: 12px; color: var(--muted); line-height: 1.65; background: var(--surface2); border-radius: 6px; padding: 10px 12px; white-space: pre-wrap; }
 
   /* ── MISC ── */
   @media (max-width: 500px) {
@@ -466,7 +478,7 @@
 <!-- START -->
 <div id="start-screen" class="screen active">
   <div class="start-card">
-    <h2>// COOS 190 EXAM REVIEW</h2>
+    <h2>COOS 190 Review Test</h2>
     <div class="info-grid">
       <div class="info-cell"><span class="num">30</span><span class="lbl">questions per run</span></div>
       <div class="info-cell"><span class="num">80</span><span class="lbl">MC in pool</span></div>
@@ -535,6 +547,7 @@
     </div>
     <button class="restart-btn" onclick="startQuiz()">Restart Quiz →</button>
   </div>
+  <div class="missed-section" id="missed-section"></div>
 </div>
 
 <script>
@@ -1046,7 +1059,9 @@ const WRITTEN_COUNT = 5;
 let quizQuestions = [];
 let current = 0;
 let mcCorrect = 0, mcAnswered = 0, wrCorrect = 0;
+let wrongAnswers = [];
 let modStats = {4:{c:0,t:0}, 5:{c:0,t:0}, 6:{c:0,t:0}, 7:{c:0,t:0}};
+  wrongAnswers = [];
 let writtenGraded = false;
 
 function shuffle(arr) {
@@ -1067,6 +1082,7 @@ function startQuiz() {
   quizQuestions = shuffle([...mc, ...written]);
   current = 0; mcCorrect = 0; mcAnswered = 0; wrCorrect = 0;
   modStats = {4:{c:0,t:0}, 5:{c:0,t:0}, 6:{c:0,t:0}, 7:{c:0,t:0}};
+  wrongAnswers = [];
 
   show('quiz-screen');
   renderQuestion();
@@ -1141,6 +1157,7 @@ function handleMC(chosen, q) {
     }
   });
   if (chosen === q.c) { mcCorrect++; modStats[q.m].c++; }
+  else { wrongAnswers.push({type:'mc', q:q.q, m:q.m, yourAnswer: q.o[chosen], correctAnswer: q.o[q.c], exp:q.exp}); }
   document.getElementById('q-score').textContent = mcCorrect + ' / ' + mcAnswered;
   document.getElementById('exp-text').textContent = q.exp;
   document.getElementById('explanation').style.display = 'block';
@@ -1165,6 +1182,7 @@ function selfGrade(got) {
   const q = quizQuestions[current];
   modStats[q.m].t++;
   if (got) { wrCorrect++; modStats[q.m].c++; }
+  else { wrongAnswers.push({type:'written', q:q.q, m:q.m, model:q.model}); }
   document.getElementById('self-grade').style.display = 'none';
   const nb = document.getElementById('next-btn');
   nb.style.display = 'inline-block';
@@ -1200,6 +1218,42 @@ function showResults() {
   document.getElementById('res-correct').textContent = totalCorrect;
   document.getElementById('res-wrong').textContent = QUIZ_SIZE - totalCorrect;
   document.getElementById('res-written').textContent = wrCorrect + ' / ' + WRITTEN_COUNT;
+
+  // Build missed questions review
+  const missedEl = document.getElementById('missed-section');
+  missedEl.innerHTML = '';
+  if (wrongAnswers.length > 0) {
+    const tagColors = {4:'#4f9eff',5:'#3ecf8e',6:'#f5a623',7:'#b06aff'};
+    const tagBg = {4:'#4f9eff14',5:'#3ecf8e14',6:'#f5a62314',7:'#b06aff14'};
+    const tagBorder = {4:'#4f9eff2a',5:'#3ecf8e2a',6:'#f5a6232a',7:'#b06aff2a'};
+    let html = '<div class="missed-title">// missed questions (' + wrongAnswers.length + ')</div>';
+    wrongAnswers.forEach((w, i) => {
+      const col = tagColors[w.m] || '#7a8399';
+      const bg = tagBg[w.m] || '#7a839914';
+      const bd = tagBorder[w.m] || '#7a83992a';
+      if (w.type === 'mc') {
+        html += '<div class="missed-item">' +
+          '<div class="missed-item-header">' +
+            '<span class="missed-mod-tag" style="color:'+col+';background:'+bg+';border:1px solid '+bd+'">Module ' + w.m + '</span>' +
+          '</div>' +
+          '<div class="missed-q">' + (i+1) + '. ' + w.q + '</div>' +
+          '<div class="missed-your-answer"><span class="missed-answer-label">Your answer</span>' + (w.yourAnswer !== undefined ? w.yourAnswer : 'No answer') + '</div>' +
+          '<div class="missed-correct-answer"><span class="missed-answer-label">Correct</span>' + w.correctAnswer + '</div>' +
+          '<div class="missed-exp">' + w.exp + '</div>' +
+        '</div>';
+      } else {
+        html += '<div class="missed-item">' +
+          '<div class="missed-item-header">' +
+            '<span class="missed-mod-tag" style="color:'+col+';background:'+bg+';border:1px solid '+bd+'">Module ' + w.m + '</span>' +
+            '<span class="missed-type-tag">Written</span>' +
+          '</div>' +
+          '<div class="missed-q">' + (i+1) + '. ' + w.q + '</div>' +
+          '<div class="missed-correct-answer" style="display:block"><span class="missed-answer-label" style="display:block;margin-bottom:6px">Model answer</span><div class="missed-written-model">' + w.model.replace(/\n/g,'\n') + '</div></div>' +
+        '</div>';
+      }
+    });
+    missedEl.innerHTML = html;
+  }
 
   [4,5,6,7].forEach(m => {
     const s = modStats[m];
