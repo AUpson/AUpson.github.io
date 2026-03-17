@@ -126,6 +126,7 @@
   .pill-4 { color: #4f9eff; border-color: #4f9eff33; background: #4f9eff11; }
   .pill-5 { color: #3ecf8e; border-color: #3ecf8e33; background: #3ecf8e11; }
   .pill-6 { color: #f5a623; border-color: #f5a62333; background: #f5a62311; }
+  .pill-7 { color: #b06aff; border-color: #b06aff33; background: #b06aff11; }
   .start-btn {
     width: 100%;
     padding: 15px;
@@ -475,6 +476,7 @@
       <span class="pill pill-4">Module 4 — Storage &amp; File Servers</span>
       <span class="pill pill-5">Module 5 — Hyper-V &amp; Containers</span>
       <span class="pill pill-6">Module 6 — High Availability</span>
+      <span class="pill pill-7">Module 7 — Disaster Recovery</span>
     </div>
     <button class="start-btn" onclick="startQuiz()">Start Quiz →</button>
   </div>
@@ -529,6 +531,7 @@
       <div class="brow"><span class="brow-label">Module 4 — Storage &amp; File Servers</span><span class="brow-val" id="br-4"></span></div>
       <div class="brow"><span class="brow-label">Module 5 — Hyper-V &amp; Containers</span><span class="brow-val" id="br-5"></span></div>
       <div class="brow"><span class="brow-label">Module 6 — High Availability</span><span class="brow-val" id="br-6"></span></div>
+      <div class="brow"><span class="brow-label">Module 7 — Disaster Recovery</span><span class="brow-val" id="br-7"></span></div>
     </div>
     <button class="restart-btn" onclick="startQuiz()">Restart Quiz →</button>
   </div>
@@ -1043,7 +1046,7 @@ const WRITTEN_COUNT = 5;
 let quizQuestions = [];
 let current = 0;
 let mcCorrect = 0, mcAnswered = 0, wrCorrect = 0;
-let modStats = {4:{c:0,t:0}, 5:{c:0,t:0}, 6:{c:0,t:0}};
+let modStats = {4:{c:0,t:0}, 5:{c:0,t:0}, 6:{c:0,t:0}, 7:{c:0,t:0}};
 let writtenGraded = false;
 
 function shuffle(arr) {
@@ -1056,14 +1059,14 @@ function shuffle(arr) {
 }
 
 function startQuiz() {
-  // pick 3 written questions
+  // pick 5 written questions
   const written = shuffle(WR_POOL).slice(0, WRITTEN_COUNT);
   // pick remaining from MC pool
   const mc = shuffle(MC_POOL).slice(0, QUIZ_SIZE - WRITTEN_COUNT);
   // merge and shuffle
   quizQuestions = shuffle([...mc, ...written]);
   current = 0; mcCorrect = 0; mcAnswered = 0; wrCorrect = 0;
-  modStats = {4:{c:0,t:0}, 5:{c:0,t:0}, 6:{c:0,t:0}};
+  modStats = {4:{c:0,t:0}, 5:{c:0,t:0}, 6:{c:0,t:0}, 7:{c:0,t:0}};
 
   show('quiz-screen');
   renderQuestion();
@@ -1198,7 +1201,7 @@ function showResults() {
   document.getElementById('res-wrong').textContent = QUIZ_SIZE - totalCorrect;
   document.getElementById('res-written').textContent = wrCorrect + ' / ' + WRITTEN_COUNT;
 
-  [4,5,6].forEach(m => {
+  [4,5,6,7].forEach(m => {
     const s = modStats[m];
     const el = document.getElementById('br-' + m);
     el.textContent = s.t > 0 ? s.c + ' / ' + s.t : '—';
