@@ -1,1267 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>COOS 190 — Exam Review Quiz</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #0d0f12;
-    --surface: #151820;
-    --surface2: #1c2030;
-    --border: #2a2f3d;
-    --border2: #353c50;
-    --accent: #4f9eff;
-    --accent2: #7bc8ff;
-    --green: #3ecf8e;
-    --red: #f36b6b;
-    --amber: #f5a623;
-    --text: #e8ecf2;
-    --muted: #7a8399;
-    --mono: 'IBM Plex Mono', monospace;
-    --sans: 'IBM Plex Sans', sans-serif;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0 16px 60px;
-  }
-
-  /* ── HEADER ── */
-  header {
-    width: 100%;
-    max-width: 760px;
-    padding: 36px 0 28px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 40px;
-  }
-  .header-label {
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    color: var(--accent);
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-  header h1 {
-    font-family: var(--mono);
-    font-size: clamp(22px, 4vw, 30px);
-    font-weight: 600;
-    color: var(--text);
-    line-height: 1.2;
-  }
-  header p {
-    margin-top: 8px;
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.6;
-  }
-
-  /* ── SCREENS ── */
-  .screen { width: 100%; max-width: 760px; display: none; }
-  .screen.active { display: block; }
-
-  /* ── START SCREEN ── */
-  .start-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 36px;
-  }
-  .start-card h2 {
-    font-family: var(--mono);
-    font-size: 17px;
-    font-weight: 600;
-    margin-bottom: 16px;
-    color: var(--accent2);
-  }
-  .info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 28px;
-  }
-  .info-cell {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px;
-    text-align: center;
-  }
-  .info-cell .num {
-    font-family: var(--mono);
-    font-size: 26px;
-    font-weight: 600;
-    color: var(--accent);
-    display: block;
-  }
-  .info-cell .lbl {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 4px;
-    display: block;
-  }
-  .module-pills {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 28px;
-  }
-  .pill {
-    font-family: var(--mono);
-    font-size: 11px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    border: 1px solid;
-  }
-  .pill-4 { color: #4f9eff; border-color: #4f9eff33; background: #4f9eff11; }
-  .pill-5 { color: #3ecf8e; border-color: #3ecf8e33; background: #3ecf8e11; }
-  .pill-6 { color: #f5a623; border-color: #f5a62333; background: #f5a62311; }
-  .pill-7 { color: #b06aff; border-color: #b06aff33; background: #b06aff11; }
-  .start-btn {
-    width: 100%;
-    padding: 15px;
-    background: var(--accent);
-    color: #000;
-    border: none;
-    border-radius: 8px;
-    font-family: var(--mono);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    letter-spacing: 0.05em;
-    transition: background 0.15s, transform 0.1s;
-  }
-  .start-btn:hover { background: var(--accent2); }
-  .start-btn:active { transform: scale(0.99); }
-
-  /* ── QUIZ SCREEN ── */
-  .quiz-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-  .q-counter {
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--muted);
-  }
-  .q-score {
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--accent);
-  }
-  .progress-track {
-    height: 3px;
-    background: var(--border);
-    border-radius: 2px;
-    margin-bottom: 28px;
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 2px;
-    transition: width 0.4s ease;
-  }
-  .module-tag {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    padding: 3px 9px;
-    border-radius: 4px;
-    display: inline-block;
-    margin-bottom: 14px;
-  }
-  .tag-4 { color: #4f9eff; background: #4f9eff14; border: 1px solid #4f9eff2a; }
-  .tag-5 { color: #3ecf8e; background: #3ecf8e14; border: 1px solid #3ecf8e2a; }
-  .tag-6 { color: #f5a623; background: #f5a62314; border: 1px solid #f5a6232a; }
-  .tag-7 { color: #b06aff; background: #b06aff14; border: 1px solid #b06aff2a; }
-
-  .q-type-tag {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--amber);
-    background: #f5a62312;
-    border: 1px solid #f5a62330;
-    padding: 3px 9px;
-    border-radius: 4px;
-    display: inline-block;
-    margin-bottom: 14px;
-    margin-left: 6px;
-  }
-
-  .question-text {
-    font-size: 17px;
-    font-weight: 500;
-    line-height: 1.65;
-    color: var(--text);
-    margin-bottom: 22px;
-  }
-
-  /* MC options */
-  .options { display: flex; flex-direction: column; gap: 9px; margin-bottom: 20px; }
-  .opt-btn {
-    text-align: left;
-    padding: 13px 16px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: var(--sans);
-    font-size: 14px;
-    line-height: 1.5;
-    cursor: pointer;
-    transition: border-color 0.12s, background 0.12s;
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-  }
-  .opt-btn:hover:not(:disabled) {
-    border-color: var(--border2);
-    background: var(--surface2);
-  }
-  .opt-btn:disabled { cursor: default; }
-  .opt-letter {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-    min-width: 16px;
-    padding-top: 1px;
-    flex-shrink: 0;
-  }
-  .opt-btn.correct { border-color: var(--green); background: #3ecf8e12; }
-  .opt-btn.correct .opt-letter { color: var(--green); }
-  .opt-btn.wrong { border-color: var(--red); background: #f36b6b12; }
-  .opt-btn.wrong .opt-letter { color: var(--red); }
-  .opt-btn.reveal { border-color: #3ecf8e55; background: #3ecf8e08; opacity: 0.75; }
-  .opt-btn.reveal .opt-letter { color: #3ecf8e88; }
-
-  /* Written answer */
-  .written-wrap { margin-bottom: 20px; }
-  .written-area {
-    width: 100%;
-    min-height: 100px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: var(--sans);
-    font-size: 14px;
-    line-height: 1.6;
-    padding: 13px 16px;
-    resize: vertical;
-    outline: none;
-    transition: border-color 0.12s;
-  }
-  .written-area:focus { border-color: var(--accent); }
-  .written-area:disabled { opacity: 0.6; cursor: default; }
-  .submit-written {
-    margin-top: 10px;
-    padding: 10px 22px;
-    background: var(--surface2);
-    border: 1px solid var(--border2);
-    border-radius: 7px;
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 13px;
-    cursor: pointer;
-    transition: border-color 0.12s, background 0.12s;
-  }
-  .submit-written:hover { border-color: var(--accent); color: var(--accent); }
-  .model-answer {
-    display: none;
-    margin-top: 14px;
-    background: var(--surface2);
-    border-left: 3px solid var(--amber);
-    border-radius: 0 8px 8px 0;
-    padding: 13px 16px;
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.7;
-  }
-  .model-answer strong {
-    display: block;
-    font-family: var(--mono);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--amber);
-    margin-bottom: 6px;
-  }
-  .self-grade {
-    display: none;
-    margin-top: 10px;
-    gap: 8px;
-  }
-  .self-grade .sg-lbl {
-    font-size: 12px;
-    color: var(--muted);
-    font-family: var(--mono);
-    margin-bottom: 8px;
-    display: block;
-  }
-  .sg-btns { display: flex; gap: 8px; }
-  .sg-btn {
-    padding: 8px 18px;
-    border-radius: 7px;
-    font-family: var(--mono);
-    font-size: 12px;
-    cursor: pointer;
-    border: 1px solid;
-    transition: background 0.12s;
-  }
-  .sg-got-it { border-color: #3ecf8e44; color: var(--green); background: #3ecf8e0d; }
-  .sg-got-it:hover { background: #3ecf8e22; }
-  .sg-missed { border-color: #f36b6b44; color: var(--red); background: #f36b6b0d; }
-  .sg-missed:hover { background: #f36b6b22; }
-
-  /* Explanation */
-  .explanation {
-    display: none;
-    background: var(--surface);
-    border-left: 3px solid var(--accent);
-    border-radius: 0 8px 8px 0;
-    padding: 13px 16px;
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.7;
-    margin-bottom: 20px;
-  }
-  .explanation strong {
-    display: block;
-    font-family: var(--mono);
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--accent);
-    margin-bottom: 5px;
-  }
-
-  .next-btn {
-    padding: 12px 28px;
-    background: var(--surface2);
-    border: 1px solid var(--border2);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: border-color 0.12s, color 0.12s;
-    display: none;
-  }
-  .next-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-  /* ── RESULTS ── */
-  #results-screen { text-align: center; }
-  .results-top {
-    padding: 40px 36px 32px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    margin-bottom: 20px;
-  }
-  .result-pct {
-    font-family: var(--mono);
-    font-size: 64px;
-    font-weight: 600;
-    line-height: 1;
-    margin-bottom: 8px;
-  }
-  .result-grade-lbl {
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 28px;
-  }
-  .stats-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-bottom: 28px;
-  }
-  .stat-box {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px;
-  }
-  .stat-box .sn {
-    font-family: var(--mono);
-    font-size: 24px;
-    font-weight: 600;
-    display: block;
-    margin-bottom: 4px;
-  }
-  .stat-box .sl { font-size: 12px; color: var(--muted); }
-  .breakdown {
-    text-align: left;
-    margin-bottom: 24px;
-  }
-  .breakdown-title {
-    font-family: var(--mono);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--muted);
-    margin-bottom: 12px;
-  }
-  .brow {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 13px;
-  }
-  .brow:last-child { border-bottom: none; }
-  .brow-label { color: var(--muted); }
-  .brow-val { font-family: var(--mono); font-size: 13px; }
-  .restart-btn {
-    width: 100%;
-    padding: 14px;
-    background: var(--accent);
-    color: #000;
-    border: none;
-    border-radius: 8px;
-    font-family: var(--mono);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.15s;
-    letter-spacing: 0.05em;
-  }
-  .restart-btn:hover { background: var(--accent2); }
-  .missed-section { margin-top: 28px; text-align: left; }
-  .missed-title { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 14px; }
-  .missed-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; margin-bottom: 12px; }
-  .missed-item-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-  .missed-mod-tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; flex-shrink: 0; }
-  .missed-type-tag { font-family: var(--mono); font-size: 10px; color: var(--amber); background: #f5a62312; border: 1px solid #f5a62330; padding: 2px 8px; border-radius: 4px; }
-  .missed-q { font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.55; margin-bottom: 10px; }
-  .missed-your-answer { font-size: 12px; color: var(--red); background: #f36b6b0d; border: 1px solid #f36b6b30; border-radius: 6px; padding: 7px 11px; margin-bottom: 7px; display: flex; gap: 8px; align-items: baseline; }
-  .missed-correct-answer { font-size: 12px; color: var(--green); background: #3ecf8e0d; border: 1px solid #3ecf8e30; border-radius: 6px; padding: 7px 11px; margin-bottom: 10px; display: flex; gap: 8px; align-items: baseline; }
-  .missed-answer-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; flex-shrink: 0; opacity: 0.7; }
-  .missed-exp { font-size: 12px; color: var(--muted); line-height: 1.65; border-left: 2px solid var(--accent); padding-left: 10px; }
-  .missed-written-model { font-size: 12px; color: var(--muted); line-height: 1.65; background: var(--surface2); border-radius: 6px; padding: 10px 12px; white-space: pre-wrap; }
-
-  /* ── MISC ── */
-  @media (max-width: 500px) {
-    .info-grid { grid-template-columns: 1fr 1fr; }
-    .stats-row { grid-template-columns: 1fr 1fr 1fr; }
-    .start-card { padding: 24px; }
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>COSC 182 – Java Midterm Study Quiz</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<header>
-  <div class="header-label">COOS 190 — Windows Server</div>
-  <h1>Exam&nbsp;2 Review Quiz</h1>
-  <p>Modules 4, 5 &amp; 6 &mdash; File Systems, Hyper-V, Containers &amp; High Availability</p>
-</header>
+<!-- ══════════════════════════════════════════════════════════
+     Navigation
+═══════════════════════════════════════════════════════════ -->
+<nav>
+  <div class="container">
+    <a href="#" class="nav-logo">
+      <!-- Java "Duke" inspired icon -->
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="3" fill="#f89820"/>
+        <text x="5" y="17" font-family="monospace" font-size="11" font-weight="bold" fill="#000">J</text>
+      </svg>
+      COSC 182 Quiz
+    </a>
+    <div class="nav-links">
+      <a href="#" id="nav-home-link">Home</a>
+      <a href="#" id="nav-start-link">Start Quiz</a>
+    </div>
+  </div>
+</nav>
 
-<!-- START -->
-<div id="start-screen" class="screen active">
-  <div class="start-card">
-    <h2>COOS 190 Review Test</h2>
-    <div class="info-grid">
-      <div class="info-cell"><span class="num">30</span><span class="lbl">questions per run</span></div>
-      <div class="info-cell"><span class="num">80</span><span class="lbl">MC in pool</span></div>
-      <div class="info-cell"><span class="num">20</span><span class="lbl">written in pool</span></div>
-    </div>
-    <div class="module-pills">
-      <span class="pill pill-4">Module 4 — Storage &amp; File Servers</span>
-      <span class="pill pill-5">Module 5 — Hyper-V &amp; Containers</span>
-      <span class="pill pill-6">Module 6 — High Availability</span>
-      <span class="pill pill-7">Module 7 — Disaster Recovery</span>
-    </div>
-    <button class="start-btn" onclick="startQuiz()">Start Quiz →</button>
+<!-- ══════════════════════════════════════════════════════════
+     PAGE: HOME
+═══════════════════════════════════════════════════════════ -->
+<div id="page-home" class="page active">
+  <div class="container">
+    <section id="page-home-inner">
+      <div class="hero-badge">COSC 182 – Midterm Prep</div>
+      <h1>Java Midterm Study Quiz</h1>
+      <p class="hero-sub">
+        Test your knowledge of File I/O, Generics, Data Structures, and Assignment 3.
+        Each session draws <strong>10 multiple-choice</strong> and <strong>10 coding questions</strong>
+        at random from a bank of <strong>70 questions</strong>.
+      </p>
+
+      <!-- Stats cards -->
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-card-icon">📋</div>
+          <h3>Multiple Choice</h3>
+          <p>50 questions <span class="small">in the bank</span></p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-icon">💻</div>
+          <h3>Coding Questions</h3>
+          <p>20 questions <span class="small">in the bank</span></p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-icon">🎯</div>
+          <h3>Per Session</h3>
+          <p>20 questions <span class="small">10 MC + 10 Coding</span></p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-icon">🔀</div>
+          <h3>Randomized</h3>
+          <p>Every run <span class="small">shuffled fresh</span></p>
+        </div>
+      </div>
+
+      <!-- Topics covered -->
+      <div class="topics">
+        <span class="topic-pill">📁 Chapter 17: File I/O</span>
+        <span class="topic-pill">🔷 Chapter 19: Generics</span>
+        <span class="topic-pill">🔗 Linked Lists (LList / OLList)</span>
+        <span class="topic-pill">🌳 Binary Search Trees</span>
+        <span class="topic-pill">⚡ Generic Algorithms</span>
+        <span class="topic-pill">✅ JUnit 5 Testing</span>
+        <span class="topic-pill">📦 Serialization</span>
+        <span class="topic-pill">🔍 Binary Search / QuickSort</span>
+      </div>
+
+      <button class="btn btn-primary" id="btn-start" style="font-size:1.1rem; padding:.9rem 2.5rem;">
+        Start Quiz →
+      </button>
+
+      <div style="margin-top:2.5rem; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem;">
+        <h3 style="margin-bottom:.8rem; color:var(--text-muted); font-size:.9rem; text-transform:uppercase; letter-spacing:.05em;">How it works</h3>
+        <ol style="padding-left:1.3rem; line-height:2; font-size:.93rem; color:var(--text-muted);">
+          <li>The quiz randomly selects 10 MC and 10 coding questions each time.</li>
+          <li>For <strong style="color:var(--accent2)">multiple choice</strong>, pick an answer and submit — you'll see if you were right immediately.</li>
+          <li>For <strong style="color:var(--accent3)">coding questions</strong>, write your answer in the text box, then reveal the model answer to compare.</li>
+          <li>Self-grade each coding question as ✅ Correct or ❌ Needs Practice.</li>
+          <li>After all 20 questions, review your results and re-run as many times as you like!</li>
+        </ol>
+      </div>
+    </section>
   </div>
 </div>
 
-<!-- QUIZ -->
-<div id="quiz-screen" class="screen">
-  <div class="quiz-header">
-    <span class="q-counter" id="q-counter">Question 1 of 30</span>
-    <span class="q-score" id="q-score">0 / 0</span>
-  </div>
-  <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+<!-- ══════════════════════════════════════════════════════════
+     PAGE: QUIZ
+═══════════════════════════════════════════════════════════ -->
+<div id="page-quiz" class="page">
+  <div class="container">
 
-  <span class="module-tag" id="mod-tag"></span><span class="q-type-tag" id="type-tag" style="display:none">Written</span>
-  <div class="question-text" id="q-text"></div>
-
-  <div id="mc-section">
-    <div class="options" id="options-list"></div>
-    <div class="explanation" id="explanation"><strong>// explanation</strong><span id="exp-text"></span></div>
-  </div>
-
-  <div id="written-section" style="display:none">
-    <div class="written-wrap">
-      <textarea class="written-area" id="written-input" placeholder="Type your answer here…"></textarea>
-      <button class="submit-written" id="submit-written-btn" onclick="submitWritten()">Submit answer →</button>
+    <div class="quiz-header">
+      <h2>Java Midterm Quiz</h2>
+      <div class="timer" id="timer-wrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <span id="timer-display">00:00</span>
+      </div>
+      <span style="font-size:.85rem; color:var(--text-muted);" id="q-counter">Question 1 of 20</span>
     </div>
-    <div class="model-answer" id="model-answer"><strong>// model answer</strong><span id="model-text"></span></div>
-    <div class="self-grade" id="self-grade">
-      <span class="sg-lbl">How did you do?</span>
-      <div class="sg-btns">
-        <button class="sg-btn sg-got-it" onclick="selfGrade(true)">Got it ✓</button>
-        <button class="sg-btn sg-missed" onclick="selfGrade(false)">Missed it ✗</button>
+
+    <!-- Progress bar -->
+    <div class="progress-wrap">
+      <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+    </div>
+
+    <!-- Question card -->
+    <div id="question-card" class="question-card">
+      <!-- Rendered by quiz.js -->
+    </div>
+
+    <!-- Navigation -->
+    <div class="quiz-nav">
+      <button class="btn btn-secondary" id="btn-prev">← Previous</button>
+      <button class="btn btn-primary"   id="btn-next">Next →</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     PAGE: RESULTS
+═══════════════════════════════════════════════════════════ -->
+<div id="page-results" class="page">
+  <div class="container">
+
+    <div class="results-header">
+      <div class="score-circle" id="score-circle">
+        <span class="score-number" id="score-number">0%</span>
+      </div>
+      <h1 style="margin-bottom:.4rem;">Quiz Complete!</h1>
+      <p class="results-sub" id="results-summary"></p>
+
+      <div class="results-breakdown">
+        <div class="breakdown-card good">
+          <div class="num" id="result-correct">0</div>
+          <div class="lbl">Correct</div>
+        </div>
+        <div class="breakdown-card bad">
+          <div class="num" id="result-wrong">0</div>
+          <div class="lbl">Incorrect</div>
+        </div>
+        <div class="breakdown-card">
+          <div class="num" id="result-skipped">0</div>
+          <div class="lbl">Skipped</div>
+        </div>
+        <div class="breakdown-card">
+          <div class="num" id="result-time">00:00</div>
+          <div class="lbl">Time Taken</div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+        <button class="btn btn-primary"    id="btn-restart">🔀 New Quiz</button>
+        <button class="btn btn-secondary"  id="btn-home">🏠 Home</button>
       </div>
     </div>
-  </div>
 
-  <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next question →</button>
+    <!-- Detailed review -->
+    <div class="review-section">
+      <h2 style="margin-bottom:1.2rem;">Question Review</h2>
+      <div id="review-list">
+        <!-- Rendered by quiz.js -->
+      </div>
+    </div>
+
+  </div>
 </div>
 
-<!-- RESULTS -->
-<div id="results-screen" class="screen">
-  <div class="results-top">
-    <div class="result-pct" id="res-pct"></div>
-    <div class="result-grade-lbl" id="res-lbl"></div>
-    <div class="stats-row">
-      <div class="stat-box"><span class="sn" id="res-correct" style="color:var(--green)"></span><span class="sl">correct</span></div>
-      <div class="stat-box"><span class="sn" id="res-wrong" style="color:var(--red)"></span><span class="sl">incorrect</span></div>
-      <div class="stat-box"><span class="sn" id="res-written"></span><span class="sl">written ✓</span></div>
-    </div>
-    <div class="breakdown">
-      <div class="breakdown-title">// by module</div>
-      <div class="brow"><span class="brow-label">Module 4 — Storage &amp; File Servers</span><span class="brow-val" id="br-4"></span></div>
-      <div class="brow"><span class="brow-label">Module 5 — Hyper-V &amp; Containers</span><span class="brow-val" id="br-5"></span></div>
-      <div class="brow"><span class="brow-label">Module 6 — High Availability</span><span class="brow-val" id="br-6"></span></div>
-      <div class="brow"><span class="brow-label">Module 7 — Disaster Recovery</span><span class="brow-val" id="br-7"></span></div>
-    </div>
-    <button class="restart-btn" onclick="startQuiz()">Restart Quiz →</button>
-  </div>
-  <div class="missed-section" id="missed-section"></div>
-</div>
+<!-- Scripts -->
+<script src="questions.js"></script>
+<script src="quiz.js"></script>
 
+<!-- Extra: nav link wiring (done after DOM ready in quiz.js, but add fallback here) -->
 <script>
-const LETTERS = ['A','B','C','D'];
-
-// ── ALL QUESTIONS ──────────────────────────────────────────────
-// type: 'mc' or 'written'
-// mc: o[] = options, c = correct index
-// written: model = model answer string
-
-const ALL_QUESTIONS = [
-
-  // ══════════════ MODULE 4 ══════════════
-  {m:4,type:'mc',
-   q:"NTFS supports per-file permissions. FAT does not. What is the name of the NTFS feature that provides file-level encryption on disk?",
-   o:["BitLocker","EFS (Encrypting File System)","DPAPI","SMB Signing"],c:1,
-   exp:"EFS (Encrypting File System) encrypts individual files/folders using the logged-on user's certificate. BitLocker encrypts entire volumes, not individual files."},
-
-  {m:4,type:'mc',
-   q:"Which file system was designed specifically to replace NTFS for virtualization and large-scale storage, with built-in integrity checksums?",
-   o:["exFAT","FAT32","ReFS","CDFS"],c:2,
-   exp:"Resilient File System (ReFS) was built for Hyper-V workloads and Storage Spaces Direct, offering automatic data integrity verification and real-time tiering."},
-
-  {m:4,type:'mc',
-   q:"A volume that spans multiple physical disks but offers NO fault tolerance is called a:",
-   o:["Mirrored volume","RAID-5 volume","Spanned volume","Striped volume with parity"],c:2,
-   exp:"A spanned volume combines space from multiple disks into one logical volume with no redundancy — if any disk fails, all data is lost. A striped volume (RAID-0) also has no fault tolerance but distributes I/O."},
-
-  {m:4,type:'mc',
-   q:"A user has Modify NTFS permission but Read share permission on the same folder. When accessing it over the network, what can they do?",
-   o:["Modify files — NTFS always wins over the network","Read only — the most restrictive of the two applies","Full Control — permissions are additive over the network","Nothing — conflicting permissions result in no access"],c:1,
-   exp:"The effective network permission is the most restrictive intersection of NTFS and share permissions. Share=Read, NTFS=Modify → effective = Read."},
-
-  {m:4,type:'mc',
-   q:"Which SMB 3.x feature automatically uses multiple network adapters in a single session to increase bandwidth?",
-   o:["SMB Direct","SMB Signing","SMB Multichannel","SMB Encryption"],c:2,
-   exp:"SMB Multichannel detects multiple NICs or paths and bonds them into one session for greater throughput and path redundancy — no manual configuration needed."},
-
-  {m:4,type:'mc',
-   q:"SMB Direct requires which type of network adapter?",
-   o:["Any gigabit NIC","An RDMA-capable NIC","A fiber channel HBA","A 10GbE NIC with jumbo frames"],c:1,
-   exp:"SMB Direct uses Remote Direct Memory Access (RDMA), which requires an RDMA-capable NIC (e.g. iWARP, RoCE, InfiniBand) to move data between host memory regions while bypassing the CPU."},
-
-  {m:4,type:'mc',
-   q:"Storage Spaces Direct (S2D) eliminates the need for what type of external hardware?",
-   o:["Network switches","SAN (Storage Area Network)","UPS units","RAID controller cards"],c:1,
-   exp:"S2D uses each cluster node's internal NVMe/SSD/HDD drives and SMB3 to create shared storage, removing the dependency on expensive external SAN hardware."},
-
-  {m:4,type:'mc',
-   q:"In Storage Spaces, what is a 'pool'?",
-   o:["A virtual disk with assigned resiliency","A group of physical drives combined to allocate virtual disks from","A cache tier made of SSDs","A DFS namespace linked to multiple shares"],c:1,
-   exp:"A storage pool is the collection of physical drives. Virtual disks (spaces) are then carved from the pool with chosen resiliency settings."},
-
-  {m:4,type:'mc',
-   q:"Which Storage Spaces resiliency type requires a minimum of 5 drives and can survive two simultaneous drive failures?",
-   o:["Two-way mirror","Three-way mirror","Single parity","Dual parity"],c:3,
-   exp:"Dual parity (similar to RAID-6) writes two parity stripes and requires ≥5 drives, surviving two concurrent drive failures — at higher write overhead than single parity."},
-
-  {m:4,type:'mc',
-   q:"Thin provisioning allows you to create a virtual disk larger than the available pool space. This practice is called:",
-   o:["Tiered storage","Over-provisioning","Hot sparing","Dynamic expansion"],c:1,
-   exp:"Over-provisioning is intentional — you declare more virtual space than physically exists, betting that actual usage will not exhaust the pool all at once."},
-
-  {m:4,type:'mc',
-   q:"iSCSI access to storage is at which level?",
-   o:["File level","Share level","Block level","Object level"],c:2,
-   exp:"iSCSI presents remote storage as a raw block device (like a local disk). The initiator (client) formats and manages the file system on top of that block device itself."},
-
-  {m:4,type:'mc',
-   q:"In iSCSI, the server exposing storage is called the _____, and the client connecting to it is the _____.",
-   o:["Initiator / Target","Target / Initiator","Host / Guest","Provider / Consumer"],c:1,
-   exp:"The Target is the iSCSI server presenting the LUN (Logical Unit Number). The Initiator is the client that connects to and mounts that LUN."},
-
-  {m:4,type:'mc',
-   q:"Data Center Bridging (DCB) is used to ensure storage traffic is not dropped. Which protocol does DCB enable on Ethernet?",
-   o:["Lossless Ethernet via Priority Flow Control","Jumbo frame support","VLANs for storage isolation","RDMA over standard TCP"],c:0,
-   exp:"DCB uses Priority Flow Control (PFC) to make Ethernet lossless for specific traffic classes, which is critical for latency-sensitive storage protocols like iSCSI and RDMA."},
-
-  {m:4,type:'mc',
-   q:"Data deduplication works by identifying and storing only one copy of repeated data _____ across files.",
-   o:["characters","sectors","chunks (variable-length blocks)","entire files"],c:2,
-   exp:"Dedup splits data into variable-length chunks, hashes each chunk, and replaces duplicates with pointers to a single stored copy — far more granular than whole-file dedup."},
-
-  {m:4,type:'mc',
-   q:"DFS Namespaces primarily helps users by:",
-   o:["Replicating files between servers","Providing a single unified path to files spread across multiple servers","Encrypting share traffic","Caching frequently accessed files locally"],c:1,
-   exp:"A DFS Namespace presents a virtual folder tree (e.g. \\\\domain\\files\\HR) that can point to actual shares on any number of servers — users see one consistent path."},
-
-  {m:4,type:'written',
-   q:"Explain the difference between Storage Spaces and Storage Spaces Direct (S2D). Include what type of deployment each is suited for.",
-   model:"Storage Spaces pools physical drives attached to a single server into a storage pool, from which virtual disks are created with resiliency options (mirror, parity). It is suited to standalone servers needing software-defined storage without extra hardware.\n\nStorage Spaces Direct extends this concept to a cluster: it uses local drives inside multiple servers and SMB3 to form a shared, software-defined storage pool across nodes. This eliminates the need for an external SAN and is suited for hyperconverged infrastructure (HCI) deployments running Hyper-V, where compute and storage are combined on the same cluster nodes."},
-
-  // ══════════════ MODULE 5 ══════════════
-  {m:5,type:'mc',
-   q:"In Hyper-V's architecture, what is the 'parent partition'?",
-   o:["A VM running the domain controller","The privileged management OS partition that runs the Hyper-V management stack","The VM with the highest RAM allocation","The partition used as a template for new VMs"],c:1,
-   exp:"The parent partition (also called the root partition) is the first OS that starts on a Hyper-V host. It runs the management OS and has direct hardware access; child partitions are the VMs."},
-
-  {m:5,type:'mc',
-   q:"Hyper-V Dynamic Memory sets which two boundaries for a VM's RAM allocation?",
-   o:["Startup RAM and Maximum RAM","Minimum RAM and Maximum RAM","Reserved RAM and Burst RAM","Static RAM and Overflow RAM"],c:1,
-   exp:"Dynamic Memory allows a VM's allocation to float between a Minimum (floor it won't drop below) and a Maximum (ceiling it can't exceed), based on current workload pressure."},
-
-  {m:5,type:'mc',
-   q:"A private virtual switch in Hyper-V allows communication between:",
-   o:["VMs and the external physical network only","VMs and the Hyper-V host only","VMs on the same host only, with no host or external access","All VMs across all hosts in the cluster"],c:2,
-   exp:"Private switches create an isolated network segment visible only to VMs on that host. The host itself cannot communicate on a private switch — use Internal for that."},
-
-  {m:5,type:'mc',
-   q:"Which VHDX provisioning type pre-allocates all disk space at creation time for consistent I/O performance?",
-   o:["Dynamically expanding","Differencing","Fixed","Pass-through"],c:2,
-   exp:"Fixed VHDX files are fully allocated when created. This avoids on-the-fly expansion overhead during writes, giving more predictable performance for production workloads."},
-
-  {m:5,type:'mc',
-   q:"A differencing disk stores:",
-   o:["A complete copy of the parent disk","Only the changes made since the parent disk was attached","Compressed snapshots of the entire VM state","Parity data for the parent disk"],c:1,
-   exp:"A differencing (child) disk records only the writes that differ from its parent VHDX. The parent must remain intact and unchanged; breaking that chain corrupts the child."},
-
-  {m:5,type:'mc',
-   q:"Pass-through disks give a VM direct physical disk access. Which Hyper-V feature is LOST when using pass-through?",
-   o:["Dynamic Memory","Virtual switch connectivity","Checkpoints and live migration","Integration Services"],c:2,
-   exp:"Because pass-through bypasses the VHD/VHDX file, Hyper-V cannot snapshot or migrate that disk state — checkpoints and live migration are disabled for that VM."},
-
-  {m:5,type:'mc',
-   q:"What component of Guarded Fabric performs TPM-based attestation of Hyper-V hosts?",
-   o:["BitLocker","The Shielded VM itself","Host Guardian Service (HGS)","Active Directory"],c:2,
-   exp:"HGS validates that each Hyper-V host's TPM chip reports a trusted, unmodified state before releasing the key needed to start a Shielded VM."},
-
-  {m:5,type:'mc',
-   q:"In a Guarded Fabric, a Shielded VM's disk is protected by:",
-   o:["IPsec transport mode","SMB Encryption","BitLocker with a key held by HGS","NTFS EFS using the VM's certificate"],c:2,
-   exp:"Shielded VM disks are BitLocker-encrypted. The decryption key is held by HGS and only released to hosts that pass attestation, preventing offline disk theft."},
-
-  {m:5,type:'mc',
-   q:"Production Checkpoints are safer for running workloads than Standard Checkpoints because they:",
-   o:["Are stored in Azure for durability","Do not capture the VM's live RAM state — they use guest-side VSS instead","Compress the VHDX before snapshotting","Use ReFS integrity streams to verify the snapshot"],c:1,
-   exp:"Production Checkpoints invoke VSS inside the guest so applications flush in-flight data. No live RAM state is captured, making restore app-consistent rather than crash-consistent."},
-
-  {m:5,type:'mc',
-   q:"Windows Server containers share the host's OS kernel. This means a Windows Server container:",
-   o:["Can run Linux binaries natively","Cannot be isolated from other containers on the same host","Cannot run a different Windows kernel version than the host","Requires a Hyper-V VM layer to start"],c:2,
-   exp:"Because containers share the host kernel, a container OS version must be compatible with the host kernel version. Hyper-V isolated containers work around this restriction by adding a VM boundary."},
-
-  {m:5,type:'mc',
-   q:"Hyper-V isolated containers are preferred when:",
-   o:["You need maximum container density on a single host","You need stronger kernel isolation between untrusted workloads","You want faster container start times","You are running Linux containers on a Windows host"],c:1,
-   exp:"Hyper-V containers wrap each container in a minimal VM, preventing kernel sharing. This is the right choice for multi-tenant or hostile workloads where you cannot trust all containers to share a kernel."},
-
-  {m:5,type:'mc',
-   q:"Docker is primarily responsible for:",
-   o:["Scheduling containers across a cluster","Packaging application dependencies into portable images and managing container runtime","Providing persistent storage volumes to containers","Load balancing traffic between container replicas"],c:1,
-   exp:"Docker handles image build, push/pull, container runtime lifecycle (start/stop/logs). It is not an orchestrator — Kubernetes handles scheduling and scaling across clusters."},
-
-  {m:5,type:'mc',
-   q:"In Kubernetes, which component is responsible for scheduling Pods onto worker nodes?",
-   o:["kubelet","etcd","kube-scheduler","kube-proxy"],c:2,
-   exp:"The kube-scheduler watches for unscheduled Pods and assigns them to nodes based on resource availability and constraints. etcd stores cluster state; kubelet runs Pods on nodes."},
-
-  {m:5,type:'mc',
-   q:"etcd in a Kubernetes cluster serves as:",
-   o:["The container runtime","A distributed key-value store holding all cluster configuration and state","A load balancer for Pod traffic","The CNI plugin for pod networking"],c:1,
-   exp:"etcd is the backing store for all Kubernetes cluster data — node registrations, Pod specs, ConfigMaps, secrets. Losing etcd without a backup means losing the entire cluster state."},
-
-  {m:5,type:'written',
-   q:"Describe what Guarded Fabric is, what problem it solves, and name the two core mechanisms it uses to protect Shielded VMs.",
-   model:"Guarded Fabric is a Hyper-V security architecture that protects sensitive VM workloads from being accessed or tampered with — even by compromised or rogue Hyper-V administrators or malicious host operators.\n\nThe two core mechanisms are:\n1. Host Guardian Service (HGS) with TPM-based attestation — HGS verifies that each Hyper-V host is in a known-good, trusted state before releasing keys to start Shielded VMs. A host that fails attestation cannot unlock the VM.\n2. BitLocker disk encryption — Shielded VM disks and state are encrypted with BitLocker. The decryption keys are held by HGS and only provided to attested hosts, preventing offline disk theft by admins."},
-
-  // ══════════════ MODULE 6 ══════════════
-  {m:6,type:'mc',
-   q:"In Windows Server failover clustering, what is the minimum number of nodes required to form a cluster?",
-   o:["1","2","3","4"],c:1,
-   exp:"A failover cluster requires at least 2 nodes. A single node is just a server. Quorum mechanics typically require ≥2 nodes plus a witness to operate reliably."},
-
-  {m:6,type:'mc',
-   q:"Which type of storage is traditionally used by a failover cluster (not S2D) to store shared VM files?",
-   o:["Each node's local drives mirrored between nodes","An external shared SAN or iSCSI LUN accessible to all nodes","A DFS replicated share","Azure Blob storage"],c:1,
-   exp:"Traditional failover clusters need shared storage — typically a SAN LUN or iSCSI target — that all nodes can access. S2D replaces this with pooled local drives."},
-
-  {m:6,type:'mc',
-   q:"Cluster-Aware Updating (CAU) automates patching by:",
-   o:["Installing updates on all nodes simultaneously","Draining, patching, and rebooting nodes one at a time while the cluster stays available","Snapshotting VMs before applying updates","Downloading updates only to the primary node"],c:1,
-   exp:"CAU performs a rolling update: it migrates workloads off a node, applies updates, reboots it, confirms it is healthy, then moves to the next node — keeping the cluster available throughout."},
-
-  {m:6,type:'mc',
-   q:"What happens to cluster services if quorum is lost?",
-   o:["The cluster elects a new primary node automatically","All cluster services stop to prevent split-brain data corruption","The witness disk takes over running all resources","Nodes continue running but stop accepting new connections"],c:1,
-   exp:"Without quorum, Windows stops all clustered roles and services on the affected partition. This is intentional — it prevents two partitions each believing they own the shared resources."},
-
-  {m:6,type:'mc',
-   q:"A file share witness is especially useful for a stretched cluster because:",
-   o:["It provides faster failover than a disk witness","It can be placed in a third location (e.g. Azure) to break quorum ties between two sites","It encrypts cluster traffic between sites","It replicates cluster configuration data between nodes"],c:1,
-   exp:"A file share witness hosted in a third site (or Azure) provides a neutral tie-breaking vote. If one site loses connectivity to the other, the site that can still reach the witness achieves quorum."},
-
-  {m:6,type:'mc',
-   q:"Storage Replica replication in synchronous mode guarantees RPO of:",
-   o:["Minutes","Seconds","Zero (no data loss)","Depends on bandwidth"],c:2,
-   exp:"Synchronous mode holds the write acknowledgment until both the source and destination have committed the data. This guarantees zero data loss (RPO = 0) at the cost of added write latency."},
-
-  {m:6,type:'mc',
-   q:"When would you choose asynchronous over synchronous replication in a stretched cluster?",
-   o:["When RPO must be zero","When the two sites are geographically far apart and network latency makes synchronous mode impractical","When using local SSDs for storage","When the cluster has more than 4 nodes"],c:1,
-   exp:"Synchronous replication adds latency equal to the round-trip time to the remote site for every write. Over long distances this becomes unacceptable for performance, so asynchronous mode is used, accepting a small RPO."},
-
-  {m:6,type:'mc',
-   q:"In an active-passive stretched cluster, the secondary site:",
-   o:["Runs a different set of production workloads simultaneously","Sits in standby and only activates after the primary site fails","Continuously load-balances requests with the primary site","Handles read-only requests while the primary handles writes"],c:1,
-   exp:"Active-passive keeps one site (passive) as a warm standby. All production workloads run on the active site; the passive site only becomes active after a failover event."},
-
-  {m:6,type:'mc',
-   q:"What is the main prerequisite for live migration between two Hyper-V hosts?",
-   o:["The VM must be powered off","Both hosts must use identical hardware vendors","The hosts must share access to the same VM storage (or use SMB storage)","The VM must have a fixed VHDX disk type"],c:2,
-   exp:"Live Migration transfers memory state but the VM's disk must be accessible from the destination host. This means either shared storage (CSV, SAN) or SMB storage reachable by both hosts."},
-
-  {m:6,type:'mc',
-   q:"Hyper-V Replica replicates VMs to a secondary host by:",
-   o:["Mirroring the VHDX at the block level using Storage Replica","Sending periodic incremental log changes of writes to the replica host over HTTP/HTTPS","Copying the entire VHDX on a schedule","Using DFS Replication to sync the VM folder"],c:1,
-   exp:"Hyper-V Replica tracks write changes to VM disks and ships them to the replica host at a defined interval (30s, 5min, or 15min), maintaining a lagged copy that can be failed over to."},
-
-  {m:6,type:'mc',
-   q:"How does Azure Site Recovery differ from built-in Hyper-V Replica?",
-   o:["Azure Site Recovery only works with physical servers","Azure Site Recovery adds orchestrated failover, testing without disruption, and replication to Azure cloud — not just a secondary on-premises site","Azure Site Recovery uses synchronous replication; Hyper-V Replica uses asynchronous","They are functionally identical"],c:1,
-   exp:"ASR extends Hyper-V Replica's concept with orchestrated recovery plans, non-disruptive failover testing, Azure as a target site, and integration with Azure monitoring — it is a managed DR-as-a-service offering."},
-
-  {m:6,type:'mc',
-   q:"Volume Shadow Copy Service (VSS) is used in backups to:",
-   o:["Compress backup data before transfer","Create application-consistent point-in-time snapshots of volumes while apps continue running","Encrypt backup data at rest","Replicate backups to a secondary location"],c:1,
-   exp:"VSS coordinates with VSS writers inside applications (SQL, Exchange) to quiesce in-flight transactions and flush data to disk before the snapshot is taken, ensuring a consistent backup."},
-
-  {m:6,type:'mc',
-   q:"A bare-metal backup differs from a system state backup because it:",
-   o:["Backs up only the registry and boot files","Backs up all volumes needed to restore the entire server from scratch, including the OS","Only works on virtual machines","Stores data in Azure instead of locally"],c:1,
-   exp:"A bare-metal recovery (BMR) backup captures all critical volumes so you can completely rebuild a server onto new hardware. System state only covers Active Directory, registry, and OS components — not all data volumes."},
-
-  {m:6,type:'mc',
-   q:"Network Load Balancing (NLB) is NOT appropriate for which type of application?",
-   o:["Web servers","VPN gateways","A SQL Server database that must have a single writer","Remote Desktop Session Host farms"],c:2,
-   exp:"NLB distributes stateless requests — any node can serve any request. A SQL Server database must run on one owner at a time and maintain transaction consistency; NLB cannot enforce that. Use failover clustering instead."},
-
-  {m:6,type:'mc',
-   q:"Guest clustering places a Windows Failover Cluster inside virtual machines. What does this provide that host-level VM HA does not?",
-   o:["Faster VM restart times","Application-level failover — the clustered app detects its own failure and fails over without waiting for the VM to restart on another host","Shared storage between hosts","Integration with Azure Site Recovery"],c:1,
-   exp:"Host-level HA restarts the entire VM on another host (takes minutes). Guest clustering runs a cluster inside the VMs so the application detects failure and fails over within the existing running VMs in seconds."},
-
-  {m:6,type:'written',
-   q:"Explain what quorum is in a Windows failover cluster, why it matters, and briefly describe two different quorum modes.",
-   model:"Quorum is a voting mechanism that determines which nodes form the authoritative, active cluster when nodes lose communication with each other. It exists to prevent 'split-brain' — a situation where two disconnected partitions each believe they are the active cluster and both try to write to shared storage simultaneously, causing data corruption.\n\nTwo quorum modes:\n1. Node Majority — Each node gets one vote; the cluster stays active as long as more than half the nodes are available. No additional witness resource. Works best with an odd number of nodes.\n2. Node and File Share Majority (or Disk Witness) — Each node plus a witness resource (a disk LUN or a file share) each get a vote. The witness provides a tie-breaking vote and is especially useful in even-node or two-node clusters, and in stretched clusters where the witness can be placed at a neutral third site."},
-,
-
-  // ── EXTRA MODULE 4 ──
-  {m:4,type:'mc',
-   q:"Which partition style supports drives larger than 2 TB and is required for UEFI boot?",
-   o:["MBR (Master Boot Record)","GPT (GUID Partition Table)","Dynamic","Basic"],c:1,
-   exp:"GPT supports disks larger than 2 TB and up to 128 primary partitions. It is required for UEFI firmware. MBR is limited to 2 TB and 4 primary partitions."},
-
-  {m:4,type:'mc',
-   q:"In Storage Spaces, a 'tiered' virtual disk automatically moves frequently accessed data to:",
-   o:["A remote Azure cache","Faster SSD or NVMe drives in the pool","A mirrored volume on the same drive","Compressed blocks on slower HDDs"],c:1,
-   exp:"Storage tiers place 'hot' data on fast SSD/NVMe and 'cold' data on slower HDDs automatically, giving SSD-like performance for working data at HDD-like cost per GB."},
-
-  {m:4,type:'mc',
-   q:"What does a 'hot spare' do in a Storage Spaces pool?",
-   o:["Caches hot data for faster reads","Automatically replaces a failed drive and rebuilds the virtual disk","Adds IOPS capacity during peak hours","Stores parity data for the pool"],c:1,
-   exp:"A hot spare is a standby drive in the pool. When another drive fails, Storage Spaces automatically begins rebuilding the resiliency layout onto the hot spare without admin intervention."},
-
-  {m:4,type:'mc',
-   q:"SMB Signing protects network file transfers from:",
-   o:["Bandwidth throttling","Man-in-the-middle and packet tampering attacks","Unauthorized share browsing","DNS spoofing of share names"],c:1,
-   exp:"SMB Signing cryptographically signs each packet so both sides can verify integrity. Without it, an attacker in the path could modify packets in transit (man-in-the-middle)."},
-
-  {m:4,type:'mc',
-   q:"When you deny a permission in NTFS, it:",
-   o:["Is ignored if the user also has an Allow for the same permission","Overrides any Allow permissions — Deny always takes precedence","Only applies when accessing the resource over the network","Only applies to subfolders, not the parent folder"],c:1,
-   exp:"A Deny ACE always overrides Allow ACEs for the same permission. This is intentional — Deny is used to explicitly block access even when group memberships would otherwise grant it."},
-
-  {m:4,type:'mc',
-   q:"Data deduplication in Windows Server 2022 is configured on a per-_____ basis.",
-   o:["File","Folder","Volume","Pool"],c:2,
-   exp:"Deduplication is enabled at the volume level. All eligible files on that volume are processed by the dedup engine — you cannot enable it for individual folders."},
-
-  {m:4,type:'mc',
-   q:"NFS (Network File System) is primarily used for file sharing between Windows Server and:",
-   o:["Other Windows clients","UNIX/Linux clients","Mobile devices","SAN storage arrays"],c:1,
-   exp:"SMB is the native Windows file sharing protocol. NFS is the UNIX/Linux standard. Windows Server includes NFS server and client roles to interoperate with Linux/UNIX environments."},
-
-  // ── EXTRA MODULE 5 ──
-  {m:5,type:'mc',
-   q:"Hyper-V Generation 2 VMs require the guest OS to support which firmware interface?",
-   o:["BIOS","UEFI","OpenFirmware","coreboot"],c:1,
-   exp:"Generation 2 VMs use UEFI (Unified Extensible Firmware Interface) instead of legacy BIOS. This enables Secure Boot and faster boot times but requires a compatible 64-bit guest OS."},
-
-  {m:5,type:'mc',
-   q:"Secure Boot in a Hyper-V Generation 2 VM prevents:",
-   o:["Unauthorized admin logins to the VM","Unsigned or untrusted OS boot loaders from starting","Network access unless the VM passes HGS attestation","Dynamic Memory from changing VM RAM"],c:1,
-   exp:"Secure Boot uses UEFI and a trusted certificate database to verify that the boot loader is signed and trusted. It prevents boot-level rootkits and malicious boot code from loading."},
-
-  {m:5,type:'mc',
-   q:"A Kubernetes worker node's 'kubelet' is responsible for:",
-   o:["Scheduling pods onto nodes","Storing cluster state in etcd","Running and monitoring the containers assigned to that node","Managing the cluster's external load balancer"],c:2,
-   exp:"The kubelet is the node agent. It receives Pod specs from the control plane, instructs the container runtime to start the containers, and reports node/pod health back to the API server."},
-
-  {m:5,type:'mc',
-   q:"What is a key advantage of containers over VMs for deploying microservices?",
-   o:["Containers provide stronger security isolation","Containers start in milliseconds and have far lower overhead than full VMs","Containers can run any OS kernel regardless of the host","Containers automatically scale across multiple hosts without orchestration"],c:1,
-   exp:"Containers share the host kernel and require no guest OS, so they start almost instantly and consume far less RAM/disk than VMs. This makes them ideal for dense, rapidly-scaling microservice deployments."},
-
-  {m:5,type:'mc',
-   q:"Virtual machine checkpoints can negatively impact performance if left long-term because:",
-   o:["The parent VHDX becomes read-only and blocks all writes","The differencing disk chain grows with every write, increasing I/O overhead","Checkpoints consume all available RAM on the host","The VM is paused while the checkpoint exists"],c:1,
-   exp:"Each write after a checkpoint goes to a differencing disk. Over time, reading data requires merging the chain of differencing disks, which adds read latency. Long checkpoint chains should be avoided in production."},
-
-  // ── EXTRA MODULE 6 ──
-  {m:6,type:'mc',
-   q:"What is the purpose of a heartbeat in a failover cluster?",
-   o:["To synchronize VM clock times across nodes","To detect node failures by monitoring regular inter-node communications","To coordinate storage writes between nodes","To notify administrators of cluster events"],c:1,
-   exp:"Nodes exchange heartbeat messages on the cluster network. If a node stops responding to heartbeats within the configured timeout, the cluster assumes it has failed and begins failover."},
-
-  {m:6,type:'mc',
-   q:"Azure Site Recovery's 'Test Failover' feature is valuable because it:",
-   o:["Permanently moves VMs to Azure","Verifies your recovery plan works without affecting production workloads","Reduces replication lag during testing","Backs up VMs to a local recovery vault"],c:1,
-   exp:"Test Failover spins up replicated VMs in an isolated Azure network so you can validate that the VMs boot, apps work, and RTO targets are met — all without interrupting production replication."},
-
-  {m:6,type:'mc',
-   q:"Recovery Time Objective (RTO) is best defined as:",
-   o:["The maximum amount of data that can be lost after a failure","The maximum acceptable downtime before services must be restored","The time it takes to replicate a full backup to a secondary site","The minimum number of nodes required to maintain quorum"],c:1,
-   exp:"RTO defines how long a system can be down before it becomes unacceptable to the business. RPO defines how much data loss is tolerable. Together they drive HA and DR architecture decisions."},
-
-  {m:6,type:'mc',
-   q:"In Windows Server Backup, a 'system state' backup captures:",
-   o:["All volumes on the server","The registry, boot files, Active Directory (on DCs), and COM+ class registration database","Only the OS volume","All user data shares"],c:1,
-   exp:"System state backs up the components needed to restore Windows operational state: registry, boot files, COM+ database, and on Domain Controllers, Active Directory. It does NOT cover user data volumes."},
-,
-
-  // ─── MODULE 7 MC (20 questions) ───
-  {m:7,type:'mc',
-   q:"Hyper-V Replica keeps the replica VM powered off while the primary runs. This makes it a solution for:",
-   o:["High availability with automatic failover","Disaster recovery requiring manual failover","Synchronous block-level storage replication","Live VM load balancing across two sites"],c:1,
-   exp:"Hyper-V Replica is DR, not HA. The replica VM stays powered off until an admin manually initiates a failover -- there is no automatic detection or response to primary failures."},
-
-  {m:7,type:'mc',
-   q:"When Hyper-V hosts are in untrusted or different domains, which authentication method is required for Hyper-V Replica?",
-   o:["Kerberos (HTTP)","NTLM integrated Windows auth","Certificate-based authentication (HTTPS)","Anonymous HTTP"],c:2,
-   exp:"Kerberos requires a trusted domain relationship. For workgroup or untrusted-domain hosts, certificate-based HTTPS authentication must be used to secure the replication channel."},
-
-  {m:7,type:'mc',
-   q:"What is the shortest replication interval available in Hyper-V Replica?",
-   o:["5 seconds","15 seconds","30 seconds","2 minutes"],c:2,
-   exp:"Hyper-V Replica supports three intervals: 30 seconds, 5 minutes, or 15 minutes. 30 seconds is the minimum."},
-
-  {m:7,type:'mc',
-   q:"A planned failover requires the primary VM to be shut down first so that:",
-   o:["The Kerberos ticket used for replication can be released","Any remaining unreplicated data is sent before switching, ensuring zero data loss","The replica server can acquire the shared SAN LUN","The VM configuration file on the replica can be updated"],c:1,
-   exp:"Shutting down the primary lets Hyper-V flush and transmit all pending changes before completing the failover, guaranteeing a zero-data-loss cutover."},
-
-  {m:7,type:'mc',
-   q:"During an unplanned failover, the failover is initiated at the replica site because:",
-   o:["The replica always initiates failover regardless of the scenario","The primary VM is unavailable and cannot initiate anything","The administrator prefers to manage failover from a secondary location","Azure Site Recovery requires failover from the replica"],c:1,
-   exp:"In an unplanned failover the primary has failed and is unreachable, so the admin must trigger failover from the replica. Data loss may occur since the latest changes may not have replicated."},
-
-  {m:7,type:'mc',
-   q:"A test failover in Hyper-V Replica is non-disruptive because it:",
-   o:["Shuts down the primary in a controlled way before testing","Creates a temporary VM from a checkpoint in an isolated network without affecting ongoing replication","Uses a dedicated test NIC on the replica host","Suspends checkpointing on the primary during the test window"],c:1,
-   exp:"Test failover spins up a temporary VM from a replica checkpoint in an isolated environment. The real replica stays off and replication between primary and replica continues uninterrupted."},
-
-  {m:7,type:'mc',
-   q:"Hyper-V Replica is configured at which level of granularity?",
-   o:["Per Hyper-V host","Per cluster node","Per virtual machine","Per virtual hard disk file"],c:2,
-   exp:"Replication is enabled per VM. Each VM independently specifies its replica server, authentication, frequency, which VHDs to replicate, and recovery point settings."},
-
-  {m:7,type:'mc',
-   q:"Extended replication in Hyper-V Replica allows replication from the secondary site to a:",
-   o:["Fourth backup host","Tertiary (third) location","Azure Blob storage account directly","Local tape library via iSCSI"],c:1,
-   exp:"Hyper-V supports chaining replication to a third location, providing an additional DR layer beyond the standard primary-to-secondary setup."},
-
-  {m:7,type:'mc',
-   q:"Which firewall rule must be configured on the Hyper-V replica server?",
-   o:["Allow outbound SMB on port 445","Allow inbound Hyper-V Replica HTTP or HTTPS traffic","Allow inbound RDP on port 3389","Allow outbound Live Migration traffic on port 6600"],c:1,
-   exp:"Windows Defender Firewall on the replica server must permit inbound Hyper-V Replica traffic -- port 80 for Kerberos/HTTP, port 443 for certificate/HTTPS -- so the primary can push changes."},
-
-  {m:7,type:'mc',
-   q:"Hyper-V Replica uses asynchronous replication. In the worst case, the replica lags the primary by:",
-   o:["One full replication interval (30 seconds to 15 minutes depending on configuration)","Zero -- it is always in sync","24 hours -- it syncs once per day","Exactly 1 hour"],c:0,
-   exp:"Async replication batches writes and ships them at the configured interval without blocking primary VM I/O. The replica can lag by up to one full interval worth of changes."},
-
-  {m:7,type:'mc',
-   q:"Azure Site Recovery extends Hyper-V Replica by adding which capability?",
-   o:["Asynchronous replication of VM disk writes","Orchestrated recovery plans with Azure as the failover target","Kerberos authentication for secure replication","A 30-second replication frequency option"],c:1,
-   exp:"ASR adds recovery plan orchestration, non-disruptive test failovers, Azure as the recovery site, and centralized monitoring -- none of which are in standalone Hyper-V Replica."},
-
-  {m:7,type:'mc',
-   q:"Azure Site Recovery can protect which combination of workloads?",
-   o:["Hyper-V VMs in VMM clouds only","Hyper-V VMs, VMware VMs, and physical Windows or Linux servers","Azure-native VMs only","Only servers running Windows Server 2022"],c:1,
-   exp:"ASR protects Hyper-V VMs (standalone or VMM-managed), VMware VMs, and physical servers running Windows or Linux -- making it platform-agnostic for DR."},
-
-  {m:7,type:'mc',
-   q:"Why does copying a live volume produce an unreliable backup?",
-   o:["Copied files lose their NTFS permissions","Files being written during the copy may be captured mid-write or skipped if locked","The copy does not preserve folder timestamps","Copying requires SMB, which throttles transfer speed"],c:1,
-   exp:"A live copy captures data in a moving state -- files may change mid-copy, locked files may be skipped, and some writes may be partially captured. VSS solves this by briefly quiescing state before snapshotting."},
-
-  {m:7,type:'mc',
-   q:"A VSS writer's primary job during a backup is to:",
-   o:["Create the volume snapshot","Copy the snapshot to backup media","Flush application in-memory data to disk before the snapshot is taken","Allocate shadow-copy disk space"],c:2,
-   exp:"VSS writers (SQL, Hyper-V, AD DS) instruct their application to commit all in-memory data to disk when notified that a snapshot is coming, ensuring the on-disk state is complete and consistent."},
-
-  {m:7,type:'mc',
-   q:"Which VSS component physically creates and maintains the volume snapshot?",
-   o:["VSS requestor","VSS writer","VSS provider","VSS coordinator"],c:2,
-   exp:"The VSS provider creates the snapshot and maintains the shadow-copy area. Windows includes a built-in copy-on-write provider; storage vendors may supply their own hardware providers."},
-
-  {m:7,type:'mc',
-   q:"Windows Server Backup cannot back up remote servers because it is:",
-   o:["Licensed only for local use","A single-server, agentless tool with no central management or remote backup capability","Blocked by Windows Firewall on remote hosts","Incompatible with SMB 3.x network shares"],c:1,
-   exp:"Windows Server Backup has no agent framework and no central console. It operates only on the local server. Multi-server environments need MABS or a third-party enterprise backup product."},
-
-  {m:7,type:'mc',
-   q:"A differential backup grows larger over time because it captures all changes since:",
-   o:["The most recent backup of any type","The most recent full backup","The previous differential","The server was last restarted"],c:1,
-   exp:"Differential backups include everything changed since the last full backup. As more changes accumulate between full backups, each differential grows larger. Restore needs only the last full + latest differential."},
-
-  {m:7,type:'mc',
-   q:"Restoring from an incremental backup chain requires:",
-   o:["Only the most recent incremental","The last full backup and the most recent incremental only","The last full backup plus every subsequent incremental in sequence","Any single incremental that contains the needed files"],c:2,
-   exp:"Incremental restore applies the full backup first, then each incremental in order. Missing any link in the chain produces an incomplete restore."},
-
-  {m:7,type:'mc',
-   q:"A host-level online VM backup in Hyper-V requires the guest VM to have:",
-   o:["A Generation 2 config and Dynamic Memory","VSS support and the Hyper-V Backup Integration Service","A fixed VHDX disk and an external virtual switch","Live Migration capability and access to a CSV"],c:1,
-   exp:"Online host-level backup keeps VMs running. The guest needs VSS and the Backup Integration Service so the Hyper-V host VSS can coordinate a quiesce of guest data before snapshotting."},,
-
-  {m:6,type:'mc',
-   q:"Cluster-Aware Updating (CAU) patches cluster nodes by:",
-   o:["Updating all nodes at the same time in one maintenance window","Draining workloads off each node, patching and rebooting it, then moving to the next","Snapshotting all VMs before applying any updates","Downloading patches only to the primary node then distributing them"],c:1,
-   exp:"CAU performs rolling updates: it migrates workloads off one node at a time, applies updates and reboots, confirms the node is healthy, then repeats for the next node -- keeping the cluster available throughout."},
-
-  {m:7,type:'written',
-   q:"Explain the difference between a planned failover and an unplanned failover in Hyper-V Replica. Include the required state of the primary VM and whether data loss can occur for each.",
-   model:"Planned failover: Initiated by the admin before a known event such as scheduled maintenance. The primary VM must be SHUT DOWN before initiating. Hyper-V sends any remaining unreplicated data to the replica, then starts the replica VM. Result: zero data loss.\n\nUnplanned failover: Initiated at the replica when the primary fails unexpectedly and is unreachable. No final sync occurs because the primary is down. Failover is triggered from the replica site. Result: potential data loss -- changes made after the last completed replication cycle were never delivered to the replica."},
-
-  {m:7,type:'written',
-   q:"Describe the three VSS components (requestor, writer, provider) and the specific role each plays in producing a consistent backup.",
-   model:"VSS Requestor: The backup application (Windows Server Backup, Azure Backup agent). It calls VSS to initiate the snapshot and, once the snapshot is ready, copies its contents to the backup destination.\n\nVSS Writer: An app-specific component (SQL writer, Hyper-V writer, AD DS writer). When VSS signals an imminent snapshot, the writer instructs its application to flush all in-memory data and uncommitted transactions to disk, ensuring a complete, consistent on-disk state is captured.\n\nVSS Provider: Creates and maintains the volume snapshot. It briefly prevents new writes while capturing the point-in-time snapshot (lasting only seconds), then allows normal I/O to resume. Windows includes a built-in copy-on-write provider; storage vendors may supply their own hardware providers."},
-
-  {m:7,type:'written',
-   q:"Compare host-level and guest-level backup for Hyper-V VMs. What does each capture, what are the requirements, and what are the trade-offs?",
-   model:"Host-level backup: Performed from the Hyper-V host. Captures the entire VM including configuration (.vmcx), virtual disk files, and checkpoints. Online mode keeps VMs running (requires VSS and Hyper-V Backup Integration Service in the guest); offline mode briefly pauses VMs during the snapshot. Centrally manages all VMs on the host. Advantage: full VM restore including hardware configuration.\n\nGuest-level backup: A backup agent runs inside the VM, treating it like a physical server. Captures OS, applications, and user data visible from inside the VM. Does NOT capture VM configuration or Hyper-V metadata. Advantage: granular file/folder restore, familiar physical-server workflow. Disadvantage: agents must be deployed and maintained inside every VM separately."},
-
-  {m:7,type:'written',
-   q:"What is Azure Site Recovery and how does it go beyond built-in Hyper-V Replica? Name at least three capabilities ASR adds.",
-   model:"Azure Site Recovery (ASR) is a Microsoft managed DR-as-a-service that uses Azure as the recovery target and adds orchestration on top of Hyper-V Replica's replication mechanism.\n\nThree capabilities ASR adds:\n1. Recovery Plans: Scripted, ordered failover sequences for multiple VMs with customizable pre- and post-failover automation steps.\n2. Non-disruptive Test Failover: Starts VMs in an isolated Azure network to validate recovery procedures without affecting production replication.\n3. Azure as Recovery Target: Replicates on-premises VMs to Azure instead of requiring a second on-premises site, eliminating secondary datacenter hardware costs.\n\nASR also supports VMware VMs and physical servers, provides centralized monitoring and alerting via Azure Monitor, and supports workload migration scenarios."},
-
-  {m:7,type:'written',
-   q:"Describe full, differential, and incremental backup types. For each, state what data is captured and what is needed to perform a complete restore.",
-   model:"Full backup: Captures all selected data regardless of previous backups. Restore: only the most recent full backup is needed. Slowest to create and consumes the most storage per job, but simplest to restore.\n\nDifferential backup: Captures all data changed since the most recent full backup. Grows larger each day as more changes accumulate. Restore: the last full backup plus the most recent differential -- only two pieces required.\n\nIncremental backup: Captures only data changed since the most recent backup of any type. Each job is small and fast. Restore: the last full backup plus every subsequent incremental in sequence -- a more complex restore process, but the smallest daily backup footprint."},
-
-  {m:7,type:'written',
-   q:"Describe the MARS agent versus Microsoft Azure Backup Server (MABS). How do they differ in capability and when would you choose each?",
-   model:"MARS agent: A lightweight agent installed on individual Windows servers. Backs up files, folders, and system state directly to an Azure Recovery Services vault. Maximum frequency: 3 times per day for files and folders, once per day for system state. Simple to deploy for small environments.\n\nMABS: A dedicated Windows Server installation based on the System Center DPM engine, available free with an Azure subscription. Provides centralized, agent-based backup for multiple servers and complex workloads including SQL Server, Exchange, SharePoint, Hyper-V, and Active Directory. Backs up first to local disk for fast recovery, then offloads to Azure for long-term retention. Supports backup intervals as frequent as every 15 minutes for some workloads.\n\nChoose MARS: small number of servers needing file, folder, or system state protection sent directly to Azure.\nChoose MABS: multiple servers, application-consistent backup for SQL or Exchange, frequent backup intervals, or fast local-disk recovery requirements."},
-
-  {m:7,type:'written',
-   q:"Explain the four deployment scenarios supported by Hyper-V Replica and give a brief use case for each.",
-   model:"1. Standalone to Standalone: One Hyper-V host replicates to another standalone host. Use case: simple DR for small environments -- e.g. a branch office server replicating to headquarters.\n\n2. Cluster to Standalone: A Hyper-V failover cluster replicates to a standalone host. Use case: a production HA cluster replicating to a lower-cost DR host that does not need to be a full cluster.\n\n3. Standalone to Cluster: A standalone host replicates into a Hyper-V cluster. Use case: a single production server sending its replica to a clustered DR site for higher replica availability.\n\n4. Cluster to Cluster: One Hyper-V cluster replicates to another cluster. Use case: two enterprise datacenters each running clustered production and DR infrastructure for maximum availability at both ends."},
-
-  {m:4,type:'written',
-   q:"Explain how the Volume Shadow Copy Service (VSS) enables consistent backups in Windows Server. Walk through the sequence of events from when backup starts until the application can resume normal writes.",
-   model:"1. Windows Server Backup (VSS requestor) calls the VSS service to initiate a backup.\n2. VSS notifies all registered VSS writers (SQL, Hyper-V, AD DS, Exchange, etc.) that a snapshot is imminent.\n3. Each writer instructs its application to flush all in-memory data and uncommitted transactions to disk, ensuring a complete, consistent on-disk state.\n4. VSS briefly freezes new writes to the volume -- this pause lasts only seconds.\n5. The VSS provider captures the point-in-time volume snapshot.\n6. Applications immediately resume normal read and write operations.\n7. The VSS requestor copies the snapshot contents to the backup destination at its own pace, without impacting the live volume or applications."},
-
-  {m:4,type:'written',
-   q:"Describe NTFS permissions vs share permissions and explain how effective permissions are calculated when both apply. Provide a concrete example.",
-   model:"NTFS permissions are set at the file system level and apply whether the resource is accessed locally or over the network. Share permissions apply only to network access through a file share.\n\nWhen both types apply over the network, Windows calculates the effective permission as the MOST RESTRICTIVE intersection of the two permission sets. A Deny entry always overrides Allow regardless of the calculation.\n\nExample: A user has Modify (NTFS) and Read (share) permission on a shared folder.\n- Local access: only NTFS applies, so effective = Modify.\n- Network access: both apply, most restrictive wins, so effective = Read.\nThe user can modify files when sitting at the server but can only read them when connecting remotely through the share."},
-
-  {m:4,type:'written',
-   q:"Explain what Data Deduplication does, how it operates at the chunk level, and identify one workload that benefits and one that does not -- with reasoning for each.",
-   model:"Data Deduplication identifies and removes redundant data across files on a volume. It splits files into variable-length chunks, computes a hash for each chunk, and stores only one copy of each unique chunk in a chunk store on the volume. Duplicate chunks are replaced with lightweight pointers to the single stored copy, reducing physical disk consumption.\n\nBenefits: VDI (Virtual Desktop Infrastructure) image libraries -- many VMs share an identical OS base image, so the duplicate OS blocks are stored only once, achieving very high space savings.\n\nDoes not benefit: Live transactional SQL Server databases -- database pages change constantly and are mostly unique. Chunks rarely repeat across the file, so deduplication achieves minimal space savings and adds I/O overhead from the chunk processing pipeline."},
-
-  {m:4,type:'written',
-   q:"Explain what iSCSI is, describe the roles of the iSCSI target and initiator, and explain how iSCSI differs from SMB file sharing.",
-   model:"iSCSI (Internet Small Computer System Interface) encapsulates SCSI storage commands within TCP/IP packets, allowing servers to access remote storage over a standard Ethernet network as if it were a locally attached block device.\n\niSCSI Target: The server-side component that exposes one or more LUNs (Logical Unit Numbers -- raw storage volumes) over the network. In Windows Server, the iSCSI Target Server role provides this.\n\niSCSI Initiator: The client-side component that connects to a target and presents the LUN to the operating system as a local disk. The initiator's OS manages its own file system on the raw block device.\n\nDifference from SMB: SMB is a file-level protocol -- the server manages the file system and clients access named files and folders through a share. iSCSI is a block-level protocol -- the client receives raw disk blocks and is fully responsible for its own file system on top of them. iSCSI is used when the client needs full disk control (e.g. cluster shared storage, raw database volumes); SMB is used for concurrent multi-client file access."},
-
-  {m:5,type:'written',
-   q:"Describe Guarded Fabric. What problem does it solve and what are its two core protection mechanisms for Shielded VMs?",
-   model:"Guarded Fabric protects sensitive VM workloads from being accessed or tampered with by compromised Hyper-V administrators, rogue fabric hosts, or attackers with physical access to host hardware -- a zero-trust model for the virtualization infrastructure.\n\nTwo core mechanisms:\n1. Host Guardian Service (HGS) with TPM-based attestation: HGS is a hardened server that validates each Hyper-V host's TPM measurements against a known-good baseline. Only hosts that pass attestation receive the encryption key needed to start Shielded VMs. A host that fails attestation cannot unlock or run Shielded VMs.\n2. BitLocker disk encryption: Shielded VM virtual disks and state are encrypted with BitLocker. Keys are held by HGS and released only to attested hosts. Even if an admin copies the VHDX files, they cannot decrypt or start the VM on an untrusted host."},
-
-  {m:5,type:'written',
-   q:"Compare Windows Server containers and Hyper-V isolated containers. Describe the isolation difference and explain when you would choose each.",
-   model:"Windows Server containers: Share the host OS kernel. Isolation is provided through Windows namespaces and job objects. Lightweight and fast to start. Suitable when all container workloads are trusted and can safely share a kernel.\n\nHyper-V isolated containers: Each container runs inside a minimal, lightweight VM with its own kernel instance. This creates a hardware-level isolation boundary -- even a kernel exploit in one container cannot affect the host kernel or other containers.\n\nChoose Windows Server containers when: maximizing density and startup speed is the priority and all workloads are trusted (e.g. internal dev/test or single-tenant application hosting).\n\nChoose Hyper-V containers when: running untrusted or multi-tenant workloads where a kernel vulnerability in one container must not be allowed to affect others (e.g. container hosting for external customers or highly regulated workloads)."},
-
-  {m:5,type:'written',
-   q:"Explain the Kubernetes control plane and worker node architecture. What is the purpose of each component, and what is a Pod?",
-   model:"Control Plane: Makes global decisions about the cluster.\n- API server: Entry point for all management commands (kubectl, portals).\n- Scheduler: Assigns Pods to worker nodes based on resource availability and constraints.\n- Controller Manager: Runs controllers that reconcile desired vs actual cluster state (e.g. restart failed Pods, maintain replica counts).\n- etcd: Distributed key-value store holding all cluster configuration and state.\n\nWorker Nodes: Run container workloads. Each node runs:\n- kubelet: Node agent that receives Pod specs from the control plane, instructs the container runtime to start containers, and reports node and Pod health back.\n- Container runtime: Executes containers (e.g. containerd).\n- kube-proxy: Manages network rules enabling Pod-to-Pod and external-to-Pod communication.\n\nPod: The smallest deployable unit in Kubernetes -- one or more tightly coupled containers that share a network namespace, storage volumes, and are always scheduled together on the same worker node."},
-
-  {m:6,type:'written',
-   q:"Explain quorum in a Windows failover cluster, why it is necessary, and describe how a file share witness helps -- especially in a stretched cluster.",
-   model:"Quorum is a voting mechanism that determines which nodes form the authoritative active cluster when nodes lose communication with each other. It prevents split-brain: two isolated network partitions each believing they are the active cluster and simultaneously writing to shared storage, causing data corruption.\n\nEach node receives one vote. The cluster continues running as long as a majority of votes are reachable. In a two-node cluster, neither node alone has a majority if the other fails -- a tie results in both stopping. A witness provides an additional vote to break ties.\n\nIn a stretched cluster spanning two sites, the file share witness is placed at a neutral third location such as Azure. If Site A loses connectivity to Site B, the site that can still reach the witness achieves a majority vote and keeps running. The site that cannot reach the witness stops cluster services, preventing split-brain across geographically separated nodes."},
-
-  {m:6,type:'written',
-   q:"Describe host clustering and guest clustering for Hyper-V VMs. What level of failover does each provide and how do they complement each other?",
-   model:"Host clustering (VM HA): The Windows Failover Cluster runs at the Hyper-V layer. If a host node fails, the cluster automatically restarts the affected VMs on surviving hosts. This takes minutes (VM restart plus OS boot). It protects against host hardware failure but the application inside the VM is unavailable during the restart.\n\nGuest clustering: A Windows Failover Cluster is installed inside VMs. The clustered application (SQL Server, file server) detects its own failure and fails over between the VMs in seconds -- without waiting for a VM restart. The VMs themselves keep running on their host nodes.\n\nHow they complement each other: Guest clustering provides sub-minute application-level HA. Host clustering provides VM-level protection against host hardware failures. Used together: if an application fails inside a VM, guest clustering recovers it in seconds. If the host itself fails, host clustering restarts the VMs, and guest clustering then automatically re-establishes the application role."},
-
-  {m:6,type:'written',
-   q:"Explain Storage Replica in a stretched cluster. What does it replicate, what are the two replication modes, and when would you choose each?",
-   model:"Storage Replica replicates storage volumes between sites at the block level -- independent of file system or workload type, so any content (VMs, files, databases) is protected.\n\nSynchronous mode: Every write on the source waits for the destination to confirm receipt before being acknowledged to the application. Guarantees RPO of zero -- no data loss. Adds write latency equal to the round-trip network time to the remote site. Choose for low-latency links such as same metropolitan area, campus, or dedicated fiber connections.\n\nAsynchronous mode: Writes are acknowledged locally without waiting for the remote site. Changes are queued and shipped in the background. Some recent data may not have transferred if a failure occurs (non-zero RPO). Choose for geographically distant sites where synchronous replication latency would be unacceptable for production workloads."},
-];
-
-// ── QUIZ ENGINE ──────────────────────────────────────────────────
-const MC_POOL   = ALL_QUESTIONS.filter(q => q.type === 'mc');
-const WR_POOL   = ALL_QUESTIONS.filter(q => q.type === 'written');
-const QUIZ_SIZE = 30;
-const WRITTEN_COUNT = 5;
-
-let quizQuestions = [];
-let current = 0;
-let mcCorrect = 0, mcAnswered = 0, wrCorrect = 0;
-let wrongAnswers = [];
-let modStats = {4:{c:0,t:0}, 5:{c:0,t:0}, 6:{c:0,t:0}, 7:{c:0,t:0}};
-  wrongAnswers = [];
-let writtenGraded = false;
-
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-function startQuiz() {
-  // pick 5 written questions
-  const written = shuffle(WR_POOL).slice(0, WRITTEN_COUNT);
-  // pick remaining from MC pool
-  const mc = shuffle(MC_POOL).slice(0, QUIZ_SIZE - WRITTEN_COUNT);
-  // merge and shuffle
-  quizQuestions = shuffle([...mc, ...written]);
-  current = 0; mcCorrect = 0; mcAnswered = 0; wrCorrect = 0;
-  modStats = {4:{c:0,t:0}, 5:{c:0,t:0}, 6:{c:0,t:0}, 7:{c:0,t:0}};
-  wrongAnswers = [];
-
-  show('quiz-screen');
-  renderQuestion();
-}
-
-function show(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-function renderQuestion() {
-  const q = quizQuestions[current];
-  const total = quizQuestions.length;
-
-  document.getElementById('progress-fill').style.width = ((current / total) * 100) + '%';
-  document.getElementById('q-counter').textContent = 'Question ' + (current + 1) + ' of ' + total;
-  document.getElementById('q-score').textContent = mcCorrect + ' / ' + mcAnswered;
-
-  const modTag = document.getElementById('mod-tag');
-  modTag.textContent = 'Module ' + q.m;
-  modTag.className = 'module-tag tag-' + q.m;
-
-  const typeTag = document.getElementById('type-tag');
-  typeTag.style.display = q.type === 'written' ? 'inline-block' : 'none';
-
-  document.getElementById('q-text').textContent = q.q;
-  document.getElementById('next-btn').style.display = 'none';
-
-  if (q.type === 'mc') {
-    document.getElementById('mc-section').style.display = 'block';
-    document.getElementById('written-section').style.display = 'none';
-    document.getElementById('explanation').style.display = 'none';
-    renderOptions(q);
-  } else {
-    document.getElementById('mc-section').style.display = 'none';
-    document.getElementById('written-section').style.display = 'block';
-    document.getElementById('written-input').value = '';
-    document.getElementById('written-input').disabled = false;
-    document.getElementById('submit-written-btn').style.display = 'inline-block';
-    document.getElementById('model-answer').style.display = 'none';
-    document.getElementById('self-grade').style.display = 'none';
-    writtenGraded = false;
-  }
-}
-
-function renderOptions(q) {
-  const list = document.getElementById('options-list');
-  list.innerHTML = '';
-  const indices = shuffle([0, 1, 2, 3]);
-  q._shuffledIdx = indices;
-  indices.forEach((origIdx, pos) => {
-    const btn = document.createElement('button');
-    btn.className = 'opt-btn';
-    btn.dataset.orig = origIdx;
-    btn.innerHTML = '<span class="opt-letter">' + LETTERS[pos] + '</span><span>' + q.o[origIdx] + '</span>';
-    btn.onclick = () => handleMC(origIdx, q);
-    list.appendChild(btn);
+  document.getElementById('nav-home-link').addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-home').classList.add('active');
+    window.scrollTo({ top: 0 });
   });
-}
-
-function handleMC(chosen, q) {
-  mcAnswered++;
-  modStats[q.m].t++;
-  const btns = document.querySelectorAll('.opt-btn');
-  btns.forEach(b => {
-    b.disabled = true;
-    const orig = parseInt(b.dataset.orig);
-    if (orig === q.c) {
-      b.classList.add(chosen === q.c ? 'correct' : 'reveal');
-    } else if (orig === chosen) {
-      b.classList.add('wrong');
-    }
+  document.getElementById('nav-start-link').addEventListener('click', e => {
+    e.preventDefault();
+    document.getElementById('btn-start').click();
   });
-  if (chosen === q.c) { mcCorrect++; modStats[q.m].c++; }
-  else { wrongAnswers.push({type:'mc', q:q.q, m:q.m, yourAnswer: q.o[chosen], correctAnswer: q.o[q.c], exp:q.exp}); }
-  document.getElementById('q-score').textContent = mcCorrect + ' / ' + mcAnswered;
-  document.getElementById('exp-text').textContent = q.exp;
-  document.getElementById('explanation').style.display = 'block';
-  const nb = document.getElementById('next-btn');
-  nb.style.display = 'inline-block';
-  nb.textContent = current + 1 < quizQuestions.length ? 'Next question →' : 'See results →';
-}
-
-function submitWritten() {
-  const input = document.getElementById('written-input');
-  if (!input.value.trim()) return;
-  input.disabled = true;
-  document.getElementById('submit-written-btn').style.display = 'none';
-  const q = quizQuestions[current];
-  document.getElementById('model-text').textContent = q.model;
-  document.getElementById('model-answer').style.display = 'block';
-  document.getElementById('self-grade').style.display = 'block';
-}
-
-function selfGrade(got) {
-  writtenGraded = true;
-  const q = quizQuestions[current];
-  modStats[q.m].t++;
-  if (got) { wrCorrect++; modStats[q.m].c++; }
-  else { wrongAnswers.push({type:'written', q:q.q, m:q.m, model:q.model}); }
-  document.getElementById('self-grade').style.display = 'none';
-  const nb = document.getElementById('next-btn');
-  nb.style.display = 'inline-block';
-  nb.textContent = current + 1 < quizQuestions.length ? 'Next question →' : 'See results →';
-}
-
-function nextQuestion() {
-  // if written and not self-graded, skip grading (count as missed)
-  if (quizQuestions[current].type === 'written' && !writtenGraded) {
-    modStats[quizQuestions[current].m].t++;
-  }
-  current++;
-  if (current < quizQuestions.length) {
-    renderQuestion();
-  } else {
-    showResults();
-  }
-}
-
-function showResults() {
-  show('results-screen');
-  const totalScored = mcAnswered + WRITTEN_COUNT;
-  const totalCorrect = mcCorrect + wrCorrect;
-  const pct = Math.round((totalCorrect / QUIZ_SIZE) * 100);
-
-  const pctEl = document.getElementById('res-pct');
-  pctEl.textContent = pct + '%';
-  pctEl.style.color = pct >= 80 ? 'var(--green)' : pct >= 60 ? 'var(--amber)' : 'var(--red)';
-
-  const labels = ['','','','','Keep studying — focus on the explanations you missed.','','Needs work — re-read the review sheets.','','','','Not bad — a few gaps to fill.','','','','','','Good effort — review the weak spots.','','','','','Strong work — minor gaps remain.','','','','','Very good — almost there.','','','','','Excellent — you know this material well.'];
-  document.getElementById('res-lbl').textContent = pct >= 90 ? 'Excellent — you know this material well.' : pct >= 75 ? 'Very good — review any missed questions.' : pct >= 60 ? 'Decent — some gaps to address.' : 'Keep studying — re-read the review explanations.';
-
-  document.getElementById('res-correct').textContent = totalCorrect;
-  document.getElementById('res-wrong').textContent = QUIZ_SIZE - totalCorrect;
-  document.getElementById('res-written').textContent = wrCorrect + ' / ' + WRITTEN_COUNT;
-
-  // Build missed questions review
-  const missedEl = document.getElementById('missed-section');
-  missedEl.innerHTML = '';
-  if (wrongAnswers.length > 0) {
-    const tagColors = {4:'#4f9eff',5:'#3ecf8e',6:'#f5a623',7:'#b06aff'};
-    const tagBg = {4:'#4f9eff14',5:'#3ecf8e14',6:'#f5a62314',7:'#b06aff14'};
-    const tagBorder = {4:'#4f9eff2a',5:'#3ecf8e2a',6:'#f5a6232a',7:'#b06aff2a'};
-    let html = '<div class="missed-title">// missed questions (' + wrongAnswers.length + ')</div>';
-    wrongAnswers.forEach((w, i) => {
-      const col = tagColors[w.m] || '#7a8399';
-      const bg = tagBg[w.m] || '#7a839914';
-      const bd = tagBorder[w.m] || '#7a83992a';
-      if (w.type === 'mc') {
-        html += '<div class="missed-item">' +
-          '<div class="missed-item-header">' +
-            '<span class="missed-mod-tag" style="color:'+col+';background:'+bg+';border:1px solid '+bd+'">Module ' + w.m + '</span>' +
-          '</div>' +
-          '<div class="missed-q">' + (i+1) + '. ' + w.q + '</div>' +
-          '<div class="missed-your-answer"><span class="missed-answer-label">Your answer</span>' + (w.yourAnswer !== undefined ? w.yourAnswer : 'No answer') + '</div>' +
-          '<div class="missed-correct-answer"><span class="missed-answer-label">Correct</span>' + w.correctAnswer + '</div>' +
-          '<div class="missed-exp">' + w.exp + '</div>' +
-        '</div>';
-      } else {
-        html += '<div class="missed-item">' +
-          '<div class="missed-item-header">' +
-            '<span class="missed-mod-tag" style="color:'+col+';background:'+bg+';border:1px solid '+bd+'">Module ' + w.m + '</span>' +
-            '<span class="missed-type-tag">Written</span>' +
-          '</div>' +
-          '<div class="missed-q">' + (i+1) + '. ' + w.q + '</div>' +
-          '<div class="missed-correct-answer" style="display:block"><span class="missed-answer-label" style="display:block;margin-bottom:6px">Model answer</span><div class="missed-written-model">' + w.model.replace(/\n/g,'\n') + '</div></div>' +
-        '</div>';
-      }
-    });
-    missedEl.innerHTML = html;
-  }
-
-  [4,5,6,7].forEach(m => {
-    const s = modStats[m];
-    const el = document.getElementById('br-' + m);
-    el.textContent = s.t > 0 ? s.c + ' / ' + s.t : '—';
-    el.style.color = s.t > 0 ? (s.c / s.t >= 0.7 ? 'var(--green)' : s.c / s.t >= 0.5 ? 'var(--amber)' : 'var(--red)') : 'var(--muted)';
-  });
-}
 </script>
+
 </body>
 </html>
