@@ -1,203 +1,377 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>COSC 182 – Java Midterm Study Quiz</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+  .nav { display: flex; flex-wrap: wrap; gap: 8px; padding: 1rem 0 1.5rem; border-bottom: 0.5px solid var(--color-border-tertiary); margin-bottom: 1.5rem; }
+  .nav-btn { padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; font-size: 13px; cursor: pointer; color: var(--color-text-secondary); transition: all 0.15s; }
+  .nav-btn.active { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-primary); }
+  .section { display: none; }
+  .section.active { display: block; }
+  .card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 1rem; }
+  .tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: var(--border-radius-md); margin-bottom: 8px; }
+  .tag-blue { background: #E6F1FB; color: #0C447C; }
+  .tag-teal { background: #E1F5EE; color: #085041; }
+  .tag-amber { background: #FAEEDA; color: #633806; }
+  .tag-coral { background: #FAECE7; color: #712B13; }
+  .tag-purple { background: #EEEDFE; color: #3C3489; }
+  h2 { font-size: 18px; font-weight: 500; margin-bottom: 1rem; color: var(--color-text-primary); }
+  h3 { font-size: 15px; font-weight: 500; margin-bottom: 0.5rem; color: var(--color-text-primary); }
+  p, li { font-size: 14px; line-height: 1.7; color: var(--color-text-secondary); }
+  ul { padding-left: 1.25rem; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; }
+  .pill-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 0.5rem; }
+  .pill { font-size: 12px; padding: 3px 10px; border-radius: 20px; border: 0.5px solid var(--color-border-secondary); color: var(--color-text-secondary); }
+  .example-box { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 0.75rem 1rem; margin: 0.5rem 0; font-size: 13px; }
+  .bad { border-left: 3px solid #E24B4A; }
+  .good { border-left: 3px solid #639922; }
+  .label { font-size: 11px; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+  .q-btn { width: 100%; text-align: left; padding: 0.75rem 1rem; background: transparent; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); cursor: pointer; font-size: 14px; color: var(--color-text-primary); margin-bottom: 0.5rem; transition: all 0.15s; }
+  .q-btn:hover { background: var(--color-background-secondary); }
+  .answer { display: none; background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 0.75rem 1rem; margin-top: -0.25rem; margin-bottom: 0.75rem; font-size: 14px; color: var(--color-text-secondary); line-height: 1.7; }
+  .answer.show { display: block; }
+  .sendprompt-btn { padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; font-size: 13px; cursor: pointer; color: var(--color-text-secondary); margin-top: 1rem; }
+  .metric { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 0.75rem 1rem; text-align: center; }
+  .metric-num { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+  .metric-label { font-size: 12px; color: var(--color-text-tertiary); margin-top: 2px; }
+  table { width: 100%; font-size: 13px; border-collapse: collapse; }
+  th { text-align: left; font-weight: 500; padding: 6px 10px; border-bottom: 0.5px solid var(--color-border-secondary); color: var(--color-text-primary); font-size: 12px; }
+  td { padding: 6px 10px; border-bottom: 0.5px solid var(--color-border-tertiary); color: var(--color-text-secondary); vertical-align: top; }
+  .highlight { color: var(--color-text-primary); font-weight: 500; }
+  @media (max-width: 600px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+</style>
 
-<!-- ══════════════════════════════════════════════════════════
-     Navigation
-═══════════════════════════════════════════════════════════ -->
-<nav>
-  <div class="container">
-    <a href="#" class="nav-logo">
-      <!-- Java "Duke" inspired icon -->
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="3" y="3" width="18" height="18" rx="3" fill="#f89820"/>
-        <text x="5" y="17" font-family="monospace" font-size="11" font-weight="bold" fill="#000">J</text>
-      </svg>
-      COSC 182 Quiz
-    </a>
-    <div class="nav-links">
-      <a href="#" id="nav-home-link">Home</a>
-      <a href="#" id="nav-start-link">Start Quiz</a>
-    </div>
+<div style="padding: 1rem 0">
+  <h1 style="font-size:22px;font-weight:500;color:var(--color-text-primary);margin-bottom:0.25rem;">TCOM 190 — Final Exam Study Guide</h1>
+  <p style="font-size:13px;color:var(--color-text-tertiary);margin-bottom:1rem;">44 marks total · Application-based · 4 sections</p>
+
+  <div class="grid3" style="margin-bottom:1.5rem;">
+    <div class="metric"><div class="metric-num">10</div><div class="metric-label">T/F questions</div></div>
+    <div class="metric"><div class="metric-num">10</div><div class="metric-label">Multiple choice</div></div>
+    <div class="metric"><div class="metric-num">24</div><div class="metric-label">Short answer + reflection</div></div>
   </div>
-</nav>
 
-<!-- ══════════════════════════════════════════════════════════
-     PAGE: HOME
-═══════════════════════════════════════════════════════════ -->
-<div id="page-home" class="page active">
-  <div class="container">
-    <section id="page-home-inner">
-      <div class="hero-badge">COSC 182 – Midterm Prep</div>
-      <h1>Java Midterm Study Quiz</h1>
-      <p class="hero-sub">
-        Test your knowledge of File I/O, Generics, Data Structures, and Assignment 3.
-        Each session draws <strong>10 multiple-choice</strong> and <strong>10 coding questions</strong>
-        at random from a bank of <strong>70 questions</strong>.
-      </p>
+  <nav class="nav">
+    <button class="nav-btn active" onclick="show('nines')">9 C's + Emails</button>
+    <button class="nav-btn" onclick="show('grammar')">Grammar</button>
+    <button class="nav-btn" onclick="show('reports')">Reports & Proposals</button>
+    <button class="nav-btn" onclick="show('persuasion')">Persuasion</button>
+    <button class="nav-btn" onclick="show('instructions')">Instructions</button>
+    <button class="nav-btn" onclick="show('practice')">Practice Questions</button>
+  </nav>
 
-      <!-- Stats cards -->
-      <div class="info-grid">
-        <div class="info-card">
-          <div class="info-card-icon">📋</div>
-          <h3>Multiple Choice</h3>
-          <p>50 questions <span class="small">in the bank</span></p>
-        </div>
-        <div class="info-card">
-          <div class="info-card-icon">💻</div>
-          <h3>Coding Questions</h3>
-          <p>20 questions <span class="small">in the bank</span></p>
-        </div>
-        <div class="info-card">
-          <div class="info-card-icon">🎯</div>
-          <h3>Per Session</h3>
-          <p>20 questions <span class="small">10 MC + 10 Coding</span></p>
-        </div>
-        <div class="info-card">
-          <div class="info-card-icon">🔀</div>
-          <h3>Randomized</h3>
-          <p>Every run <span class="small">shuffled fresh</span></p>
-        </div>
-      </div>
+  <div id="nines" class="section active">
+    <h2>The 9 C's of Effective Workplace Writing</h2>
+    <div class="grid3">
+      <div class="card"><span class="tag tag-blue">1</span><h3>Clear</h3><p>State purpose; use simple, audience-appropriate language.</p></div>
+      <div class="card"><span class="tag tag-blue">2</span><h3>Concise</h3><p>Use fewest words needed; include only necessary info.</p></div>
+      <div class="card"><span class="tag tag-blue">3</span><h3>Coherent</h3><p>Organize ideas logically; use transition words.</p></div>
+      <div class="card"><span class="tag tag-teal">4</span><h3>Correct</h3><p>Accurate grammar, punctuation, and content.</p></div>
+      <div class="card"><span class="tag tag-teal">5</span><h3>Complete</h3><p>Give all necessary information; answer all reader questions.</p></div>
+      <div class="card"><span class="tag tag-teal">6</span><h3>Concrete</h3><p>Use specific, precise, measurable language.</p></div>
+      <div class="card"><span class="tag tag-amber">7</span><h3>Credible</h3><p>All sources reliable and cited appropriately.</p></div>
+      <div class="card"><span class="tag tag-amber">8</span><h3>Considerate</h3><p>Message is well-formatted and written for your audience.</p></div>
+      <div class="card"><span class="tag tag-amber">9</span><h3>Courteous</h3><p>Use polite and professional language.</p></div>
+    </div>
 
-      <!-- Topics covered -->
-      <div class="topics">
-        <span class="topic-pill">📁 Chapter 17: File I/O</span>
-        <span class="topic-pill">🔷 Chapter 19: Generics</span>
-        <span class="topic-pill">🔗 Linked Lists (LList / OLList)</span>
-        <span class="topic-pill">🌳 Binary Search Trees</span>
-        <span class="topic-pill">⚡ Generic Algorithms</span>
-        <span class="topic-pill">✅ JUnit 5 Testing</span>
-        <span class="topic-pill">📦 Serialization</span>
-        <span class="topic-pill">🔍 Binary Search / QuickSort</span>
-      </div>
+    <h2 style="margin-top:1.5rem;">Professional Email Structure</h2>
+    <div class="grid3" style="margin-bottom:1rem;">
+      <div class="card" style="border-top:3px solid #1D9E75;"><h3>01 Purpose</h3><p>State why you are writing in the very first sentence.</p><div class="pill-grid"><span class="pill">"I am writing to update you on…"</span><span class="pill">"I'd like to ask about…"</span></div></div>
+      <div class="card" style="border-top:3px solid #378ADD;"><h3>02 Details</h3><p>Provide concise, relevant background. Use bullets for lists of items.</p></div>
+      <div class="card" style="border-top:3px solid #BA7517;"><h3>03 Action</h3><p>State what you want the reader to do next.</p><div class="pill-grid"><span class="pill">"Please let me know by…"</span><span class="pill">"Let me know your availability"</span></div></div>
+    </div>
 
-      <button class="btn btn-primary" id="btn-start" style="font-size:1.1rem; padding:.9rem 2.5rem;">
-        Start Quiz →
-      </button>
+    <h2>The 5 Key Parts of a Professional Email</h2>
+    <div class="card">
+      <table>
+        <tr><th style="width:30%">Part</th><th>Guidance</th></tr>
+        <tr><td class="highlight">A) Subject line</td><td>Always include one. Keep it under ~5 words. Should reflect the purpose.</td></tr>
+        <tr><td class="highlight">B) Greeting</td><td>Hi / Hello / Dear — match formality to relationship. Add recipient name + comma.</td></tr>
+        <tr><td class="highlight">C) Body</td><td>3-part structure (purpose → details → action). Short paragraphs. Use bullets if listing 3+ items.</td></tr>
+        <tr><td class="highlight">D) Closing</td><td>Thanks / Best / Sincerely — match formality. Always include for first email in a thread.</td></tr>
+        <tr><td class="highlight">E) Block signature</td><td>Full name, title, company, phone, email.</td></tr>
+      </table>
+    </div>
 
-      <div style="margin-top:2.5rem; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem;">
-        <h3 style="margin-bottom:.8rem; color:var(--text-muted); font-size:.9rem; text-transform:uppercase; letter-spacing:.05em;">How it works</h3>
-        <ol style="padding-left:1.3rem; line-height:2; font-size:.93rem; color:var(--text-muted);">
-          <li>The quiz randomly selects 10 MC and 10 coding questions each time.</li>
-          <li>For <strong style="color:var(--accent2)">multiple choice</strong>, pick an answer and submit — you'll see if you were right immediately.</li>
-          <li>For <strong style="color:var(--accent3)">coding questions</strong>, write your answer in the text box, then reveal the model answer to compare.</li>
-          <li>Self-grade each coding question as ✅ Correct or ❌ Needs Practice.</li>
-          <li>After all 20 questions, review your results and re-run as many times as you like!</li>
-        </ol>
-      </div>
-    </section>
+    <h2 style="margin-top:1.5rem;">Tone: Plain vs. Formal Language</h2>
+    <div class="card">
+      <table>
+        <tr><th>Overly formal / wordy</th><th>Plain alternative</th></tr>
+        <tr><td>Due to the fact that</td><td>Because</td></tr>
+        <tr><td>In order to</td><td>To</td></tr>
+        <tr><td>Has the capability to</td><td>Can</td></tr>
+        <tr><td>Utilize</td><td>Use</td></tr>
+        <tr><td>Commence</td><td>Start</td></tr>
+        <tr><td>I am writing in response to</td><td>Just start with your purpose</td></tr>
+        <tr><td>Please do not hesitate to contact</td><td>Feel free to reach out</td></tr>
+      </table>
+    </div>
+    <button class="sendprompt-btn" onclick="sendPrompt('Can you give me a sample professional email scenario to practice the 3-part structure?')">Practice drafting an email ↗</button>
+  </div>
+
+  <div id="grammar" class="section">
+    <h2>Sentence Types</h2>
+    <div class="grid3">
+      <div class="card"><span class="tag tag-blue">Simple</span><h3>One independent clause</h3><p>One complete idea. Great for emphasis and clarity. Too many in a row sound choppy.</p><div class="example-box">"Grammar matters."</div></div>
+      <div class="card"><span class="tag tag-teal">Compound</span><h3>Two independent clauses</h3><p>Joined by FANBOYS: <span class="highlight">For And Nor But Or Yet So</span>. Must have a comma before the conjunction.</p><div class="example-box">"Grammar is hard, <span class="highlight">but</span> I will master it."</div></div>
+      <div class="card"><span class="tag tag-amber">Complex</span><h3>Independent + dependent clause</h3><p>Joined by subordinating conjunction (if, because, although, when). Comma needed only when dependent clause comes FIRST.</p><div class="example-box">"<span class="highlight">When</span> I study, I do well."</div></div>
+    </div>
+
+    <h2 style="margin-top:1.5rem;">Common Sentence Errors</h2>
+    <div class="card">
+      <h3>Fragment</h3><p>A group of words that lacks a subject, verb, or complete thought.</p>
+      <div class="example-box bad"><div class="label">Wrong</div>"Which is why we have midterms."</div>
+      <div class="example-box good"><div class="label">Fixed</div>"The semester is halfway over, which is why we have midterms."</div>
+    </div>
+    <div class="card">
+      <h3>Fused run-on</h3><p>Two complete ideas crammed together with no punctuation.</p>
+      <div class="example-box bad"><div class="label">Wrong</div>"The experiment failed it was left unobserved."</div>
+      <div class="example-box good"><div class="label">Fixed</div>"The experiment failed; it was left unobserved."</div>
+    </div>
+    <div class="card">
+      <h3>Comma splice</h3><p>Two independent clauses joined by only a comma — no conjunction.</p>
+      <div class="example-box bad"><div class="label">Wrong</div>"Grammar is hard, I hate it."</div>
+      <div class="example-box good"><div class="label">Fixed — add conjunction</div>"Grammar is hard, <span class="highlight">so</span> I hate it." OR use a semicolon.</div>
+    </div>
+
+    <h2 style="margin-top:1.5rem;">Punctuation Quick Reference</h2>
+    <div class="card">
+      <table>
+        <tr><th>Mark</th><th>Key rule</th><th>Example</th></tr>
+        <tr><td class="highlight">Comma</td><td>Before FANBOYS in compound sentences; after introductory dependent clause; around parenthetical info; in lists (Oxford comma)</td><td>"I study, <span style="color:var(--color-text-primary)">but</span> I struggle."</td></tr>
+        <tr><td class="highlight">Semicolon</td><td>Connects two closely related complete sentences. Can fix a comma splice.</td><td>"Grammar is hard; it takes practice."</td></tr>
+        <tr><td class="highlight">Colon</td><td>After a complete sentence to introduce a list, example, or quote. NOT after "including" or "such as".</td><td>"You need three things: time, effort, and focus."</td></tr>
+        <tr><td class="highlight">Apostrophe</td><td>Possession (noun+'s) OR contraction. Never for plurals. its = belongs to it; it's = it is.</td><td>"The company's policy; it's clear."</td></tr>
+      </table>
+    </div>
+
+    <h2 style="margin-top:1.5rem;">Common Word Confusion</h2>
+    <div class="grid2">
+      <div class="card"><h3>their / there / they're</h3><ul><li><span class="highlight">Their</span> = belonging to them</li><li><span class="highlight">There</span> = place or to introduce a clause</li><li><span class="highlight">They're</span> = they are</li></ul></div>
+      <div class="card"><h3>its / it's</h3><ul><li><span class="highlight">Its</span> = belonging to it</li><li><span class="highlight">It's</span> = it is / it has</li></ul></div>
+      <div class="card"><h3>then / than</h3><ul><li><span class="highlight">Than</span> = comparison ("better than")</li><li><span class="highlight">Then</span> = time sequence ("first… then")</li></ul></div>
+      <div class="card"><h3>affect / effect</h3><ul><li><span class="highlight">Affect</span> = verb (to influence)</li><li><span class="highlight">Effect</span> = noun (the result); rarely a verb meaning "to cause"</li></ul></div>
+    </div>
+
+    <h2 style="margin-top:1.5rem;">Other Grammar Traps</h2>
+    <div class="card">
+      <h3>Subject-verb agreement</h3><p>The subject and verb must match in number. Watch out for phrases between subject and verb that trick you.</p>
+      <div class="example-box bad"><div class="label">Wrong</div>"Various kinds of vandalism <span class="highlight">has</span> been increasing."</div>
+      <div class="example-box good"><div class="label">Correct</div>"Various kinds of vandalism <span class="highlight">have</span> been increasing."</div>
+    </div>
+    <div class="card">
+      <h3>Misplaced modifier</h3><p>A word/phrase that accidentally modifies the wrong thing. Move it next to what it describes.</p>
+      <div class="example-box bad"><div class="label">Wrong</div>"At the age of three, he caught a fish with a broken arm."</div>
+      <div class="example-box good"><div class="label">Fixed</div>"At the age of three, the boy with a broken arm caught a fish."</div>
+    </div>
+    <div class="card">
+      <h3>Dangling participle</h3><p>The participial phrase modifies a noun that isn't actually in the sentence.</p>
+      <div class="example-box bad"><div class="label">Wrong</div>"Having finished the assignment, the TV was turned on."</div>
+      <div class="example-box good"><div class="label">Fixed</div>"Having finished the assignment, Jill turned on the TV."</div>
+    </div>
+    <div class="card">
+      <h3>Unclear pronoun ("this", "it", "they")</h3><p>Always add a specific noun after "this" so readers know what it refers to.</p>
+      <div class="example-box bad"><div class="label">Unclear</div>"The system enforces MFA. <span class="highlight">This</span> reduces risk."</div>
+      <div class="example-box good"><div class="label">Clear</div>"The system enforces MFA. <span class="highlight">This enforcement</span> reduces risk."</div>
+    </div>
+    <button class="sendprompt-btn" onclick="sendPrompt('Give me 5 grammar editing practice sentences covering comma splices, fragments, and misplaced modifiers for TCOM 190.')">Generate editing practice ↗</button>
+  </div>
+
+  <div id="reports" class="section">
+    <h2>Formal Report: Presentation Order</h2>
+    <div class="card">
+      <table>
+        <tr><th style="width:30%">Element</th><th>Key details</th></tr>
+        <tr><td class="highlight">Transmittal document</td><td>Email or letter "handing over" the report. Uses 3-part structure. Written directly to the primary reader. Separate from the report itself.</td></tr>
+        <tr><td class="highlight">Cover</td><td>Professional presentation.</td></tr>
+        <tr><td class="highlight">Title page</td><td>Specific & descriptive title, prepared for, prepared by, date. Pre-document pages use Roman numerals (i, ii, iii).</td></tr>
+        <tr><td class="highlight">Executive summary</td><td>¾–1 page. Problem/purpose, key findings, conclusions, recommendations. No jargon. Follow topic order of report.</td></tr>
+        <tr><td class="highlight">Table of contents</td><td>Include if report is 5+ pages. Road map for readers. Use Word Styles for easy generation.</td></tr>
+        <tr><td class="highlight">List of figures/tables</td><td>Separate page if 3+ visuals. Figures first, then tables.</td></tr>
+        <tr><td class="highlight">Report body</td><td>Introduction → Findings/Discussion → Summary → Recommendations → Looking Ahead. Arabic page numbers (1, 2, 3).</td></tr>
+        <tr><td class="highlight">References</td><td>APA format. Document everything that isn't your own work.</td></tr>
+        <tr><td class="highlight">Appendices</td><td>Appendix A, B, C… One major item per appendix. Non-essential but useful material.</td></tr>
+      </table>
+    </div>
+
+    <h2 style="margin-top:1.5rem;">Report Design Principles</h2>
+    <div class="grid2">
+      <div class="card"><h3>Font</h3><ul><li>Serif (Times New Roman) for print</li><li>Sans-serif (Arial) for digital</li><li>11–12pt body; larger for headings</li><li>Bold headings; bold/italic for emphasis</li></ul></div>
+      <div class="card"><h3>White space & margins</h3><ul><li>1-inch margins</li><li>Single-space within paragraphs</li><li>One blank line between paragraphs</li><li>White space around visuals</li></ul></div>
+      <div class="card"><h3>Headings</h3><ul><li>Always bold</li><li>Informative and specific (not just "Introduction")</li><li>Major headings = larger font</li><li>Use Word Styles for consistency</li></ul></div>
+      <div class="card"><h3>Visuals</h3><ul><li>Label as "Table 1" or "Figure 1" with a descriptive title</li><li>Introduce every visual in body text before it appears</li><li>Visuals complement text; they don't replace it</li></ul></div>
+    </div>
+
+    <h2 style="margin-top:1.5rem;">Proposal Structure</h2>
+    <div class="card">
+      <table>
+        <tr><th>Section</th><th>What it covers</th></tr>
+        <tr><td class="highlight">Introduction</td><td>Identifies problem/request, summarizes proposed plan, highlights qualifications, hooks the audience.</td></tr>
+        <tr><td class="highlight">Background</td><td>Why the problem exists, why it matters, what the solution must address. Demonstrates understanding.</td></tr>
+        <tr><td class="highlight">Project description</td><td>The proposed solution and how it will be implemented. Supported by evidence.</td></tr>
+        <tr><td class="highlight">Supporting material</td><td>Qualifications, facilities, examples of similar work, team résumés.</td></tr>
+        <tr><td class="highlight">Budget</td><td>Realistic, detailed cost breakdown.</td></tr>
+        <tr><td class="highlight">Conclusion/Authorization</td><td>Brief summary of benefits. Request for approval or meeting.</td></tr>
+      </table>
+    </div>
+    <button class="sendprompt-btn" onclick="sendPrompt('What are common mistakes students make when writing a transmittal email for a formal report?')">Common transmittal mistakes ↗</button>
+  </div>
+
+  <div id="persuasion" class="section">
+    <h2>The 4 Rhetorical Appeals (Elements of Persuasion)</h2>
+    <div class="grid2">
+      <div class="card" style="border-top:3px solid #7F77DD;"><span class="tag tag-purple">Ethos</span><h3>Credibility & Authority</h3><ul><li>Highlight your expertise and qualifications</li><li>Use credible, cited sources</li><li>Demonstrate professional grammar and organization</li></ul></div>
+      <div class="card" style="border-top:3px solid #1D9E75;"><span class="tag tag-teal">Pathos</span><h3>Emotion, Interest, Values</h3><ul><li>Show alignment with audience values and org goals</li><li>Use real-world impacts, storytelling, case studies</li><li>Build common ground</li></ul></div>
+      <div class="card" style="border-top:3px solid #378ADD;"><span class="tag tag-blue">Logos</span><h3>Logic & Reason</h3><ul><li>Provide facts, data, statistics</li><li>Anticipate counterarguments</li><li>Acknowledge limitations honestly</li><li>Use effective structure (direct vs. indirect)</li></ul></div>
+      <div class="card" style="border-top:3px solid #BA7517;"><span class="tag tag-amber">Kairos</span><h3>Timeliness & Appropriateness</h3><ul><li>Emphasize urgency — why act NOW?</li><li>Connect to current trends and policies</li><li>Align with institutional goals</li></ul></div>
+    </div>
+
+    <h2 style="margin-top:1.5rem;">Research & References</h2>
+    <div class="grid2">
+      <div class="card"><h3>Primary sources</h3><p>Research you do yourself: surveys, interviews, experiments, observations, company records.</p></div>
+      <div class="card"><h3>Secondary sources</h3><p>Analysis/interpretation of others' work: journal articles, books, government documents, news articles.</p></div>
+    </div>
+    <div class="card" style="margin-top:0.5rem;">
+      <h3>APA in-text citation format</h3>
+      <div class="example-box">(Author Last Name, Year) — e.g., (Smith, 2021)</div>
+      <p style="margin-top:0.5rem;">Document: ideas, quotations, paraphrases, images, data, AI-generated content. When in doubt, cite it.</p>
+    </div>
+    <div class="card">
+      <h3>AI Disclosure Statement must include:</h3>
+      <ul>
+        <li>The name of the tool used (e.g., ChatGPT, Claude)</li>
+        <li>What tasks it helped with (brainstorming, editing, writing, images)</li>
+        <li>Prompt details if relevant</li>
+        <li>Extent of your edits to the AI output</li>
+      </ul>
+    </div>
+    <button class="sendprompt-btn" onclick="sendPrompt('Give me a practice scenario: I need to write a persuasive proposal paragraph using ethos, pathos, and logos. Can you walk me through how to do it?')">Practice persuasive writing ↗</button>
+  </div>
+
+  <div id="instructions" class="section">
+    <h2>Writing Effective Instructions</h2>
+    <div class="grid2">
+      <div class="card"><h3>Structure</h3><ul><li>Introduction (purpose, background, materials, prerequisites, safety warnings)</li><li>Numbered chronological steps</li><li>Conclusion (expected results, outcome)</li></ul></div>
+      <div class="card"><h3>Audience</h3><ul><li>Always assume reader knows less than you</li><li>State expected knowledge level</li><li>Define specialized terms</li><li>Give enough examples to visualize the procedure</li></ul></div>
+    </div>
+
+    <h2 style="margin-top:1.5rem;">Key Writing Rules for Steps</h2>
+    <div class="card">
+      <ul>
+        <li>Begin each step with an <span class="highlight">action verb</span> (imperative mood)</li>
+        <li>One step per numbered item; one action per step</li>
+        <li>Use <span class="highlight">active voice</span>: "Key in your access code" not "The access code is keyed in"</li>
+        <li>Use affirmative phrasing: "Examine your CD for dust" not "Verify it is not contaminated"</li>
+        <li>Use <span class="highlight">parallel phrasing</span> — identical grammatical form for all steps</li>
+        <li>Use transition words for sequence: next, then, after, before, finally</li>
+      </ul>
+    </div>
+
+    <h2 style="margin-top:1.5rem;">Safety Notices (in order of severity)</h2>
+    <div class="grid2">
+      <div class="card"><span class="tag tag-blue">Note</span><p>Clarifies a point, describes options or alternatives.</p></div>
+      <div class="card"><span class="tag tag-amber">Caution</span><p>Prevents mistakes that could result in injury or equipment damage.</p></div>
+      <div class="card"><span class="tag tag-coral">Warning</span><p>Alerts users against hazards to life or limb.</p></div>
+      <div class="card" style="border:1px solid #E24B4A;"><span class="tag" style="background:#FCEBEB;color:#A32D2D;">Danger</span><p>Identifies an immediate hazard to life or limb.</p></div>
+    </div>
+
+    <h2 style="margin-top:1.5rem;">Audience and Context (Workplace Communication)</h2>
+    <div class="card">
+      <p>Before writing, always consider your <span class="highlight">Audience, Purpose, Message, Context,</span> and your own <span class="highlight">Identity</span> as the writer.</p>
+      <table style="margin-top:0.75rem;">
+        <tr><th>Element</th><th>Key question</th></tr>
+        <tr><td class="highlight">Audience</td><td>What do they know? What do they need to know? How will they use this?</td></tr>
+        <tr><td class="highlight">Purpose</td><td>To record, share/request, or persuade?</td></tr>
+        <tr><td class="highlight">Context</td><td>What situation created this need? Timing, culture, current events?</td></tr>
+        <tr><td class="highlight">Message</td><td>What content serves this specific audience and purpose?</td></tr>
+      </table>
+    </div>
+
+    <h2 style="margin-top:1.5rem;">Team Roles</h2>
+    <div class="grid3">
+      <div class="card"><span class="tag tag-teal">Task roles</span><p>Get the work done. Help teams accomplish goals.</p></div>
+      <div class="card"><span class="tag tag-blue">Maintenance roles</span><p>Interpersonal roles that create a positive working climate.</p></div>
+      <div class="card"><span class="tag tag-coral">Dysfunctional roles</span><p>Potentially negative roles that hinder progress or create a bad environment.</p></div>
+    </div>
+    <button class="sendprompt-btn" onclick="sendPrompt('Give me a sample set of poorly written instructions for a simple task so I can practice editing them for clarity, structure, and imperative mood.')">Practice editing instructions ↗</button>
+  </div>
+
+  <div id="practice" class="section">
+    <h2>Practice Questions — click to reveal answers</h2>
+    <p style="margin-bottom:1rem;font-size:13px;color:var(--color-text-tertiary);">These mirror the types of questions you'll see on the exam.</p>
+
+    <span class="tag tag-blue" style="margin-bottom:0.75rem;display:inline-block;">True / False style</span>
+    <button class="q-btn" onclick="toggleA(this)">T/F: A comma splice occurs when two independent clauses are joined with only a comma and no conjunction.</button>
+    <div class="answer">TRUE. A comma splice joins two complete ideas with a comma alone. Fix it by adding a coordinating conjunction (but, so, and) or changing the comma to a semicolon or period.</div>
+
+    <button class="q-btn" onclick="toggleA(this)">T/F: "I hope this email finds you well" is considered best practice in professional emails.</button>
+    <div class="answer">FALSE. Generic pleasantries like this are discouraged. Get to your purpose immediately, or use a more personal/specific opener if a warm-up sentence is needed.</div>
+
+    <button class="q-btn" onclick="toggleA(this)">T/F: In IEEE format, the reference list is organized alphabetically.</button>
+    <div class="answer">FALSE. IEEE references are numbered in order of FIRST APPEARANCE in the document. If you reuse a reference, you use the same number — you do not create a new one. (APA is alphabetical.)</div>
+
+    <span class="tag tag-teal" style="margin:1rem 0 0.75rem;display:inline-block;">Short answer / Critique</span>
+    <button class="q-btn" onclick="toggleA(this)">Identify ALL errors in: "The student completed there assignment however, they forgot to submit it on time, this effected their grade."</button>
+    <div class="answer">
+      1. <span class="highlight">there → their</span> (possessive, not place)<br>
+      2. <span class="highlight">Comma splice</span> after "assignment" — "however" is not a coordinating conjunction; use a semicolon: "assignment; however,"<br>
+      3. <span class="highlight">Comma splice</span> after "time" — two independent clauses joined by only a comma<br>
+      4. <span class="highlight">effected → affected</span> (affect = to influence; effect = the result)<br><br>
+      Corrected: "The student completed their assignment; however, they forgot to submit it on time. This delay affected their grade."
+    </div>
+
+    <button class="q-btn" onclick="toggleA(this)">Which of the 9 C's does this sentence violate, and why? "Due to the fact that there were numerous unforeseen circumstances, we were unable to finalize the project."</button>
+    <div class="answer">
+      <span class="highlight">Concise</span> — it uses unnecessarily wordy and formal phrases.<br>
+      "Due to the fact that" → "Because"<br>
+      "numerous unforeseen circumstances" → "unexpected issues"<br>
+      "unable to finalize" → "couldn't finish"<br><br>
+      Better: "Because of unexpected issues, we couldn't finish the project."
+    </div>
+
+    <button class="q-btn" onclick="toggleA(this)">A classmate drafts an email that begins: "Dear Professor, I hope this message finds you well. I am writing this email today to respectfully reach out and touch base with you regarding the assignment that is due this coming Friday…" What feedback would you give?</button>
+    <div class="answer">
+      <span class="highlight">Problems:</span><br>
+      1. Generic opener ("hope this finds you well") — skip it or personalize<br>
+      2. Purpose is buried and vague — state it in the first sentence: "I'm writing to ask a question about Friday's assignment."<br>
+      3. Wordy phrases: "writing this email today to," "reach out and touch base," "this coming Friday"<br>
+      4. Violates Concise and Clear C's<br><br>
+      <span class="highlight">Better opening:</span> "Hi [Professor's Name], I have a quick question about the assignment due Friday."
+    </div>
+
+    <span class="tag tag-amber" style="margin:1rem 0 0.75rem;display:inline-block;">Scenario / Application</span>
+    <button class="q-btn" onclick="toggleA(this)">You need to write instructions for a general audience explaining how to safely change a bicycle tire. What must your introduction include?</button>
+    <div class="answer">
+      Your introduction should include:<br>
+      1. <span class="highlight">Purpose</span> — explain what task the instructions accomplish<br>
+      2. <span class="highlight">Prerequisite knowledge</span> — state what the reader should already know<br>
+      3. <span class="highlight">Materials/equipment list</span> — tire levers, patch kit, pump, new tube<br>
+      4. <span class="highlight">Safety notices</span> — if applicable (e.g., release air pressure before removing)<br>
+      5. <span class="highlight">Definitions</span> — define specialized terms (e.g., "valve stem," "bead")<br><br>
+      Always assume the reader knows LESS than you.
+    </div>
+
+    <button class="q-btn" onclick="toggleA(this)">Your team is writing a proposal. Explain how you would use Ethos, Pathos, and Logos to strengthen your proposal's introduction paragraph.</button>
+    <div class="answer">
+      <span class="highlight">Ethos:</span> Mention your team's relevant qualifications, experience, or credentials. Cite credible sources. Show you understand the RFP thoroughly.<br><br>
+      <span class="highlight">Pathos:</span> Briefly describe the real-world impact of the problem — who is affected and why it matters. Connect your solution to the organization's values or mission.<br><br>
+      <span class="highlight">Logos:</span> State the problem clearly with a relevant statistic or fact. Outline your proposed solution logically. Preview that you have evidence and a realistic plan.<br><br>
+      <span class="highlight">Example intro sentence:</span> "With employee turnover costing Canadian businesses an estimated $30,000 per replacement (Smith, 2023), [Company Name]'s mentorship program offers a proven, cost-effective solution our team is uniquely qualified to deliver."
+    </div>
+
+    <button class="sendprompt-btn" onclick="sendPrompt('Give me a writing sample (3-4 sentences) with multiple grammar and clarity issues from the TCOM 190 curriculum for me to critique and edit.')">Generate a writing sample to critique ↗</button>
+    <button class="sendprompt-btn" style="margin-left:8px;" onclick="sendPrompt('Quiz me with 5 true or false questions based on the TCOM 190 course content about professional emails, grammar, and report writing.')">Quiz me with T/F questions ↗</button>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     PAGE: QUIZ
-═══════════════════════════════════════════════════════════ -->
-<div id="page-quiz" class="page">
-  <div class="container">
-
-    <div class="quiz-header">
-      <h2>Java Midterm Quiz</h2>
-      <div class="timer" id="timer-wrap">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-        </svg>
-        <span id="timer-display">00:00</span>
-      </div>
-      <span style="font-size:.85rem; color:var(--text-muted);" id="q-counter">Question 1 of 20</span>
-    </div>
-
-    <!-- Progress bar -->
-    <div class="progress-wrap">
-      <div class="progress-bar" id="progress-bar" style="width:0%"></div>
-    </div>
-
-    <!-- Question card -->
-    <div id="question-card" class="question-card">
-      <!-- Rendered by quiz.js -->
-    </div>
-
-    <!-- Navigation -->
-    <div class="quiz-nav">
-      <button class="btn btn-secondary" id="btn-prev">← Previous</button>
-      <button class="btn btn-primary"   id="btn-next">Next →</button>
-    </div>
-
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════════════════
-     PAGE: RESULTS
-═══════════════════════════════════════════════════════════ -->
-<div id="page-results" class="page">
-  <div class="container">
-
-    <div class="results-header">
-      <div class="score-circle" id="score-circle">
-        <span class="score-number" id="score-number">0%</span>
-      </div>
-      <h1 style="margin-bottom:.4rem;">Quiz Complete!</h1>
-      <p class="results-sub" id="results-summary"></p>
-
-      <div class="results-breakdown">
-        <div class="breakdown-card good">
-          <div class="num" id="result-correct">0</div>
-          <div class="lbl">Correct</div>
-        </div>
-        <div class="breakdown-card bad">
-          <div class="num" id="result-wrong">0</div>
-          <div class="lbl">Incorrect</div>
-        </div>
-        <div class="breakdown-card">
-          <div class="num" id="result-skipped">0</div>
-          <div class="lbl">Skipped</div>
-        </div>
-        <div class="breakdown-card">
-          <div class="num" id="result-time">00:00</div>
-          <div class="lbl">Time Taken</div>
-        </div>
-      </div>
-
-      <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
-        <button class="btn btn-primary"    id="btn-restart">🔀 New Quiz</button>
-        <button class="btn btn-secondary"  id="btn-home">🏠 Home</button>
-      </div>
-    </div>
-
-    <!-- Detailed review -->
-    <div class="review-section">
-      <h2 style="margin-bottom:1.2rem;">Question Review</h2>
-      <div id="review-list">
-        <!-- Rendered by quiz.js -->
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- Scripts -->
-<script src="questions.js"></script>
-<script src="quiz.js"></script>
-
-<!-- Extra: nav link wiring (done after DOM ready in quiz.js, but add fallback here) -->
 <script>
-  document.getElementById('nav-home-link').addEventListener('click', e => {
-    e.preventDefault();
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById('page-home').classList.add('active');
-    window.scrollTo({ top: 0 });
-  });
-  document.getElementById('nav-start-link').addEventListener('click', e => {
-    e.preventDefault();
-    document.getElementById('btn-start').click();
-  });
+  function show(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.target.classList.add('active');
+  }
+  function toggleA(btn) {
+    const ans = btn.nextElementSibling;
+    ans.classList.toggle('show');
+  }
 </script>
-
-</body>
-</html>
