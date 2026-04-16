@@ -146,9 +146,72 @@
   .cat-Generics { color: #a29bfe; } .cat-Generics-bg { background: #a29bfe22; border-color: #a29bfe44; }
   .cat-Functional { color: #fd79a8; } .cat-Functional-bg { background: #fd79a822; border-color: #fd79a844; }
 
+  /* ── CODING CHALLENGES ── */
+  #coding { display: none; max-width: 900px; margin: 0 auto; padding: 1.5rem; }
+  .coding-top {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface); border-radius: 14px; padding: .8rem 1.2rem;
+    margin-bottom: 1.5rem; border: 1px solid var(--border);
+  }
+  .coding-top h2 { font-size: 1rem; font-weight: 700; }
+  .challenge-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+    padding: 2rem; margin-bottom: 1.2rem;
+  }
+  .challenge-card .ch-meta {
+    display: flex; gap: .6rem; align-items: center; margin-bottom: .8rem; flex-wrap: wrap;
+  }
+  .ch-tag {
+    font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+    padding: .2rem .6rem; border-radius: 999px;
+  }
+  .ch-diff { font-size: .72rem; color: var(--muted); }
+  .challenge-card h3 { font-size: 1.05rem; line-height: 1.6; margin-bottom: .8rem; }
+  .challenge-card .ch-prompt {
+    background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px;
+    padding: 1rem 1.2rem; font-family: 'Consolas','Fira Code',monospace; font-size: .82rem;
+    line-height: 1.6; margin-bottom: 1rem; color: #c9d1d9; overflow-x: auto;
+  }
+  .ch-hints { font-size: .82rem; color: var(--muted); margin-bottom: 1rem; line-height: 1.6; }
+  .ch-hints span { color: var(--yellow); }
+  textarea.code-input {
+    width: 100%; min-height: 220px; background: var(--code-bg); color: #c9d1d9;
+    border: 2px solid var(--border); border-radius: 10px;
+    padding: 1rem; font-family: 'Consolas','Fira Code',monospace; font-size: .83rem;
+    line-height: 1.6; resize: vertical; outline: none; transition: border-color .2s;
+    tab-size: 4;
+  }
+  textarea.code-input:focus { border-color: var(--accent); }
+  .solution-block {
+    display: none; margin-top: 1rem;
+    background: #0d1f17; border: 1px solid var(--green); border-radius: 10px;
+    padding: 1.2rem;
+  }
+  .solution-block.show { display: block; }
+  .solution-block .sol-label {
+    font-size: .72rem; text-transform: uppercase; letter-spacing: .1em;
+    color: var(--green); font-weight: 700; margin-bottom: .6rem;
+  }
+  .solution-block pre { font-family: 'Consolas','Fira Code',monospace; font-size: .82rem; line-height: 1.6; color: #c9d1d9; overflow-x: auto; }
+  .solution-block .sol-notes { font-size: .82rem; color: #a0cfb8; margin-top: .8rem; line-height: 1.6; border-top: 1px solid #1a4030; padding-top: .7rem; }
+  .self-check-row { display: flex; gap: .8rem; margin-top: 1rem; flex-wrap: wrap; align-items: center; }
+  .self-check-row .sc-label { font-size: .82rem; color: var(--muted); }
+  .btn-got { background: #0d2e24; border: 1px solid var(--green); color: var(--green); }
+  .btn-got:hover { background: #1a4030; }
+  .btn-missed-it { background: #2e0d0d; border: 1px solid var(--red); color: var(--red); }
+  .btn-missed-it:hover { background: #401a1a; }
+  .ch-done-got { border-left: 4px solid var(--green) !important; }
+  .ch-done-missed { border-left: 4px solid var(--red) !important; }
+  .coding-summary {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    padding: 1.5rem; text-align: center; margin-bottom: 2rem;
+  }
+  .coding-summary .cs-score { font-size: 2.5rem; font-weight: 900; color: var(--accent); }
+
   @media (max-width:600px) {
     #splash h1 { font-size: 2rem; }
     .q-card { padding: 1.2rem; }
+    .challenge-card { padding: 1.2rem; }
   }
 </style>
 </head>
@@ -184,7 +247,10 @@
       <p>Retake questions you got wrong</p>
     </div>
   </div>
-  <button class="btn-start" onclick="startQuiz()">Start Quiz</button>
+  <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center">
+    <button class="btn-start" onclick="startQuiz()">Start Quiz</button>
+    <button class="btn-start" style="background:linear-gradient(135deg,#ff6584,#ff9f43)" onclick="startCoding()">Coding Challenges</button>
+  </div>
 </div>
 
 <!-- ════════════════ QUIZ ════════════════ -->
@@ -208,6 +274,26 @@
     <button class="btn btn-primary" id="btn-check" onclick="checkAnswer()" disabled>Check</button>
     <button class="btn btn-primary" id="btn-next" onclick="nextQuestion()" style="display:none">Next →</button>
     <button class="btn btn-secondary" onclick="endQuiz()">End &amp; Review</button>
+  </div>
+</div>
+
+<!-- ════════════════ CODING CHALLENGES ════════════════ -->
+<div id="coding">
+  <div class="coding-top">
+    <h2>Coding Challenges</h2>
+    <div style="display:flex;gap:.6rem;align-items:center">
+      <span id="ch-counter" style="font-size:.85rem;color:var(--muted)">0 / 18 marked</span>
+      <button class="btn btn-secondary" onclick="location.reload()" style="padding:.4rem 1rem;font-size:.8rem">← Back</button>
+    </div>
+  </div>
+  <p style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem;padding:0 .2rem">
+    Write your answer in the box, then click <strong style="color:var(--text)">Reveal Solution</strong> to compare. Mark yourself honestly.
+  </p>
+  <div id="ch-list"></div>
+  <div class="coding-summary" id="ch-summary" style="display:none">
+    <div class="cs-score" id="ch-final">—</div>
+    <p style="color:var(--muted);margin-top:.4rem" id="ch-msg">—</p>
+    <button class="btn btn-primary" style="margin-top:1rem" onclick="location.reload()">Back to Menu</button>
   </div>
 </div>
 
@@ -457,15 +543,15 @@ public int compare(Horse h1, Horse h2) {
 },
 {
   cat:"Abstract", type:"Multiple Choice",
-  q:"In the Mid1 assignment, Cargo extends Ship (abstract) and Ship implements Rescue. Which is correct?",
+  q:"Class Monster is abstract and implements Comparable<Monster>. Class Greek extends Monster. Greek does NOT provide its own compareTo(). What happens when you call compareTo() on a Greek object?",
   opts:[
-    "Cargo must implement all Ship's abstract methods and all Rescue methods",
-    "Cargo only needs to implement Ship's abstract methods",
-    "Cargo only needs to implement Rescue's methods",
-    "Cargo needs to implement nothing — Ship handles everything"
+    "Compilation error — Greek must override compareTo()",
+    "Monster's concrete compareTo() is inherited and runs",
+    "Comparable's default compareTo() runs",
+    "A NullPointerException is thrown at runtime"
   ],
-  ans:0,
-  exp:"<strong>Cargo must implement everything that is abstract</strong> — getBerth() from Ship AND canRescue() from the Rescue interface (if Ship doesn't implement it)."
+  ans:1,
+  exp:"If <strong>Monster provides a concrete compareTo()</strong> implementation, Greek inherits it just like any other non-abstract method. Greek only needs to override it if it wants different behavior."
 },
 
 // ──────────── COLLECTIONS & COMPARATORS (chap11, chap13, chap17) ────────────
@@ -956,18 +1042,28 @@ System.out.println(v instanceof Vehicle);`,
   exp:"<strong>true then true</strong> — A Car IS-A Vehicle (instanceof checks the entire inheritance chain). Both return true."
 },
 {
-  cat:"Abstract", type:"Multiple Choice",
-  q:"From the Mid1 exam: Cargo.canRescue() returns true only if the berth type is Super. If cargoSize is 80,000, what does canRescue() return? (Medium < 50k, Large < 100k, Super >= 100k)",
-  opts:["true","false","throws exception","null"],
-  ans:1,
-  exp:"<strong>false</strong> — 80,000 is less than 100,000, so getBerth() returns Large, not Super. canRescue() requires Super berth."
+  cat:"Abstract", type:"Code Output",
+  q:"Animal is abstract with abstract sound(). Edible is an interface with abstract howToEat(). Chicken extends Animal and implements Edible. What happens?",
+  code:`public abstract class Animal { public abstract String sound(); }
+public interface Edible    { String howToEat(); }
+
+public class Chicken extends Animal implements Edible {
+    public String sound()   { return "Cluck"; }
+    public String howToEat(){ return "Fry it"; }
+}
+// In main:
+Animal a = new Chicken();
+System.out.println(a.sound());`,
+  opts:["Cluck","Fry it","Compilation error — cannot assign Chicken to Animal","null"],
+  ans:0,
+  exp:"<strong>Cluck</strong> — Animal reference can hold a Chicken (polymorphism). sound() is declared on Animal so the compiler allows the call. At runtime it dispatches to Chicken.sound()."
 },
 {
   cat:"Collections", type:"Multiple Choice",
-  q:"In Mid2, to binary search a RandomAccessFile for record #5 (0-indexed) out of 10 records, you seek to:",
-  opts:["4 * REC_SIZE","5 * REC_SIZE","nMid * REC_SIZE","REC_SIZE / 2"],
+  q:"In chap17, you binary-search a RandomAccessFile of fixed-size Car records. To jump to record index nMid, you call:",
+  opts:["raf.seek(nMid)","raf.seek(nMid + REC_SIZE)","raf.seek(nMid * REC_SIZE)","raf.seek(REC_SIZE / nMid)"],
   ans:2,
-  exp:"<strong>nMid * REC_SIZE</strong> — the binary search calculates nMid = (nLow + nHigh) / 2, then seeks to that record's byte offset."
+  exp:"<strong>raf.seek(nMid * REC_SIZE)</strong> — each record occupies exactly REC_SIZE bytes, so multiplying the 0-based index by the record size gives the correct byte offset."
 },
 {
   cat:"LinkedLists", type:"Multiple Choice",
@@ -1290,6 +1386,674 @@ function renderResults() {
       </div>`;
     rl.appendChild(div);
   });
+}
+
+// ═══════════════════════════════════════════════════
+//  CODING CHALLENGES
+// ═══════════════════════════════════════════════════
+const CHALLENGES = [
+{
+  cat:"Inheritance", diff:"Beginner",
+  title:"Write the Vehicle and Car classes",
+  blurb:"Build a two-level inheritance hierarchy. Start with a parent <code>Vehicle</code> class that holds the shared fields, then write a <code>Car</code> subclass that adds a door count — making sure an invalid number silently defaults to 2.",
+  prompt:`// Vehicle has: String make, model; double price; DriveTrain drive
+// - Full constructor, getters, toString() → "make model $price"
+// Car extends Vehicle:
+// - Adds int doors (validated: must be 2–4, default 2)
+// - Full constructor calling super(), getter, toString() calling super`,
+  hints:["Use super(make, model, price, drive) in Car's constructor","Validate doors with a ternary: condition ? valid : 2","Car.toString() should call super.toString() and append doors"],
+  solution:
+`public class Vehicle {
+    private String make, model;
+    private double price;
+    private DriveTrain drive;
+
+    public Vehicle(String make, String model, double price, DriveTrain drive) {
+        this.make = make; this.model = model;
+        this.price = price; this.drive = drive;
+    }
+    public String getMake()  { return make; }
+    public String getModel() { return model; }
+    public double getPrice() { return price; }
+    public DriveTrain getDrive() { return drive; }
+
+    public String toString() {
+        return make + " " + model + " $" + price;
+    }
+}
+
+public class Car extends Vehicle {
+    private int doors;
+
+    public Car(String make, String model, double price,
+               DriveTrain drive, int doors) {
+        super(make, model, price, drive);
+        this.doors = (doors >= 2 && doors <= 4) ? doors : 2;
+    }
+    public int getDoors() { return doors; }
+
+    public String toString() {
+        return super.toString() + " (" + doors + " doors)";
+    }
+}`,
+  notes:"Key points: super() must be the <em>first</em> statement in Car's constructor. Ternary validation keeps the constructor concise. toString() delegation avoids duplicating field printing."
+},
+{
+  cat:"Inheritance", diff:"Beginner",
+  title:"Override equals() in Student",
+  blurb:"Practice writing a proper <code>equals()</code> override. Two Student objects should only be considered equal if they are exactly the same class <em>and</em> share the same student ID number — not just the same name.",
+  prompt:`// Student extends Person (Person has String first, last)
+// Student adds int studentNumber
+// Write Student.equals() so that:
+//   - Returns false if obj is not exactly a Student (use getClass())
+//   - Returns true only if studentNumbers match`,
+  hints:["Cast obOther to Student after the class check","Use this.getClass() == obOther.getClass(), NOT instanceof","Compare studentNumber fields after casting"],
+  solution:
+`@Override
+public boolean equals(Object obOther) {
+    if (obOther == null) return false;
+    if (this.getClass() != obOther.getClass()) return false;
+    Student obStudent = (Student) obOther;
+    return this.studentNumber == obStudent.getStudentNumber();
+}`,
+  notes:"<code>getClass()</code> is stricter than <code>instanceof</code> — it rejects subclasses. If you used instanceof, a GraduateStudent would equal a Student with the same ID, which is probably wrong."
+},
+{
+  cat:"Abstract", diff:"Beginner",
+  title:"Write an abstract Animal class with a concrete subclass",
+  blurb:"Define an <code>abstract</code> class that enforces a contract on its subclasses. <code>Animal</code> should have a shared concrete method that calls an abstract one — demonstrating how polymorphism lets the parent class use behaviour it doesn't define itself.",
+  prompt:`// Abstract class Animal:
+//   - double weight field, constructor, getter
+//   - abstract method: String sound()
+//   - concrete method: describe() returns "I weigh Xkg and say: [sound()]"
+// Concrete class Dog extends Animal:
+//   - constructor passing weight to super
+//   - implements sound() → returns "Woof"`,
+  hints:["Use the abstract keyword on both the class and the method","describe() can call sound() directly — polymorphism handles the rest","Dog must use super(weight) in its constructor"],
+  solution:
+`public abstract class Animal {
+    private double weight;
+
+    public Animal(double weight) { this.weight = weight; }
+    public double getWeight() { return weight; }
+
+    public abstract String sound();
+
+    public String describe() {
+        return "I weigh " + weight + "kg and say: " + sound();
+    }
+}
+
+public class Dog extends Animal {
+    public Dog(double weight) { super(weight); }
+
+    @Override
+    public String sound() { return "Woof"; }
+}`,
+  notes:"Abstract classes <em>can</em> have constructors — they're called via super() from subclasses. The concrete describe() method safely calls the abstract sound() because every instantiated Animal is guaranteed to have an implementation."
+},
+{
+  cat:"Abstract", diff:"Intermediate",
+  title:"Write a Comparator for descending age sort",
+  blurb:"Write a standalone <code>Comparator</code> class that sorts a list of people oldest-first. The key is understanding which way to subtract — get it backwards and your sort order flips.",
+  prompt:`// Write class compAgeDesc that implements Comparator<Person>
+// Person has int age (getAge())
+// Sorting with this Comparator should put OLDEST person first
+// (descending order)`,
+  hints:["Descending order: subtract h1 from h2, not h2 from h1","compare(a,b) returning positive means a goes AFTER b","Returning h2.getAge() - h1.getAge() gives descending"],
+  solution:
+`import java.util.Comparator;
+
+public class compAgeDesc implements Comparator<Person> {
+    @Override
+    public int compare(Person p1, Person p2) {
+        return p2.getAge() - p1.getAge();
+    }
+}`,
+  notes:"The trick: for <em>descending</em> order, swap the operands — <code>p2 - p1</code> instead of <code>p1 - p2</code>. When p2 is older (bigger), the result is positive, which tells sort to place p1 <em>after</em> p2."
+},
+{
+  cat:"Abstract", diff:"Intermediate",
+  title:"Implement Comparable in a Horse class",
+  blurb:"Give the <code>Horse</code> class a natural sort order by implementing <code>Comparable</code> directly on it. This is different from a Comparator — the ordering logic lives inside the class itself and is used automatically by <code>Collections.sort()</code>.",
+  prompt:`// From chap13 — the Horse class needs a natural sort order by speed.
+// Implement Comparable<Horse> so horses sort from slowest to fastest.
+// Horse has: String name, int speedFactor
+// compareTo() sorts ascending by speedFactor
+// Also add an isChampion() method that returns true if speedFactor > 90`,
+  hints:["Implement Comparable<Horse> on the class declaration","compareTo: return this.speedFactor - other.getSpeedFactor()","isChampion: return speedFactor > 90"],
+  solution:
+`public class Horse implements Comparable<Horse> {
+    private String name;
+    private int speedFactor;
+
+    public Horse(String name, int speedFactor) {
+        this.name = name;
+        this.speedFactor = speedFactor;
+    }
+    public String getName()      { return name; }
+    public int getSpeedFactor()  { return speedFactor; }
+
+    public boolean isChampion() {
+        return speedFactor > 90;
+    }
+
+    @Override
+    public int compareTo(Horse other) {
+        return this.speedFactor - other.getSpeedFactor();
+    }
+
+    public String toString() {
+        return name + " (speed: " + speedFactor + ")";
+    }
+}`,
+  notes:"Comparable defines the <em>natural</em> ordering — what Collections.sort() uses by default. Subtracting this - other gives ascending order. For a Comparator (separate class) you'd use the same subtraction logic but in a compare(a,b) method."
+},
+{
+  cat:"Collections", diff:"Beginner",
+  title:"Write push(), pop(), and peek() using an ArrayList",
+  blurb:"Build a generic <code>Stack</code> using composition — your class <em>has</em> an ArrayList internally rather than extending it. Focus on which end of the list acts as the top of the stack, and make sure <code>pop()</code> both removes and returns in one line.",
+  prompt:`// Class Stack<T> — uses a private ArrayList<T> internally
+// push(T item)  — add to top (end of list)
+// pop()         — remove and return top item
+// peek()        — return top item WITHOUT removing
+// isEmpty()     — return true if empty`,
+  hints:["Top of stack = last element = index size()-1","pop() removes AND returns in one line","Use obList.remove(obList.size()-1) for pop()"],
+  solution:
+`import java.util.ArrayList;
+
+public class Stack<T> {
+    private ArrayList<T> obList = new ArrayList<>();
+
+    public void push(T item) {
+        obList.add(item);
+    }
+
+    public T pop() {
+        return obList.remove(obList.size() - 1);
+    }
+
+    public T peek() {
+        return obList.get(obList.size() - 1);
+    }
+
+    public boolean isEmpty() {
+        return obList.isEmpty();
+    }
+}`,
+  notes:"pop() uses <code>remove(int index)</code> which both removes and returns — one clean line. peek() uses <code>get()</code> which does not remove. This is the composition approach (Stack <em>has-a</em> ArrayList) vs Stack2 which <em>extends</em> ArrayList."
+},
+{
+  cat:"LinkedLists", diff:"Intermediate",
+  title:"Write the Node class and recursive add() for LList",
+  blurb:"This is the foundation of linked lists in this course. Write the generic <code>Node</code> class, then implement the recursive <code>add()</code> that appends to the end by returning the modified node chain back up the call stack.",
+  prompt:`// Generic Node<T>: T data, Node<T> next
+//   - constructor sets next = null
+//   - getData(), getNext(), setNext()
+// In LList<T>, write:
+//   - add(T data) — public entry point
+//   - recAdd(Node<T> current, T data) — recursive helper
+//     Base case: current == null → return new Node<>(data)
+//     Else: recurse on current.getNext(), setNext, return current`,
+  hints:["recAdd returns a Node<T> — the potentially new/modified node","head = recAdd(head, data) is how add() calls it","If current is null you're at the end — return the new node"],
+  solution:
+`public class Node<T> {
+    private T data;
+    private Node<T> next;
+
+    public Node(T data) { this.data = data; this.next = null; }
+    public T getData()          { return data; }
+    public Node<T> getNext()    { return next; }
+    public void setNext(Node<T> next) { this.next = next; }
+}
+
+public class LList<T> {
+    private Node<T> head;
+
+    public void add(T data) {
+        head = recAdd(head, data);
+    }
+
+    private Node<T> recAdd(Node<T> current, T data) {
+        if (current == null) return new Node<>(data);
+        current.setNext(recAdd(current.getNext(), data));
+        return current;
+    }
+}`,
+  notes:"The recursive pattern works by <em>returning</em> the node chain back up the call stack. Each frame sets its own next pointer to whatever the recursive call returns. When the base case fires, a new node bubbles back up and gets attached."
+},
+{
+  cat:"LinkedLists", diff:"Hard",
+  title:"Write recAdd() for an Ordered Linked List (OLList)",
+  blurb:"The trickiest recursive method in chap19 — inserting into a <em>sorted</em> linked list. Unlike a regular append, you need two base cases: reaching the end of the list, and finding the spot where the new value belongs <em>before</em> the current node.",
+  prompt:`// OLList<T extends Comparable> — maintains sorted ascending order
+// Write recAdd(Node<T> current, T obNew):
+//   Base case 1: current == null  → return new Node<>(obNew)
+//   Base case 2: obNew.compareTo(current.getData()) < 0
+//                → new node goes BEFORE current
+//                → new node's next = current, return new node
+//   Recursive case: recurse forward, return current`,
+  hints:["Two base cases — end of list, OR we've found the insertion point","When inserting before current: new node's next = current","Return the new node (not current) when inserting at this position"],
+  solution:
+`private Node<T> recAdd(Node<T> current, T obNew) {
+    // End of list — append here
+    if (current == null) return new Node<>(obNew);
+
+    // New value belongs before current node
+    if (obNew.compareTo(current.getData()) < 0) {
+        Node<T> newNode = new Node<>(obNew);
+        newNode.setNext(current);
+        return newNode;
+    }
+
+    // Keep traversing
+    current.setNext(recAdd(current.getNext(), obNew));
+    return current;
+}`,
+  notes:"This is the trickiest part of OLList. When inserting <em>before</em> current, you create the new node, point it at current, and return the new node — so the previous frame's setNext() attaches to the new node instead of the old current."
+},
+{
+  cat:"LinkedLists", diff:"Intermediate",
+  title:"Write an Iterator for a linked list",
+  blurb:"Implement the <code>Iterator&lt;T&gt;</code> interface so your linked list can be used in a for-each loop. You only need to track one thing: which node you're currently on.",
+  prompt:`// LLIterator<T> implements Iterator<T>
+// Constructor takes Node<T> head
+// hasNext() → true if current node is not null
+// next()    → return current node's data, then advance current`,
+  hints:["Store current as a Node<T> field, initialized to head","hasNext() is just: return current != null","next() saves data, advances current, returns saved data"],
+  solution:
+`import java.util.Iterator;
+
+public class LLIterator<T> implements Iterator<T> {
+    private Node<T> current;
+
+    public LLIterator(Node<T> head) {
+        this.current = head;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return current != null;
+    }
+
+    @Override
+    public T next() {
+        T data = current.getData();
+        current = current.getNext();
+        return data;
+    }
+}`,
+  notes:"The pattern: save first, advance second, return saved. If you advance before saving you lose the reference to the current data. LList.iterator() just returns <code>new LLIterator&lt;&gt;(head)</code>."
+},
+{
+  cat:"LinkedLists", diff:"Hard",
+  title:"Write in-order traversal for a Binary Tree",
+  blurb:"Write two recursive methods on a Binary Search Tree: an in-order traversal that prints all values in sorted order, and a height calculation. Both follow the same recursive skeleton — handle the null case, then recurse left and right.",
+  prompt:`// BinaryTree has BNode<T> root
+// BNode<T> has: T data, BNode<T> left, BNode<T> right
+// Write inOrder(BNode<T> node) that prints all values
+//   in sorted (ascending) order
+// Also write height(BNode<T> node):
+//   returns 0 if null, else 1 + max(left height, right height)`,
+  hints:["In-order: left → node → right","height base case: if node == null return 0","Use Math.max(height(node.getLeft()), height(node.getRight()))"],
+  solution:
+`public void inOrder() { inOrder(root); }
+
+private void inOrder(BNode<T> node) {
+    if (node == null) return;
+    inOrder(node.getLeft());
+    System.out.println(node.getData());
+    inOrder(node.getRight());
+}
+
+public int height() { return height(root); }
+
+private int height(BNode<T> node) {
+    if (node == null) return 0;
+    return 1 + Math.max(height(node.getLeft()),
+                        height(node.getRight()));
+}`,
+  notes:"In-order always processes left subtree first — that's what produces sorted output for a BST. height() hits the null sentinel (returns 0) and builds back up. A single leaf returns 1 + max(0,0) = 1."
+},
+{
+  cat:"Generics", diff:"Intermediate",
+  title:"Write a generic binary search method",
+  blurb:"Write a static generic method that can binary search any sorted array — Strings, Integers, or any Comparable type. The type bound is what makes it work without knowing the actual type at compile time.",
+  prompt:`// public static <T extends Comparable<T>> int binSearch(T[] arr, T target)
+// Assumes arr is sorted ascending
+// Returns index of target, or -1 if not found
+// Use nLow, nHigh, nMid pattern`,
+  hints:["nLow=0, nHigh=arr.length-1, loop while nLow<=nHigh","nMid = (nLow + nHigh) / 2","Use target.compareTo(arr[nMid]) to compare"],
+  solution:
+`public static <T extends Comparable<T>> int binSearch(T[] arr, T target) {
+    int nLow = 0, nHigh = arr.length - 1;
+
+    while (nLow <= nHigh) {
+        int nMid = (nLow + nHigh) / 2;
+        int cmp = target.compareTo(arr[nMid]);
+
+        if (cmp == 0) return nMid;
+        else if (cmp < 0) nHigh = nMid - 1;
+        else              nLow  = nMid + 1;
+    }
+    return -1;
+}`,
+  notes:"The bound <code>T extends Comparable&lt;T&gt;</code> guarantees compareTo() is available. If cmp < 0, target is smaller so search the left half (nHigh moves down). If cmp > 0, search right half (nLow moves up)."
+},
+{
+  cat:"Generics", diff:"Intermediate",
+  title:"Implement the CopyIt interface and genCSVRead pattern",
+  blurb:"This is the pattern from chap20's generic CSV loader. Define the <code>CopyIt&lt;T&gt;</code> interface, then implement it on a class. The tricky part is <code>copy()</code> — it needs to snapshot the object's current state into a brand-new instance.",
+  prompt:`// Interface CopyIt<T>:
+//   setVals(String[] vals)  — populate fields from CSV tokens
+//   T copy()                — return a new object with same field values
+//
+// Class Spaceship implements CopyIt<Spaceship>:
+//   fields: String name, int crew
+//   Implement both interface methods
+//   Write toString()`,
+  hints:["copy() should return new Spaceship(this.name, this.crew)","setVals: name = vals[0], crew = Integer.parseInt(vals[1])","toString returns name + \" (crew: \" + crew + \")\""],
+  solution:
+`public interface CopyIt<T> {
+    void setVals(String[] vals);
+    T copy();
+}
+
+public class Spaceship implements CopyIt<Spaceship> {
+    private String name;
+    private int crew;
+
+    public Spaceship() {}
+    public Spaceship(String name, int crew) {
+        this.name = name; this.crew = crew;
+    }
+
+    @Override
+    public void setVals(String[] vals) {
+        name = vals[0];
+        crew = Integer.parseInt(vals[1].trim());
+    }
+
+    @Override
+    public Spaceship copy() {
+        return new Spaceship(name, crew);
+    }
+
+    @Override
+    public String toString() {
+        return name + " (crew: " + crew + ")";
+    }
+}`,
+  notes:"The copy pattern is needed because genCSVRead() reuses <em>one</em> sample object — calling setVals() on it each row, then copy() to snapshot it. Without copy(), every entry in the list would point to the same mutated object."
+},
+{
+  cat:"Functional", diff:"Beginner",
+  title:"Write three stream pipelines",
+  blurb:"Practice chaining the most common stream operations. Each pipeline is one fluent chain — pick the right intermediate operations (filter, map, sorted) and finish with the right terminal (forEach, count, toList).",
+  prompt:`// Given: List<String> words = List.of("apple","banana","cherry","avocado","fig","blueberry");
+// 1. Print all words longer than 5 characters, uppercased
+// 2. Count how many words start with 'b'
+// 3. Collect words sorted by length into a new List<String>`,
+  hints:["filter + map + forEach for #1","filter + count() for #2","sorted with a length comparator + toList() for #3"],
+  solution:
+`// 1. Print words longer than 5 chars, uppercased
+words.stream()
+     .filter(w -> w.length() > 5)
+     .map(String::toUpperCase)
+     .forEach(System.out::println);
+
+// 2. Count words starting with 'b'
+long count = words.stream()
+                  .filter(w -> w.startsWith("b"))
+                  .count();
+System.out.println(count); // 2
+
+// 3. Sorted by length
+List<String> sorted = words.stream()
+    .sorted((a, b) -> a.length() - b.length())
+    .toList();
+System.out.println(sorted);`,
+  notes:"filter() and map() are lazy intermediates — nothing runs until a terminal (forEach, count, toList) is called. Method reference <code>String::toUpperCase</code> is shorthand for <code>w -> w.toUpperCase()</code>."
+},
+{
+  cat:"Functional", diff:"Intermediate",
+  title:"Write a groupingBy stream and iterate the result",
+  blurb:"Use <code>Collectors.groupingBy()</code> to bucket a list into a Map, then iterate over the result. This is one of the most commonly tested stream patterns — know what type the Map comes back as and how to loop it.",
+  prompt:`// Given List<String> names = List.of("Alice","Bob","Charlie","Anna","Brian","Carol");
+// 1. Use Collectors.groupingBy to group names by their first character
+//    Result type: Map<Character, List<String>>
+// 2. Print each key and the names under it
+//    e.g.  A → [Alice, Anna]`,
+  hints:["groupingBy(s -> s.charAt(0)) — no second collector needed for List grouping","Iterate with map.entrySet() or map.keySet()","entrySet() gives Map.Entry<K,V> with getKey() and getValue()"],
+  solution:
+`Map<Character, List<String>> grouped = names.stream()
+    .collect(Collectors.groupingBy(s -> s.charAt(0)));
+
+for (Map.Entry<Character, List<String>> entry : grouped.entrySet()) {
+    System.out.println(entry.getKey() + " → " + entry.getValue());
+}`,
+  notes:"When no downstream collector is provided, groupingBy defaults to <code>Collectors.toList()</code>. To get counts instead, add <code>Collectors.counting()</code> as the second argument — that gives <code>Map&lt;Character, Long&gt;</code>."
+},
+{
+  cat:"Functional", diff:"Intermediate",
+  title:"Write a generic method that accepts a Predicate",
+  blurb:"Write a utility method that takes a list and a <code>Predicate</code> and prints anything that matches. This separates the <em>how to filter</em> from the <em>what to filter</em> — the caller passes in the condition as a lambda.",
+  prompt:`// Write a generic static method:
+//   printMatches(List<T> list, Predicate<T> condition)
+// It should print every element where condition.test(element) is true
+//
+// Then call it twice on List<Integer> nums = List.of(1,2,3,4,5,6,7,8):
+//   - once to print even numbers
+//   - once to print numbers greater than 5`,
+  hints:["Method signature: public static <T> void printMatches(List<T> list, Predicate<T> condition)","Use condition.test(item) inside a for-each loop","Even: n -> n % 2 == 0 | Greater than 5: n -> n > 5"],
+  solution:
+`public static <T> void printMatches(List<T> list, Predicate<T> condition) {
+    for (T item : list) {
+        if (condition.test(item)) {
+            System.out.println(item);
+        }
+    }
+}
+
+// Calls:
+List<Integer> nums = List.of(1,2,3,4,5,6,7,8);
+printMatches(nums, n -> n % 2 == 0);   // 2 4 6 8
+printMatches(nums, n -> n > 5);         // 6 7 8`,
+  notes:"Predicate&lt;T&gt; decouples the <em>what to print</em> from the <em>how to decide</em>. The lambda passed at the call site is the implementation of <code>test()</code>. This is the core idea behind functional interfaces."
+},
+{
+  cat:"Functional", diff:"Hard",
+  title:"Write a reduce and a collect with summarizing",
+  blurb:"Two advanced terminal operations in one challenge. Use <code>reduce()</code> to manually accumulate a result across a stream, then use <code>summarizingInt()</code> to get full statistics (min, max, average, sum, count) in a single pass.",
+  prompt:`// Given List<Integer> scores = List.of(88, 72, 95, 61, 84, 90, 77);
+// 1. Use reduce() to find the maximum score (no Math.max shortcut — use reduce)
+// 2. Use Collectors.summarizingInt() to get an IntSummaryStatistics object
+//    and print: count, sum, min, max, average`,
+  hints:["reduce(scores.get(0), (a,b) -> a > b ? a : b) OR reduce(Integer.MIN_VALUE, ...)",  "Collectors.summarizingInt(x -> x) for a List<Integer>","IntSummaryStatistics has getCount(), getSum(), getMin(), getMax(), getAverage()"],
+  solution:
+`// 1. reduce to find maximum
+int max = scores.stream()
+               .reduce(Integer.MIN_VALUE, (a, b) -> a > b ? a : b);
+System.out.println("Max: " + max); // 95
+
+// 2. summarizingInt for full stats
+IntSummaryStatistics stats = scores.stream()
+    .collect(Collectors.summarizingInt(x -> x));
+
+System.out.println("Count:   " + stats.getCount());
+System.out.println("Sum:     " + stats.getSum());
+System.out.println("Min:     " + stats.getMin());
+System.out.println("Max:     " + stats.getMax());
+System.out.println("Average: " + stats.getAverage());`,
+  notes:"reduce() identity for max should be Integer.MIN_VALUE so any real value beats it. summarizingInt() is a one-shot collector that computes all statistics in a single pass — more efficient than running five separate streams."
+},
+{
+  cat:"Collections", diff:"Intermediate",
+  title:"Write a RandomAccessFile record writer and reader",
+  blurb:"From chap17 — write fixed-size records to a <code>RandomAccessFile</code> so any record can be jumped to directly by index. The key challenge is handling the String field: it must always occupy exactly <code>FRAME</code> characters, padded or truncated.",
+  prompt:`// Class Item: String name (frame 20 chars), int quantity, double price
+// static final int FRAME = 20
+// static final int REC_SIZE = FRAME + Integer.BYTES + Double.BYTES
+// Write:
+//   void writeToRAF(RandomAccessFile raf) — pad/truncate name to FRAME
+//   static Item readFromRAF(RandomAccessFile raf) — read back an Item`,
+  hints:["Pad name: while(name.length() < FRAME) name += ' '  then substring(0,FRAME)","raf.writeInt(quantity), raf.writeDouble(price)","readFromRAF: char[] buf = new char[FRAME]; for loop reading chars"],
+  solution:
+`public static final int FRAME = 20;
+public static final int REC_SIZE = FRAME + Integer.BYTES + Double.BYTES;
+
+public void writeToRAF(RandomAccessFile raf) throws IOException {
+    String padded = name;
+    while (padded.length() < FRAME) padded += ' ';
+    padded = padded.substring(0, FRAME);
+    for (char c : padded.toCharArray()) raf.writeChar(c);
+    raf.writeInt(quantity);
+    raf.writeDouble(price);
+}
+
+public static Item readFromRAF(RandomAccessFile raf) throws IOException {
+    char[] buf = new char[FRAME];
+    for (int i = 0; i < FRAME; i++) buf[i] = raf.readChar();
+    String name = new String(buf).trim();
+    int qty    = raf.readInt();
+    double pr  = raf.readDouble();
+    return new Item(name, qty, pr);
+}`,
+  notes:"Each char in Java is 2 bytes (UTF-16), so FRAME=20 chars = 40 bytes for the string part. REC_SIZE = 40 + 4 + 8 = 52. Always trim() the string after reading to remove padding spaces."
+},
+{
+  cat:"Inheritance", diff:"Hard",
+  title:"Write toString() and equals() for a full hierarchy",
+  blurb:"Chain <code>toString()</code> and <code>equals()</code> across three levels of inheritance. Each class should call <code>super.toString()</code> and just append its own piece — no duplicated field printing. Notice how <code>GraduateStudent</code> can reuse Student's <code>equals()</code> without rewriting it.",
+  prompt:`// Person: String first, last  →  toString: "last, first"
+// Student extends Person: int id
+//   toString: "last, first  [ID: nnn]"
+//   equals: exact class match + same id
+// GraduateStudent extends Student: String thesis
+//   toString: "last, first  [ID: nnn]  Thesis: ..."
+//   equals: same as Student (id match is enough)`,
+  hints:["Each toString() calls super.toString() and appends its own part","Student.equals() uses getClass() == other.getClass()","GraduateStudent can reuse Student.equals() by calling super.equals()"],
+  solution:
+`public class Person {
+    private String first, last;
+    public Person(String first, String last) { this.first=first; this.last=last; }
+    public String toString() { return last + ", " + first; }
+}
+
+public class Student extends Person {
+    private int id;
+    public Student(String first, String last, int id) { super(first,last); this.id=id; }
+    public int getId() { return id; }
+    public String toString() { return super.toString() + "  [ID: " + id + "]"; }
+    public boolean equals(Object o) {
+        if (o == null || this.getClass() != o.getClass()) return false;
+        return this.id == ((Student) o).getId();
+    }
+}
+
+public class GraduateStudent extends Student {
+    private String thesis;
+    public GraduateStudent(String f, String l, int id, String thesis) {
+        super(f,l,id); this.thesis=thesis;
+    }
+    public String toString() { return super.toString() + "  Thesis: " + thesis; }
+    // equals() inherited from Student — same logic applies
+}`,
+  notes:"Each layer calls super.toString() — this chains cleanly without duplicating field printing. GraduateStudent deliberately inherits equals() from Student rather than re-implementing it, because the ID is still the right identity key."
+}
+];
+
+let chGot = 0, chTotal = 0;
+
+function startCoding() {
+  document.getElementById("splash").style.display = "none";
+  document.getElementById("coding").style.display = "block";
+  renderChallenges();
+}
+
+function renderChallenges() {
+  const container = document.getElementById("ch-list");
+  container.innerHTML = "";
+  CHALLENGES.forEach((ch, i) => {
+    const color = CAT_COLORS[ch.cat] || "#aaa";
+    const div = document.createElement("div");
+    div.className = "challenge-card";
+    div.id = `ch-card-${i}`;
+    div.innerHTML = `
+      <div class="ch-meta">
+        <span class="ch-tag" style="background:${color}22;color:${color}">${ch.cat}</span>
+        <span class="ch-diff">${ch.diff}</span>
+        <span style="font-size:.72rem;color:var(--muted);margin-left:auto">#${i+1} of ${CHALLENGES.length}</span>
+      </div>
+      <h3>${ch.title}</h3>
+      ${ch.blurb ? `<p style="font-size:.9rem;color:var(--muted);line-height:1.6;margin-bottom:.9rem">${ch.blurb}</p>` : ""}
+      <pre class="ch-prompt">${syntaxHL(ch.prompt)}</pre>
+      <div class="ch-hints">
+        <span>Hints:</span> ${ch.hints.map(h=>`<br>• ${h}`).join("")}
+      </div>
+      <textarea class="code-input" id="ta-${i}" placeholder="Write your Java here…" spellcheck="false"
+        onkeydown="handleTab(event)"></textarea>
+      <div class="btn-row" style="margin-top:.8rem">
+        <button class="btn btn-secondary" onclick="revealSolution(${i})">Reveal Solution</button>
+      </div>
+      <div class="solution-block" id="sol-${i}">
+        <div class="sol-label">Model Solution</div>
+        <pre>${syntaxHL(ch.solution)}</pre>
+        <div class="sol-notes">${ch.notes}</div>
+        <div class="self-check-row">
+          <span class="sc-label">How did you do?</span>
+          <button class="btn btn-got" onclick="markChallenge(${i}, true)">Got it</button>
+          <button class="btn btn-missed-it" onclick="markChallenge(${i}, false)">Missed it</button>
+        </div>
+      </div>`;
+    container.appendChild(div);
+  });
+}
+
+function handleTab(e) {
+  if (e.key === "Tab") {
+    e.preventDefault();
+    const ta = e.target;
+    const start = ta.selectionStart, end = ta.selectionEnd;
+    ta.value = ta.value.substring(0,start) + "    " + ta.value.substring(end);
+    ta.selectionStart = ta.selectionEnd = start + 4;
+  }
+}
+
+function revealSolution(i) {
+  const sol = document.getElementById(`sol-${i}`);
+  sol.classList.add("show");
+}
+
+function markChallenge(i, got) {
+  const card = document.getElementById(`ch-card-${i}`);
+  const sol = document.getElementById(`sol-${i}`);
+  // disable both buttons
+  sol.querySelectorAll(".btn-got,.btn-missed-it").forEach(b => {
+    b.disabled = true; b.style.opacity = ".4";
+  });
+  card.classList.remove("ch-done-got","ch-done-missed");
+  card.classList.add(got ? "ch-done-got" : "ch-done-missed");
+
+  chGot += got ? 1 : 0;
+  chTotal++;
+  document.getElementById("ch-counter").textContent = `${chTotal} / ${CHALLENGES.length} marked`;
+
+  if (chTotal === CHALLENGES.length) showCodingSummary();
+}
+
+function showCodingSummary() {
+  const pct = Math.round(chGot / CHALLENGES.length * 100);
+  document.getElementById("ch-final").textContent = `${chGot} / ${CHALLENGES.length}  (${pct}%)`;
+  const msgs = [
+    [90,"Outstanding — you know this cold!"],
+    [75,"Solid work. Review the ones you missed."],
+    [50,"Getting there — focus on the harder categories."],
+    [0, "Keep practising — re-read the solution notes carefully."]
+  ];
+  document.getElementById("ch-msg").textContent = msgs.find(([t])=>pct>=t)[1];
+  document.getElementById("ch-summary").style.display = "block";
+  document.getElementById("ch-summary").scrollIntoView({behavior:"smooth"});
 }
 
 function syntaxHL(code) {
