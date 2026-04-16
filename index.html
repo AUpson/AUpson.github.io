@@ -1987,7 +1987,7 @@ function renderChallenges() {
       </div>
       <h3>${ch.title}</h3>
       ${ch.blurb ? `<p style="font-size:.9rem;color:var(--muted);line-height:1.6;margin-bottom:.9rem">${ch.blurb}</p>` : ""}
-      <pre class="ch-prompt">${syntaxHL(ch.prompt)}</pre>
+      <pre class="ch-prompt">${ch.prompt.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</pre>
       <div class="ch-hints">
         <span>Hints:</span> ${ch.hints.map(h=>`<br>• ${h}`).join("")}
       </div>
@@ -1998,7 +1998,7 @@ function renderChallenges() {
       </div>
       <div class="solution-block" id="sol-${i}">
         <div class="sol-label">Model Solution</div>
-        <pre>${syntaxHL(ch.solution)}</pre>
+        <pre id="sol-code-${i}"></pre>
         <div class="sol-notes">${ch.notes}</div>
         <div class="self-check-row">
           <span class="sc-label">How did you do?</span>
@@ -2007,6 +2007,7 @@ function renderChallenges() {
         </div>
       </div>`;
     container.appendChild(div);
+    document.getElementById(`sol-code-${i}`).textContent = ch.solution;
   });
 }
 
@@ -2057,29 +2058,7 @@ function showCodingSummary() {
 }
 
 function syntaxHL(code) {
-  // Process line-by-line so comment lines are never touched by keyword regexes.
-  return code.split("\n").map(raw => {
-    // Escape HTML entities on the raw line first
-    let line = raw.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-
-    const ci = line.indexOf("//");
-    if (ci !== -1) {
-      // Split: code before comment, comment from // onward
-      const before  = line.slice(0, ci);
-      const comment = line.slice(ci);
-      return hlCode(before) + '<span class="cm">' + comment + '</span>';
-    }
-    return hlCode(line);
-  }).join("\n");
-}
-
-function hlCode(s) {
-  return s
-    .replace(/\b(public|private|protected|static|final|abstract|class|interface|extends|implements|new|return|void|if|else|for|while|true|false|null|this|super|import|package)\b/g, m => `\x01kw\x02${m}\x03`)
-    .replace(/\b(String|int|long|double|boolean|char|ArrayList|List|Map|Optional|Collectors|Collections|LinkedList|Stream|System)\b/g, m => `\x01ty\x02${m}\x03`)
-    .replace(/"([^"]*)"/g, (_, t) => `\x01st\x02&quot;${t}&quot;\x03`)
-    .replace(/\b(\d+\.?\d*)\b/g, m => `\x01nu\x02${m}\x03`)
-    .replace(/\x01(\w+)\x02([\s\S]*?)\x03/g, '<span class="$1">$2</span>');
+  return code.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 </script>
 </body>
