@@ -2057,13 +2057,29 @@ function showCodingSummary() {
 }
 
 function syntaxHL(code) {
-  return code
-    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
-    .replace(/(\/\/[^\n]*)/g,'<span class="cm">$1</span>')
-    .replace(/\b(public|private|protected|static|final|abstract|class|interface|extends|implements|new|return|void|if|else|for|while|true|false|null|this|super|import|package)\b/g,'<span class="kw">$1</span>')
-    .replace(/\b(String|int|long|double|boolean|char|ArrayList|List|Map|Optional|Collectors|Collections|LinkedList|Stream|System)\b/g,'<span class="ty">$1</span>')
-    .replace(/"([^"]*)"/g,'<span class="st">"$1"</span>')
-    .replace(/\b(\d+\.?\d*)\b/g,'<span class="nu">$1</span>');
+  // Process line-by-line so comment lines are never touched by keyword regexes.
+  return code.split("\n").map(raw => {
+    // Escape HTML entities on the raw line first
+    let line = raw.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+    const ci = line.indexOf("//");
+    if (ci !== -1) {
+      // Split: code before comment, comment from // onward
+      const before  = line.slice(0, ci);
+      const comment = line.slice(ci);
+      return hlCode(before) + '<span class="cm">' + comment + '</span>';
+    }
+    return hlCode(line);
+  }).join("\n");
+}
+
+function hlCode(s) {
+  return s
+    .replace(/\b(public|private|protected|static|final|abstract|class|interface|extends|implements|new|return|void|if|else|for|while|true|false|null|this|super|import|package)\b/g, m => `\x01kw\x02${m}\x03`)
+    .replace(/\b(String|int|long|double|boolean|char|ArrayList|List|Map|Optional|Collectors|Collections|LinkedList|Stream|System)\b/g, m => `\x01ty\x02${m}\x03`)
+    .replace(/"([^"]*)"/g, (_, t) => `\x01st\x02&quot;${t}&quot;\x03`)
+    .replace(/\b(\d+\.?\d*)\b/g, m => `\x01nu\x02${m}\x03`)
+    .replace(/\x01(\w+)\x02([\s\S]*?)\x03/g, '<span class="$1">$2</span>');
 }
 </script>
 </body>
