@@ -3,2063 +3,361 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>COSC 182 Final Exam Quiz</title>
+<title>Hardware Final — Study Quiz</title>
 <style>
-  :root {
-    --bg: #0f1117;
-    --surface: #1a1d2e;
-    --surface2: #252840;
-    --accent: #6c63ff;
-    --accent2: #ff6584;
-    --green: #43d9ad;
-    --red: #ff6b6b;
-    --yellow: #ffd166;
-    --text: #e2e8f0;
-    --muted: #8892a4;
-    --border: #2e3248;
-    --code-bg: #0d1117;
-  }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    min-height: 100vh;
-  }
-
-  /* ── SPLASH SCREEN ── */
-  #splash {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    min-height: 100vh; padding: 2rem; text-align: center;
-  }
-  #splash h1 { font-size: 2.8rem; font-weight: 800; background: linear-gradient(135deg,#6c63ff,#ff6584); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  #splash p.sub { color: var(--muted); margin: .5rem 0 2rem; font-size: 1.1rem; }
-  .badge-row { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; margin-bottom: 2rem; }
-  .badge { background: var(--surface2); border: 1px solid var(--border); border-radius: 999px; padding: .35rem .9rem; font-size: .8rem; color: var(--accent); }
-  .mode-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap: 1rem; max-width: 700px; width: 100%; margin-bottom: 2rem; }
-  .mode-card {
-    background: var(--surface); border: 2px solid var(--border); border-radius: 16px;
-    padding: 1.4rem; cursor: pointer; transition: all .2s;
-  }
-  .mode-card:hover, .mode-card.selected { border-color: var(--accent); background: #1e204a; }
-  .mode-card h3 { font-size: 1rem; margin-bottom: .3rem; }
-  .mode-card p { font-size: .8rem; color: var(--muted); }
-  .btn-start {
-    background: linear-gradient(135deg,#6c63ff,#7c74ff);
-    color: #fff; border: none; border-radius: 12px; padding: .9rem 2.5rem;
-    font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: transform .15s, box-shadow .15s;
-  }
-  .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(108,99,255,.4); }
-
-  /* ── QUIZ SCREEN ── */
-  #quiz { display: none; max-width: 860px; margin: 0 auto; padding: 1.5rem; }
-  .top-bar {
-    display: flex; align-items: center; justify-content: space-between;
-    background: var(--surface); border-radius: 14px; padding: .8rem 1.2rem;
-    margin-bottom: 1.5rem; border: 1px solid var(--border);
-  }
-  .top-bar .cat-tag {
-    font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
-    padding: .25rem .7rem; border-radius: 999px;
-  }
-  .progress-wrap { flex: 1; margin: 0 1rem; }
-  .progress-bar { height: 6px; background: var(--border); border-radius: 999px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg,#6c63ff,#ff6584); border-radius: 999px; transition: width .4s; }
-  .q-counter { font-size: .85rem; color: var(--muted); white-space: nowrap; }
-  .score-display { font-size: .85rem; color: var(--green); font-weight: 700; margin-left: 1rem; white-space: nowrap; }
-
-  .q-card {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
-    padding: 2rem; margin-bottom: 1.2rem;
-  }
-  .q-type-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: .7rem; }
-  .q-text { font-size: 1.05rem; line-height: 1.7; margin-bottom: 1.4rem; }
-  pre.code-block {
-    background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px;
-    padding: 1rem 1.2rem; font-family: 'Consolas','Fira Code',monospace; font-size: .82rem;
-    line-height: 1.6; overflow-x: auto; margin: .8rem 0 1.2rem; color: #c9d1d9;
-  }
-  .kw { color: #ff7b72; } .ty { color: #ffa657; } .st { color: #a5d6ff; }
-  .cm { color: #8b949e; font-style: italic; } .nm { color: #d2a8ff; } .nu { color: #79c0ff; }
-
-  .options { display: flex; flex-direction: column; gap: .6rem; }
-  .option {
-    background: var(--surface2); border: 2px solid var(--border); border-radius: 12px;
-    padding: .85rem 1.1rem; cursor: pointer; transition: all .18s; display: flex; align-items: center; gap: .8rem;
-  }
-  .option:hover:not(.locked) { border-color: var(--accent); background: #1e204a; }
-  .option .opt-letter {
-    width: 28px; height: 28px; border-radius: 50%; background: var(--border);
-    display: flex; align-items: center; justify-content: center;
-    font-size: .75rem; font-weight: 700; flex-shrink: 0;
-  }
-  .option.selected { border-color: var(--accent); background: #1e204a; }
-  .option.selected .opt-letter { background: var(--accent); color: #fff; }
-  .option.correct { border-color: var(--green); background: #0d2e24; }
-  .option.correct .opt-letter { background: var(--green); color: #000; }
-  .option.wrong { border-color: var(--red); background: #2e0d0d; }
-  .option.wrong .opt-letter { background: var(--red); color: #fff; }
-
-  .feedback {
-    margin-top: 1rem; padding: 1rem 1.2rem; border-radius: 12px; font-size: .9rem; line-height: 1.6;
-    display: none;
-  }
-  .feedback.show { display: block; }
-  .feedback.correct-fb { background: #0d2e24; border: 1px solid var(--green); color: var(--green); }
-  .feedback.wrong-fb { background: #2e0d0d; border: 1px solid var(--red); color: #f88; }
-  .feedback strong { display: block; margin-bottom: .3rem; }
-
-  .btn-row { display: flex; gap: .8rem; margin-top: 1.2rem; }
-  .btn {
-    border: none; border-radius: 10px; padding: .7rem 1.6rem; font-size: .9rem;
-    font-weight: 700; cursor: pointer; transition: all .15s;
-  }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:hover { background: #7c74ff; }
-  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
-  .btn-secondary:hover { border-color: var(--accent); }
-  .btn:disabled { opacity: .4; cursor: not-allowed; }
-
-  /* ── RESULTS SCREEN ── */
-  #results { display: none; max-width: 860px; margin: 0 auto; padding: 2rem; }
-  .results-hero { text-align: center; padding: 2.5rem; background: var(--surface); border-radius: 20px; margin-bottom: 1.5rem; }
-  .big-score { font-size: 5rem; font-weight: 900; background: linear-gradient(135deg,#6c63ff,#ff6584); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .results-hero p { color: var(--muted); margin-top: .5rem; }
-  .cat-breakdown { display: grid; grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); gap: .8rem; margin-bottom: 1.5rem; }
-  .cat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.2rem; }
-  .cat-card h4 { font-size: .8rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .4rem; }
-  .cat-card .cat-score { font-size: 1.4rem; font-weight: 800; }
-  .review-list { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
-  .review-item { background: var(--surface); border-radius: 14px; border: 1px solid var(--border); padding: 1.2rem; }
-  .review-item.r-correct { border-left: 4px solid var(--green); }
-  .review-item.r-wrong { border-left: 4px solid var(--red); }
-  .review-item .r-q { font-size: .9rem; line-height: 1.6; margin-bottom: .5rem; }
-  .review-item .r-ans { font-size: .82rem; }
-  .review-item .r-ans span { display: inline-block; border-radius: 6px; padding: .15rem .5rem; margin: .15rem; }
-  .r-your { background: #2e0d0d; color: #f88; }
-  .r-correct-ans { background: #0d2e24; color: var(--green); }
-
-  .cat-Inheritance { color: #ffd166; } .cat-Inheritance-bg { background: #ffd16622; border-color: #ffd16644; }
-  .cat-Abstract { color: #6c63ff; } .cat-Abstract-bg { background: #6c63ff22; border-color: #6c63ff44; }
-  .cat-Collections { color: #43d9ad; } .cat-Collections-bg { background: #43d9ad22; border-color: #43d9ad44; }
-  .cat-LinkedLists { color: #ff9f43; } .cat-LinkedLists-bg { background: #ff9f4322; border-color: #ff9f4344; }
-  .cat-Generics { color: #a29bfe; } .cat-Generics-bg { background: #a29bfe22; border-color: #a29bfe44; }
-  .cat-Functional { color: #fd79a8; } .cat-Functional-bg { background: #fd79a822; border-color: #fd79a844; }
-
-  /* ── CODING CHALLENGES ── */
-  #coding { display: none; max-width: 900px; margin: 0 auto; padding: 1.5rem; }
-  .coding-top {
-    display: flex; align-items: center; justify-content: space-between;
-    background: var(--surface); border-radius: 14px; padding: .8rem 1.2rem;
-    margin-bottom: 1.5rem; border: 1px solid var(--border);
-  }
-  .coding-top h2 { font-size: 1rem; font-weight: 700; }
-  .challenge-card {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
-    padding: 2rem; margin-bottom: 1.2rem;
-  }
-  .challenge-card .ch-meta {
-    display: flex; gap: .6rem; align-items: center; margin-bottom: .8rem; flex-wrap: wrap;
-  }
-  .ch-tag {
-    font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
-    padding: .2rem .6rem; border-radius: 999px;
-  }
-  .ch-diff { font-size: .72rem; color: var(--muted); }
-  .challenge-card h3 { font-size: 1.05rem; line-height: 1.6; margin-bottom: .8rem; }
-  .challenge-card .ch-prompt {
-    background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px;
-    padding: 1rem 1.2rem; font-family: 'Consolas','Fira Code',monospace; font-size: .82rem;
-    line-height: 1.6; margin-bottom: 1rem; color: #c9d1d9; overflow-x: auto;
-  }
-  .ch-hints { font-size: .82rem; color: var(--muted); margin-bottom: 1rem; line-height: 1.6; }
-  .ch-hints span { color: var(--yellow); }
-  textarea.code-input {
-    width: 100%; min-height: 220px; background: var(--code-bg); color: #c9d1d9;
-    border: 2px solid var(--border); border-radius: 10px;
-    padding: 1rem; font-family: 'Consolas','Fira Code',monospace; font-size: .83rem;
-    line-height: 1.6; resize: vertical; outline: none; transition: border-color .2s;
-    tab-size: 4;
-  }
-  textarea.code-input:focus { border-color: var(--accent); }
-  .solution-block {
-    display: none; margin-top: 1rem;
-    background: #0d1f17; border: 1px solid var(--green); border-radius: 10px;
-    padding: 1.2rem;
-  }
-  .solution-block.show { display: block; }
-  .solution-block .sol-label {
-    font-size: .72rem; text-transform: uppercase; letter-spacing: .1em;
-    color: var(--green); font-weight: 700; margin-bottom: .6rem;
-  }
-  .solution-block pre { font-family: 'Consolas','Fira Code',monospace; font-size: .82rem; line-height: 1.6; color: #c9d1d9; overflow-x: auto; }
-  .solution-block .sol-notes { font-size: .82rem; color: #a0cfb8; margin-top: .8rem; line-height: 1.6; border-top: 1px solid #1a4030; padding-top: .7rem; }
-  .self-check-row { display: flex; gap: .8rem; margin-top: 1rem; flex-wrap: wrap; align-items: center; }
-  .self-check-row .sc-label { font-size: .82rem; color: var(--muted); }
-  .btn-got { background: #0d2e24; border: 1px solid var(--green); color: var(--green); }
-  .btn-got:hover { background: #1a4030; }
-  .btn-missed-it { background: #2e0d0d; border: 1px solid var(--red); color: var(--red); }
-  .btn-missed-it:hover { background: #401a1a; }
-  .ch-done-got { border-left: 4px solid var(--green) !important; }
-  .ch-done-missed { border-left: 4px solid var(--red) !important; }
-  .coding-summary {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
-    padding: 1.5rem; text-align: center; margin-bottom: 2rem;
-  }
-  .coding-summary .cs-score { font-size: 2.5rem; font-weight: 900; color: var(--accent); }
-
-  @media (max-width:600px) {
-    #splash h1 { font-size: 2rem; }
-    .q-card { padding: 1.2rem; }
-    .challenge-card { padding: 1.2rem; }
-  }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f2f5; color: #1a1a2e; min-height: 100vh; }
+  .top-bar { background: #1a1a2e; color: white; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.3); }
+  .top-bar h1 { font-size: 18px; font-weight: 600; letter-spacing: 0.5px; }
+  .top-stats { display: flex; gap: 16px; font-size: 13px; }
+  .top-stats span { background: rgba(255,255,255,0.12); padding: 4px 12px; border-radius: 20px; }
+  .top-stats strong { color: #4ade80; }
+  .progress-wrap { background: #1a1a2e; padding: 0 24px 12px; }
+  .progress-bar { height: 5px; background: rgba(255,255,255,0.15); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #4ade80, #22d3ee); border-radius: 3px; transition: width 0.4s ease; }
+  .container { max-width: 780px; margin: 0 auto; padding: 24px 16px 100px; }
+  .question-card { background: white; border-radius: 14px; padding: 22px; margin-bottom: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); border: 1.5px solid transparent; transition: border-color 0.2s; }
+  .question-card.answered { border-color: #e0e7ff; }
+  .q-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .q-num { font-size: 12px; color: #6b7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .q-badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 600; }
+  .badge-mc { background: #e0e7ff; color: #3730a3; }
+  .badge-sa { background: #d1fae5; color: #065f46; }
+  .q-text { font-size: 15px; line-height: 1.65; color: #1a1a2e; font-weight: 500; margin-bottom: 16px; }
+  .options { display: flex; flex-direction: column; gap: 9px; }
+  .opt { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border: 1.5px solid #e5e7eb; border-radius: 10px; cursor: pointer; transition: all 0.15s; font-size: 14px; line-height: 1.5; color: #374151; }
+  .opt:hover { border-color: #818cf8; background: #f5f3ff; }
+  .opt.selected { border-color: #6366f1; background: #eef2ff; color: #3730a3; }
+  .opt.correct { border-color: #22c55e; background: #f0fdf4; color: #166534; }
+  .opt.wrong { border-color: #ef4444; background: #fef2f2; color: #991b1b; }
+  .opt-letter { font-weight: 700; min-width: 20px; font-size: 13px; }
+  .sa-box { width: 100%; border: 1.5px solid #e5e7eb; border-radius: 10px; padding: 12px 16px; font-size: 14px; font-family: inherit; color: #1a1a2e; resize: vertical; min-height: 90px; outline: none; transition: border-color 0.2s; line-height: 1.6; }
+  .sa-box:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+  .sa-box:disabled { background: #f9fafb; color: #4b5563; }
+  .feedback-box { margin-top: 12px; padding: 12px 16px; border-radius: 10px; font-size: 13px; line-height: 1.65; display: none; }
+  .feedback-box.show { display: block; }
+  .feedback-box.fb-correct { background: #f0fdf4; border: 1.5px solid #86efac; color: #14532d; }
+  .feedback-box.fb-wrong { background: #fef2f2; border: 1.5px solid #fca5a5; color: #7f1d1d; }
+  .feedback-box.fb-partial { background: #fffbeb; border: 1.5px solid #fcd34d; color: #78350f; }
+  .feedback-box .model-ans { margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.08); font-style: italic; }
+  .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e5e7eb; padding: 14px 24px; display: flex; gap: 12px; justify-content: center; box-shadow: 0 -4px 16px rgba(0,0,0,0.08); }
+  .btn { padding: 11px 28px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; font-family: inherit; }
+  .btn-primary { background: #1a1a2e; color: white; }
+  .btn-primary:hover { background: #2d2d4e; transform: translateY(-1px); }
+  .btn-secondary { background: #f3f4f6; color: #374151; border: 1.5px solid #e5e7eb; }
+  .btn-secondary:hover { background: #e5e7eb; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+  .results-screen { display: none; }
+  .results-screen.show { display: block; }
+  .score-hero { background: #1a1a2e; color: white; border-radius: 18px; padding: 36px; text-align: center; margin-bottom: 24px; }
+  .score-pct { font-size: 72px; font-weight: 700; background: linear-gradient(135deg, #4ade80, #22d3ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .score-label { font-size: 16px; color: rgba(255,255,255,0.7); margin-top: 4px; }
+  .score-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 24px; }
+  .score-cell { background: rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; }
+  .score-cell .val { font-size: 28px; font-weight: 700; }
+  .score-cell .lbl { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+  .val-correct { color: #4ade80; }
+  .val-partial { color: #fbbf24; }
+  .val-wrong { color: #f87171; }
+  .pool-info { text-align: center; font-size: 13px; color: #6b7280; margin-bottom: 20px; }
+  .review-section h3 { font-size: 15px; font-weight: 700; color: #1a1a2e; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .review-item { background: white; border-radius: 12px; padding: 16px; margin-bottom: 10px; border-left: 4px solid #e5e7eb; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .review-item.ri-correct { border-left-color: #22c55e; }
+  .review-item.ri-partial { border-left-color: #f59e0b; }
+  .review-item.ri-wrong { border-left-color: #ef4444; }
+  .ri-q { font-size: 14px; font-weight: 600; color: #1a1a2e; margin-bottom: 6px; }
+  .ri-detail { font-size: 13px; color: #6b7280; margin-top: 4px; line-height: 1.5; }
+  .ri-correct-ans { color: #15803d; font-weight: 500; }
+  .ri-exp { margin-top: 6px; font-style: italic; color: #4b5563; border-top: 1px solid #f3f4f6; padding-top: 6px; }
+  .start-screen { text-align: center; padding: 60px 20px; }
+  .start-screen h2 { font-size: 28px; font-weight: 700; color: #1a1a2e; margin-bottom: 12px; }
+  .start-screen p { font-size: 15px; color: #6b7280; margin-bottom: 8px; }
+  .start-screen .warn { background: #fef3c7; border: 1.5px solid #fcd34d; border-radius: 10px; padding: 14px 20px; margin: 20px auto; max-width: 460px; font-size: 14px; color: #92400e; text-align: left; }
 </style>
 </head>
 <body>
 
-<!-- ════════════════ SPLASH ════════════════ -->
-<div id="splash">
-  <h1>COSC 182 Final Quiz</h1>
-  <p class="sub">Comprehensive review — 75 questions across all modules</p>
-  <div class="badge-row">
-    <span class="badge">Inheritance</span>
-    <span class="badge">Abstract &amp; Interfaces</span>
-    <span class="badge">Collections &amp; Comparators</span>
-    <span class="badge">Linked Lists &amp; Trees</span>
-    <span class="badge">Generics</span>
-    <span class="badge">Functional &amp; Streams</span>
-  </div>
-  <div class="mode-grid">
-    <div class="mode-card selected" data-mode="all" onclick="selectMode(this,'all')">
-      <h3>Full Quiz</h3>
-      <p>All 75 questions in order</p>
-    </div>
-    <div class="mode-card" data-mode="random" onclick="selectMode(this,'random')">
-      <h3>Randomized</h3>
-      <p>All 75 in random order</p>
-    </div>
-    <div class="mode-card" data-mode="quick" onclick="selectMode(this,'quick')">
-      <h3>Quick Fire</h3>
-      <p>30 random questions</p>
-    </div>
-    <div class="mode-card" data-mode="missed" onclick="selectMode(this,'missed')">
-      <h3>Missed Only</h3>
-      <p>Retake questions you got wrong</p>
-    </div>
-  </div>
-  <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center">
-    <button class="btn-start" onclick="startQuiz()">Start Quiz</button>
-    <button class="btn-start" style="background:linear-gradient(135deg,#ff6584,#ff9f43)" onclick="startCoding()">Coding Challenges</button>
-  </div>
-</div>
-
-<!-- ════════════════ QUIZ ════════════════ -->
-<div id="quiz">
-  <div class="top-bar">
-    <span id="cat-tag" class="cat-tag">—</span>
-    <div class="progress-wrap">
-      <div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%"></div></div>
-    </div>
-    <span class="q-counter" id="q-counter">1 / 75</span>
-    <span class="score-display" id="score-display">0 pts</span>
-  </div>
-  <div class="q-card">
-    <div class="q-type-label" id="q-type">—</div>
-    <div class="q-text" id="q-text">—</div>
-    <div id="code-wrap"></div>
-    <div class="options" id="options"></div>
-    <div class="feedback" id="feedback"></div>
-  </div>
-  <div class="btn-row">
-    <button class="btn btn-primary" id="btn-check" onclick="checkAnswer()" disabled>Check</button>
-    <button class="btn btn-primary" id="btn-next" onclick="nextQuestion()" style="display:none">Next →</button>
-    <button class="btn btn-secondary" onclick="endQuiz()">End &amp; Review</button>
-  </div>
-</div>
-
-<!-- ════════════════ CODING CHALLENGES ════════════════ -->
-<div id="coding">
-  <div class="coding-top">
-    <h2>Coding Challenges</h2>
-    <div style="display:flex;gap:.6rem;align-items:center">
-      <span id="ch-counter" style="font-size:.85rem;color:var(--muted)">0 / 18 marked</span>
-      <button class="btn btn-secondary" onclick="location.reload()" style="padding:.4rem 1rem;font-size:.8rem">← Back</button>
-    </div>
-  </div>
-  <p style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem;padding:0 .2rem">
-    Write your answer in the box, then click <strong style="color:var(--text)">Reveal Solution</strong> to compare. Mark yourself honestly.
-  </p>
-  <div id="ch-list"></div>
-  <div class="coding-summary" id="ch-summary" style="display:none">
-    <div class="cs-score" id="ch-final">—</div>
-    <p style="color:var(--muted);margin-top:.4rem" id="ch-msg">—</p>
-    <button class="btn btn-primary" style="margin-top:1rem" onclick="location.reload()">Back to Menu</button>
-  </div>
-</div>
-
-<!-- ════════════════ RESULTS ════════════════ -->
-<div id="results">
-  <div class="results-hero">
-    <div class="big-score" id="final-score">—</div>
-    <p id="final-msg">—</p>
-  </div>
-  <div class="cat-breakdown" id="cat-breakdown"></div>
-  <h3 style="margin-bottom:.8rem;padding-left:.2rem">Question Review</h3>
-  <div class="review-list" id="review-list"></div>
-  <div style="text-align:center;margin-bottom:2rem">
-    <button class="btn btn-primary" onclick="location.reload()">Try Again</button>
-  </div>
-</div>
+<div id="app"></div>
 
 <script>
-// ═══════════════════════════════════════════════════
-//  QUESTION BANK  — 75 questions
-// ═══════════════════════════════════════════════════
-const QUESTIONS = [
+const ALL_QUESTIONS = [
+  {type:"mc",q:"What does ESD stand for and why is it important when working on computers?",opts:["Electrostatic Discharge — can permanently damage computer components","Electronic System Diagnosis — used to test parts","External Storage Device — used to back up data","Electrical Short Detection — detects power surges"],ans:0,exp:"ESD (Electrostatic Discharge) can instantly destroy chips and components. Always use an ESD strap when working inside a computer."},
+  {type:"mc",q:"Which connector provides the primary power to an ATX motherboard?",opts:["6-pin PCIe connector","4-pin auxiliary connector","24-pin (or 20+4-pin) P1 connector","SATA power connector"],ans:2,exp:"The 24-pin P1 connector is the main power connector for ATX motherboards."},
+  {type:"mc",q:"What is the purpose of the POST process?",opts:["To install the operating system","A series of tests performed by BIOS/UEFI at startup to check hardware","To format the hard drive before use","To connect to a network at boot"],ans:1,exp:"POST (Power-On Self Test) runs hardware checks every time the computer starts. If something fails, it reports error or beep codes."},
+  {type:"mc",q:"What is the key difference between DDR4 and DDR3 RAM?",opts:["DDR4 uses 240 pins; DDR3 uses 288 pins","DDR4 is faster, uses less power, and uses 288 pins vs DDR3's 240 pins","DDR4 only works with AMD processors","DDR4 uses triple channels while DDR3 uses dual channels"],ans:1,exp:"DDR4 is faster, uses less power, and has 288 pins. DDR3 has 240 pins. They are not physically compatible."},
+  {type:"mc",q:"What does RAID 1 do?",opts:["Stripes data across drives for speed with no redundancy","Duplicates data on one drive to another for fault tolerance","Uses parity checking across three or more drives","Combines RAID 0 and RAID 1 requiring at least 4 disks"],ans:1,exp:"RAID 1 mirrors data — it writes identical data to two drives. If one fails, the other still has all your data."},
+  {type:"mc",q:"Which form factor is used for RAM in laptops?",opts:["DIMM","SO-DIMM","RDIMM","ECC DIMM"],ans:1,exp:"SO-DIMM (Small Outline DIMM) is the smaller form factor used in laptops."},
+  {type:"mc",q:"What does NVMe stand for and what interface does it use?",opts:["Non-Volatile Memory Express; uses PCIe","New Virtual Memory Express; uses SATA","Network Volume Memory Exchange; uses USB","Non-Volatile Media Extension; uses IDE"],ans:0,exp:"NVMe (Non-Volatile Memory Express) uses PCIe — up to 32 Gb/sec on PCIe 4.0, far faster than SATA's 6 Gb/sec."},
+  {type:"mc",q:"What is the purpose of thermal compound?",opts:["To lubricate the CPU fan","To fill the gap between the processor and cooler to transfer heat","To insulate the CPU from the motherboard","To act as an electrical conductor between the CPU and socket"],ans:1,exp:"Thermal compound fills microscopic air gaps between the CPU and heat sink, dramatically improving heat transfer."},
+  {type:"mc",q:"How does UEFI differ from traditional BIOS?",opts:["UEFI can only be used with AMD processors","UEFI supports drives larger than 2TB, Secure Boot, and is required for Windows 10 certification","UEFI does not support legacy devices","UEFI uses a 16-bit interface while BIOS uses 32-bit"],ans:1,exp:"UEFI improves on BIOS with support for drives over 2TB, Secure Boot, and is required for Windows 10/11 certification."},
+  {type:"mc",q:"What is the maximum number of USB devices that can be daisy-chained together?",opts:["64","16","127","255"],ans:2,exp:"USB supports up to 127 devices connected in a chain."},
+  {type:"mc",q:"What does S.M.A.R.T. technology do?",opts:["Monitors drive health and predicts when a drive is likely to fail","Speeds up drive read/write operations","Encrypts data on the hard drive","Manages RAID array configuration"],ans:0,exp:"S.M.A.R.T. monitors drive health indicators and warns you before a drive fails so you can back up data in time."},
+  {type:"mc",q:"Which PCIe slot size is typically used for graphics cards?",opts:["PCIe x1","PCIe x4","PCIe x8","PCIe x16"],ans:3,exp:"PCIe x16 has 16 lanes and is used for graphics cards that need maximum data throughput."},
+  {type:"mc",q:"What is the correct order to install components when reassembling a desktop?",opts:["Motherboard, power supply, drives, cards","Cards, drives, motherboard, power supply","Power supply, drives, motherboard, cards","Drives, power supply, cards, motherboard"],ans:2,exp:"The correct order: power supply first, then drives, then motherboard, then expansion cards."},
+  {type:"mc",q:"What does ECC RAM do?",opts:["Increases RAM speed by 50%","Detects and corrects single-bit memory errors; detects (but cannot correct) 2-bit errors","Allows RAM to run without a memory controller","Enables quad-channel memory access"],ans:1,exp:"ECC (Error-Correcting Code) RAM detects and fixes single-bit errors and detects (but can't fix) two-bit errors. Used in servers for reliability."},
+  {type:"mc",q:"What is the purpose of a loopback plug?",opts:["To connect two computers directly","To test a network port to verify it is working correctly","To block unused ports for security","To boost a network signal"],ans:1,exp:"A loopback plug tests a port by routing its signal back through itself, confirming it can send and receive."},
+  {type:"mc",q:"What does dual-channel memory do?",opts:["Doubles the number of DIMMs you can install","Allows the memory controller to access two DIMMs simultaneously, doubling memory bandwidth","Enables two different types of RAM to work together","Splits each DIMM into two virtual modules"],ans:1,exp:"Dual-channel lets the memory controller access two DIMMs at once, effectively doubling the memory bus bandwidth."},
+  {type:"mc",q:"What is the SATA 3 data transfer speed?",opts:["3 Gb/sec","6 Gb/sec","12 Gb/sec","32 Gb/sec"],ans:1,exp:"SATA Revision 3.x transfers data at 6 Gb/sec. NVMe via PCIe 4.0 reaches 32 Gb/sec."},
+  {type:"mc",q:"What does RAID 0 do?",opts:["Mirrors data on two drives","Stripes data evenly across all disks for performance — no redundancy","Uses parity for fault tolerance","Requires a minimum of 4 disks"],ans:1,exp:"RAID 0 stripes data across multiple disks for better performance but provides NO fault tolerance. One drive fails, all data is lost."},
+  {type:"mc",q:"What is the function of the TPM chip?",opts:["Controls processor speed","Stores the BitLocker encryption startup key so a drive can't be used in another computer","Manages RAM timing","Controls USB power sharing"],ans:1,exp:"The TPM (Trusted Platform Module) chip stores encryption keys. BitLocker uses it to tie drive encryption to a specific machine."},
+  {type:"mc",q:"Which component draws the most power in a typical computer?",opts:["Processor","RAM modules","The video/graphics card","Hard drives"],ans:2,exp:"Video cards draw the most power, which is why they often need dedicated PCIe power connectors and higher-wattage power supplies."},
+  {type:"mc",q:"What is overclocking?",opts:["Running a component at a lower speed to save power","Running a processor, memory, or video card faster than the manufacturer recommends","Updating the BIOS firmware","Installing a faster cooling system"],ans:1,exp:"Overclocking pushes a component beyond its rated speed for more performance, but risks instability and overheating."},
+  {type:"mc",q:"What does Secure Boot do?",opts:["Encrypts all data at rest on the hard drive","Prevents a system from booting with unsigned or untrusted drivers/OS","Locks the BIOS with a password","Disables USB ports during boot"],ans:1,exp:"Secure Boot prevents malware from running before the OS loads by verifying digital signatures of drivers and the OS."},
+  {type:"mc",q:"What is a docking station used for?",opts:["To charge only the laptop battery","To allow a laptop to connect to a full-sized monitor, keyboard, and other peripherals via one connector","To upgrade laptop RAM","To run laptop diagnostics"],ans:1,exp:"A docking station connects via the laptop's docking port and gives easy access to full-size peripherals like monitors, keyboards, and Ethernet."},
+  {type:"mc",q:"What does the microATX form factor change vs standard ATX?",opts:["It uses a 20-pin P1 connector","It reduces expansion slots and power, and allows a smaller case; still uses a 24-pin P1 connector","It eliminates all expansion slots","It uses a different CPU socket"],ans:1,exp:"MicroATX reduces expansion slots and power delivery, allowing a smaller and cheaper case, but still uses the 24-pin P1 connector."},
+  {type:"mc",q:"What does the PC rating of RAM measure?",opts:["The physical size of the module","The total bandwidth (MB/sec) of data moving between the module and CPU","The latency in nanoseconds","The voltage the module requires"],ans:1,exp:"The PC rating (e.g., PC4-24000) measures total bandwidth. For DDR4: multiply MHz speed by 8 bytes to get MB/sec."},
+  {type:"mc",q:"What interface does an M.2 slot support?",opts:["IDE only","PCIe, SATA, or USB depending on the slot","USB 3.0 only","eSATA only"],ans:1,exp:"M.2 is flexible — depending on the slot, it can use PCIe (NVMe), SATA, or USB interfaces."},
+  {type:"mc",q:"What does RAID 5 do?",opts:["Pure mirroring of two drives","Stripes data with parity across 3+ drives for fault tolerance without full duplication","Combines RAID 0 and RAID 1","Simple spanning of two drives"],ans:1,exp:"RAID 5 stripes data with parity across 3+ drives. One drive can fail and data is rebuilt from parity on the remaining drives."},
+  {type:"mc",q:"When installing an Intel processor, what do you align?",opts:["The gold triangle on the CPU with the triangle on the socket","The two notches on the processor edge with the posts on the socket","The heat sink fins with the RAM slots","The CPU fan header with the 24-pin connector"],ans:1,exp:"Intel CPUs have two notches on their edges that align with posts on the socket to ensure correct, damage-free orientation."},
+  {type:"mc",q:"What is CAS latency?",opts:["The maximum operating temperature of RAM","The number of clock cycles it takes to read or write a row of data from a memory module","The voltage required by a DIMM","The number of memory channels supported"],ans:1,exp:"CAS (Column Access Strobe) Latency measures memory timing — lower numbers mean faster response times."},
+  {type:"mc",q:"What does hot-swapping mean?",opts:["Replacing a component while overclocked","Connecting or disconnecting a device while the system is running","Installing a component without an ESD strap","Running two power supplies simultaneously"],ans:1,exp:"Hot-swapping means you can connect/disconnect a device without powering down. SATA and USB both support hot-swapping."},
+  {type:"mc",q:"What is the role of a chipset on a motherboard?",opts:["It provides the CPU's processing power","A set of chips working with the processor to control memory, buses, and peripherals","It stores the BIOS firmware","It regulates power supply voltage"],ans:1,exp:"The chipset manages communication between the CPU, RAM, expansion slots, and peripherals. Must be compatible with the processor."},
+  {type:"mc",q:"Which best describes virtual memory?",opts:["RAM that operates faster than physical RAM","Space on the hard drive Windows uses to supplement RAM, stored in pagefile.sys","A second bank of RAM in a separate slot","RAM dedicated to the GPU"],ans:1,exp:"Virtual memory uses hard drive space (pagefile.sys) to extend available RAM. Low drive space = too small pagefile = low memory warnings."},
+  {type:"mc",q:"What happens if you mix different RAM speeds in one system?",opts:["The system will not boot","All modules run at the speed of the fastest module","All modules run at the speed of the slowest module","The modules alternate between their individual speeds"],ans:2,exp:"When mixing RAM speeds, all modules default to the slowest speed present to maintain system stability."},
+  {type:"mc",q:"What is the I/O shield on a motherboard?",opts:["Protects the CPU from overheating","A plate installed in the case providing holes for the motherboard's I/O ports","Grounds the motherboard to the case","Protects RAM from static electricity"],ans:1,exp:"The I/O shield is a metal plate at the back of the case with correctly shaped cutouts for all of the motherboard's rear ports."},
+  {type:"mc",q:"What should you do first before working inside a computer?",opts:["Remove the RAM","Power down, unplug, and press the power button for 3 seconds to drain residual power","Remove the hard drive","Install the ESD strap while the system is on"],ans:1,exp:"Always power down, unplug all cables, then press/hold the power button ~3 seconds to fully discharge before touching internal components."},
+  {type:"mc",q:"What is NAND flash memory used for in an SSD?",opts:["Volatile memory that loses data when powered off","Non-volatile storage with no moving parts","A type of RAM used for cache","Memory used only in USB drives"],ans:1,exp:"SSDs use NAND flash — non-volatile (keeps data without power) and has no moving parts, making SSDs faster and more reliable."},
+  {type:"mc",q:"What does SATA stand for?",opts:["Serial Advanced Technology Attachment","Synchronous Addressable Transfer Array","Sequential Analog Transfer Architecture","Structured ATA"],ans:0,exp:"SATA = Serial Advanced Technology Attachment. It is the dominant storage interface for connecting drives to motherboards."},
+  {type:"mc",q:"What is the recommended wattage buffer when sizing a power supply?",opts:["10% above expected needs","20% above expected needs","30% above expected needs","50% above expected needs"],ans:2,exp:"The PSU should be rated 30% higher than your calculated total wattage to ensure stability and allow for upgrades."},
+  {type:"mc",q:"What does RAID 10 require and what does it do?",opts:["2 disks; stripes for speed","3 disks; parity for redundancy","At least 4 disks; mirrors pairs of disks while also striping","Any number of disks; simple spanning"],ans:2,exp:"RAID 10 = RAID 1 + RAID 0. Needs 4+ disks. Gives both speed (striping) and redundancy (mirroring)."},
+  {type:"mc",q:"What does 'flashing the BIOS' mean?",opts:["Resetting BIOS to factory defaults","Updating the firmware stored on the BIOS/UEFI chip","Unlocking overclocking in BIOS","Encrypting BIOS settings"],ans:1,exp:"Flashing the BIOS updates the firmware program stored on the chip. Always follow manufacturer instructions carefully."},
+  {type:"mc",q:"What does DDR stand for in DDR4 RAM?",opts:["Direct Data Relay","Double Data Rate","Dual Drive Register","Dynamic Data RAM"],ans:1,exp:"DDR = Double Data Rate. It transfers data on both the rising and falling edge of the clock cycle, doubling throughput."},
+  {type:"mc",q:"What is the key advantage of an SSD over a magnetic HDD?",opts:["SSDs are cheaper per GB","SSDs have more moving parts","SSDs are faster, more reliable, use less power, and have no moving parts","SSDs can hold more data than any magnetic drive"],ans:2,exp:"SSDs win on speed, reliability, and power use due to having no moving parts. The downside: higher cost per GB."},
+  {type:"mc",q:"What is the form factor for most desktop magnetic hard drives?",opts:["2.5\"","3.5\"","1.8\"","5.25\""],ans:1,exp:"Desktop magnetic drives use 3.5\" form factor. Laptops use 2.5\"."},
+  {type:"mc",q:"What type of adapter feature allows it to work in both US and European outlets?",opts:["Voltage regulator","Auto-switching from 110V to 220V AC power","Built-in transformer","Dual-phase power circuit"],ans:1,exp:"Most laptop AC adapters auto-switch between 110V and 220V, making them compatible with outlets worldwide."},
+  {type:"mc",q:"What is a POST diagnostic card used for?",opts:["Testing RAM speed","Discovering and reporting computer errors at POST when the system won't boot","Measuring power supply output","Flashing the BIOS firmware"],ans:1,exp:"A POST card is installed in an expansion slot and monitors the boot process, reporting error codes when the system fails to boot."},
+  {type:"mc",q:"What does ARM stand for?",opts:["Advanced RISC Machine","Automated RAM Module","Advanced Register Memory","Accelerated RISC Microprocessor"],ans:0,exp:"ARM = Advanced RISC Machine. ARM processors are low-cost, low-power, low-heat — widely used in mobile devices."},
+  {type:"mc",q:"Which Windows tool tests RAM for errors?",opts:["Device Manager","Disk Defragmenter","Memory Diagnostic Tool","Event Viewer"],ans:2,exp:"Windows Memory Diagnostic Tool checks your RAM for errors. Access it through Control Panel or the Start menu search."},
+  {type:"mc",q:"What is the maximum RAM a 32-bit Windows 10 installation supports?",opts:["2 GB","4 GB","8 GB","16 GB"],ans:1,exp:"32-bit Windows can only address a maximum of 4 GB of RAM regardless of how much is physically installed."},
+  {type:"mc",q:"What does a jumper on a motherboard do?",opts:["Connects the power LED to the motherboard","Holds configuration information using two small metal posts with or without a cover","Connects the CPU to the socket","Provides additional power to the GPU"],ans:1,exp:"Jumpers are small pins that store hardware configuration. They can be open (no cover) or closed (with a cover)."},
+  {type:"mc",q:"What does IOPS measure?",opts:["Power supply efficiency","The number of read or write operations a storage device performs per second","Network throughput","CPU clock speed"],ans:1,exp:"IOPS (Input/Output Operations Per Second) measures how many individual read/write operations a storage device handles each second."},
+  {type:"mc",q:"What does a Thunderbolt port support?",opts:["Only charging devices","Only video output","High-end displays, external storage, and device charging — a multipurpose connector","Only USB devices"],ans:2,exp:"Thunderbolt is a multipurpose high-speed connector supporting displays, fast external storage, and power delivery."},
+  {type:"mc",q:"What file does Windows store virtual memory in?",opts:["swap.sys","virtual.dat","pagefile.sys","vmem.sys"],ans:2,exp:"Windows virtual memory is stored in pagefile.sys, a hidden file in the root of the C: drive."},
+  {type:"mc",q:"What does DDR5 offer compared to DDR4?",opts:["Lower speed but higher capacity","Higher speed, lower power, and up to 64 Gb DRAM per module","Same speed but with ECC built in","Triple channels only"],ans:1,exp:"DDR5 is faster than DDR4, uses less power, and offers up to 64 Gb per module. It also uses 288 pins like DDR4."},
+  {type:"mc",q:"What should you do if you smell burnt components?",opts:["Turn the system on briefly to identify the problem","Don't turn the system on — identify the fried component and replace it","Clean with compressed air and try again","Flash the BIOS to restore settings"],ans:1,exp:"Never power on a computer that smells burnt. Find and replace the damaged component first."},
+  {type:"mc",q:"What is the typical symptom when power cords to the motherboard are not connected after reassembly?",opts:["System boots but has no audio","Memory errors during POST","System is completely dead — no lights, no sounds, nothing on screen","Keyboard doesn't work"],ans:2,exp:"No power to the motherboard = completely dead system. No fans, no lights, no sounds, no display at all."},
+  {type:"mc",q:"Which of the following is NOT a symptom of a power supply problem?",opts:["Computer appears dead with no indicator lights","Computer sometimes locks up during booting","Monitor shows incorrect resolution","Burnt smell from the case"],ans:2,exp:"Incorrect resolution is a display/driver issue, not a PSU symptom. PSU problems show as dead systems, lockups, or burnt smells."},
+  {type:"mc",q:"What is the eSATA cable's maximum recommended length?",opts:["18 inches","1 meter","2 meters","5 meters"],ans:2,exp:"External SATA (eSATA) uses a specially shielded cable with a maximum length of 2 meters."},
+  {type:"mc",q:"What is a standoff in motherboard installation?",opts:["A type of memory module","A spacer that holds the motherboard away from the case to prevent electrical shorts","A type of expansion card","A jumper configuration"],ans:1,exp:"Standoffs are metal/plastic spacers that keep the motherboard from touching the case. Missing standoffs cause short circuits."},
+  {type:"mc",q:"What is a redundant power supply (RPS)?",opts:["A power supply with extra wattage","Two identical power supplies so one can take over if the other fails","A power supply with dual voltage rails","A PSU with an external battery backup"],ans:1,exp:"A redundant power supply uses two identical PSUs. If one fails, the other takes over instantly — critical for servers."},
+  {type:"mc",q:"What Windows tool helps optimize hard drive performance?",opts:["Device Manager","Defrag and Optimization tool (dfrgui.exe)","Event Viewer","Memory Diagnostic"],ans:1,exp:"The Windows Defrag and Optimization tool (dfrgui.exe) defragments HDDs and sends TRIM commands to SSDs."},
+  {type:"mc",q:"Which of the following correctly describes the 4-pin auxiliary connector on an ATX power supply?",opts:["It is the main power connector for the motherboard","It provides an additional 12V of power specifically for the CPU","It powers SATA drives","It connects to the PCIe video card"],ans:1,exp:"The 4-pin (or 8-pin) auxiliary connector provides additional 12V power dedicated to the CPU, supporting higher-performance processors."},
+  {type:"mc",q:"What does the 'x' in PCIe x4 refer to?",opts:["The version of PCIe","The physical length of the slot","The number of data lanes available","The maximum wattage the slot provides"],ans:2,exp:"The number after 'x' in PCIe indicates the number of data lanes. PCIe x4 = 4 lanes. More lanes = more bandwidth."},
+  {type:"mc",q:"What is the purpose of installing a chassis air guide?",opts:["To hold the motherboard in place","To direct airflow specifically to the processor for better cooling","To mount additional hard drives","To organize cable management"],ans:1,exp:"A chassis air guide is a duct that directs cool air from outside the case directly to the processor, improving cooling efficiency."},
+  {type:"mc",q:"What SD card standard uses SDXC?",opts:["SD 1.x","SD 2.x","SD 3.x","SD 7.x"],ans:2,exp:"SDXC (SD eXtended Capacity) is the SD 3.x standard. SD 1.x = regular SD, SD 2.x = SDHC, SD 7.x = SDUC."},
+  {type:"mc",q:"What is the purpose of the front panel header on a motherboard?",opts:["To connect the power supply","To connect case buttons and LEDs (power, reset, HDD activity) to the motherboard","To connect drives","To connect the GPU to the CPU"],ans:1,exp:"The front panel header connects the case's power button, reset button, and indicator LEDs to the motherboard."},
+  {type:"mc",q:"What causes a whining sound when you first power up a new system with a video card?",opts:["The RAM is not seated properly","The video card is not getting enough power — the PSU may be inadequate","The BIOS needs to be updated","The CPU cooler is not attached"],ans:1,exp:"A whine on first power-up with a new GPU usually means the power supply isn't delivering enough wattage for the video card."},
+  {type:"mc",q:"To calculate the PC rating of a DDR4 DIMM running at 3,000 MHz, you multiply by what?",opts:["4 bytes","8 bytes","16 bytes","64 bytes"],ans:1,exp:"A DIMM has a 64-bit (8-byte) data path. PC rating = MHz × 8. So 3,000 MHz DDR4 = PC4-24000."},
+  {type:"mc",q:"What is RAID 5's minimum drive requirement?",opts:["2 drives","3 drives","4 drives","5 drives"],ans:1,exp:"RAID 5 requires a minimum of 3 drives — data and parity are striped across all of them."},
+  {type:"mc",q:"When removing an expansion card, what should you avoid touching?",opts:["The bracket at the top of the card","The edge connectors or chips on the card","The case screws","The power cable"],ans:1,exp:"Never touch the edge connectors or chips on an expansion card. Static electricity and oils from your fingers can damage them."},
+  {type:"mc",q:"What does the Compatibility Support Module (CSM) in UEFI do?",opts:["Enables RAID support","Allows UEFI to boot from older MBR hard drives and provide BIOS-style boot","Enables USB power share when the PC is off","Controls Secure Boot settings"],ans:1,exp:"CSM (Compatibility Support Module) lets UEFI systems boot from older MBR-formatted drives and behave like a traditional BIOS when needed."},
+  {type:"mc",q:"What is the purpose of the 6-pin and 8-pin PCIe connectors from the power supply?",opts:["They connect to SATA drives","They connect directly to the video card to provide extra power","They power the CPU","They connect to the front panel header"],ans:1,exp:"PCIe 6-pin and 8-pin connectors from the PSU plug directly into video cards to supply the extra power they need beyond what the slot provides."},
+  {type:"mc",q:"If a laptop screen is black but the power light is on, and an external monitor works fine, what does this indicate?",opts:["The GPU is failed","The problem is with the LCD panel assembly — inverter or panel needs replacement","The RAM is faulty","The OS has crashed"],ans:1,exp:"If the external monitor works but the laptop screen is black, the problem is isolated to the LCD panel — likely the inverter or the panel itself needs replacing."},
+  {type:"mc",q:"For quad-channel memory, how many DIMM slots does the motherboard typically have?",opts:["4","6","8","16"],ans:2,exp:"Quad-channel motherboards typically have 8 DIMM slots — 4 channels with 2 slots each. The CPU can address all 4 channels simultaneously."},
 
-// ──────────── INHERITANCE (chap11) ────────────
-{
-  cat:"Inheritance", type:"Multiple Choice",
-  q:"In Java, which keyword is used by a subclass constructor to call the parent class constructor?",
-  opts:["parent()","super()","base()","extends()"],
-  ans:1,
-  exp:"<strong>super()</strong> calls the parent constructor. It must be the first statement in the subclass constructor."
-},
-{
-  cat:"Inheritance", type:"Code Output",
-  q:"What is printed?",
-  code:`public class Person {
-    private String first, last;
-    public Person(String f, String l) { first=f; last=l; }
-    public String toString() { return last + "," + first; }
-}
-public class Student extends Person {
-    private int id;
-    public Student(String f, String l, int id) {
-        super(f,l); this.id = id;
-    }
-    public String toString() {
-        return super.toString() + " #" + id;
-    }
-}
-// In main:
-System.out.println(new Student("Austin","Smith",42));`,
-  opts:["Austin,Smith #42","Smith,Austin #42","Smith,Austin","Compilation error"],
-  ans:1,
-  exp:"<strong>Smith,Austin #42</strong> — Person.toString() returns last+\",\"+first, then Student appends \" #42\"."
-},
-{
-  cat:"Inheritance", type:"Multiple Choice",
-  q:"Given: Car extends Vehicle, and Vehicle has a method getPrice(). Inside Car, how do you call Vehicle's getPrice()?",
-  opts:["Vehicle.getPrice()","parent.getPrice()","super.getPrice()","this.getPrice()"],
-  ans:2,
-  exp:"<strong>super.getPrice()</strong> explicitly calls the parent class version of the method."
-},
-{
-  cat:"Inheritance", type:"True/False",
-  q:"In Java, a class can directly extend more than one class (multiple inheritance of classes).",
-  opts:["True","False"],
-  ans:1,
-  exp:"<strong>False.</strong> Java does not support multiple class inheritance. A class can only extend one class, but can implement multiple interfaces."
-},
-{
-  cat:"Inheritance", type:"Code Output",
-  q:"What does Student.equals() return for these two Student objects?",
-  code:`// Student extends Person
-// Student.equals() checks:
-//   this.getClass() == obOther.getClass()
-//   AND this.getStudentNumber() == other.getStudentNumber()
+  {type:"sa",q:"Explain the difference between RAID 0 and RAID 1 in terms of performance and fault tolerance.",ans:"RAID 0 stripes data across multiple drives for better performance but has zero fault tolerance — losing one drive loses all data. RAID 1 mirrors data to two drives for fault tolerance (survives one drive failure) but doesn't improve performance and uses 50% of storage capacity for redundancy.",key:["RAID 0","stripes","performance","no fault tolerance","RAID 1","mirrors","fault tolerance","redundancy"]},
+  {type:"sa",q:"What is ECC RAM and when would you use it?",ans:"ECC (Error-Correcting Code) RAM has an extra chip that detects and corrects single-bit memory errors, and detects (but can't fix) two-bit errors. The data path is 72 bits (64 + 8 for ECC). It's used in servers and workstations where data integrity is critical and errors cannot be tolerated.",key:["ECC","error-correcting","single-bit","server","72 bits","detect","correct"]},
+  {type:"sa",q:"Describe the steps to safely open a desktop computer case and prepare to work inside.",ans:"Power down the system and unplug it. Press and hold the power button for 3 seconds to drain residual power. Put on your ESD strap and clip it to the case. Remove the case cover. Keep screws organized in a bag or cup. Draw diagrams of cable connections before removing anything.",key:["power down","unplug","power button","ESD strap","screws","diagram"]},
+  {type:"sa",q:"What is the difference between SATA and NVMe in terms of speed and use case?",ans:"SATA 3 transfers data at 6 Gb/sec and is used by both HDDs and SSDs. NVMe uses PCIe — PCIe 3.0 at 8 Gb/sec, PCIe 4.0 at 32 Gb/sec. NVMe is used only by SSDs and is significantly faster, ideal for high-performance storage workloads.",key:["SATA","6 Gb","NVMe","PCIe","32 Gb","faster","SSD"]},
+  {type:"sa",q:"Explain how dual-channel memory works and what is required to enable it.",ans:"Dual-channel allows the memory controller to communicate with two DIMMs simultaneously, doubling memory bandwidth. To enable it: the motherboard must support it, you need matching pairs of DIMMs (identical size, speed, and features), installed in the correct color-coded slots as per the motherboard manual.",key:["two DIMMs","simultaneously","matching","bandwidth","slots","color-coded","identical"]},
+  {type:"sa",q:"What is Secure Boot and what problem does it solve?",ans:"Secure Boot is a UEFI feature that prevents the system from booting with unsigned or untrusted drivers and operating systems. It stops malware from launching before the OS and anti-malware software load. It works by checking digital signatures against a database stored in flash memory on the motherboard.",key:["UEFI","unsigned","malware","digital signatures","before OS","trusted","flash memory"]},
+  {type:"sa",q:"Describe the purpose and function of the POST process.",ans:"POST (Power-On Self Test) is a series of hardware tests run by the BIOS/UEFI every time the computer boots. It checks key components like the CPU, RAM, and storage are working. If a problem is found, POST reports it via error codes, beep codes, or messages on screen before the OS loads.",key:["power-on self test","BIOS","UEFI","hardware","error","beep","boot","checks"]},
+  {type:"sa",q:"What factors should you consider when calculating the required wattage of a power supply?",ans:"Add up the wattage requirements of all components in the case plus USB devices powered through the motherboard. Video cards draw the most power. The PSU should be rated 30% higher than the calculated total to ensure stability, efficiency, and headroom for future upgrades.",key:["wattage","components","video card","30%","higher","headroom","stability"]},
+  {type:"sa",q:"Explain what happens to memory performance if you mix different RAM speeds in one system.",ans:"When different RAM speeds are mixed, all modules operate at the speed of the slowest module. You should also never mix buffered or registered memory with unbuffered memory — this simply will not work. Matching manufacturer is recommended when possible.",key:["slowest","all modules","same speed","match","unbuffered","buffered","registered"]},
+  {type:"sa",q:"What is S.M.A.R.T. and how does it help with hard drive maintenance?",ans:"S.M.A.R.T. (Self-Monitoring Analysis and Reporting Technology) monitors drive health metrics like spin-up time, head-to-disk distance, and temperature. It predicts when a drive is likely to fail and displays a warning message so you can back up data before failure. It can be enabled or disabled in BIOS/UEFI.",key:["self-monitoring","predict failure","warning","BIOS","temperature","health","backup"]},
+  {type:"sa",q:"What is the difference between a docking station and a port replicator?",ans:"A docking station connects via a proprietary docking port on the laptop and provides a full desktop setup (monitor, keyboard, Ethernet, etc.). A port replicator (also called a universal docking station) serves the same purpose but typically uses a standard connection like USB-C and works with various laptop models.",key:["docking port","peripheral","monitor","port replicator","universal","USB-C","proprietary"]},
+  {type:"sa",q:"Describe the steps to install a DIMM module in a desktop.",ans:"Power down and unplug the system, press the power button to drain power, open the case, and wear an ESD strap. Pull out the supporting arms on both sides of the slot. Align the notch on the DIMM edge connector with the slot. Insert the DIMM straight down (not at an angle) until the supporting clips snap back into place. Verify the memory is recognized in BIOS/UEFI.",key:["ESD","supporting arms","notch","straight down","clips","BIOS","snap"]},
+  {type:"sa",q:"Explain what overclocking is and why it is generally not recommended.",ans:"Overclocking is running a processor, memory, motherboard, or video card at a higher speed than the manufacturer recommends. While it can improve performance, it is not a recommended best practice because it can cause system instability, overheating, potential permanent damage, and may void the component warranty.",key:["higher speed","manufacturer","not recommended","instability","overheating","warranty","performance"]},
+  {type:"sa",q:"What are the key things to check when a computer powers on but shows no image on the monitor?",ans:"Check the monitor power cable and that the monitor is on. Verify the video cable is connected to the correct port on the PC. Confirm the monitor's input source matches the connected port. Check for a conflict between the onboard video and a dedicated GPU — disable onboard video in BIOS. Try a different cable or monitor.",key:["monitor","power cable","video cable","port","onboard","conflict","input source","disable"]},
+  {type:"sa",q:"What is virtual memory and what happens when there isn't enough space for it?",ans:"Virtual memory is how Windows uses hard drive space to supplement physical RAM. It is stored in pagefile.sys in the root of drive C:. If drive C: doesn't have enough free space, pagefile.sys becomes too small and Windows shows a 'low memory' warning, causing slowdowns and application failures.",key:["pagefile.sys","hard drive","supplement","RAM","low memory","drive C","slowdowns"]},
+  {type:"sa",q:"Describe the general troubleshooting approach for a computer that won't boot.",ans:"Interview the user and back up data first. Examine the system and make an initial determination of the problem. Start with simple checks: power connections, cables, POST codes or beep codes. Test your theory. Check BIOS/UEFI settings, run the Memory Diagnostic Tool, check Event Viewer. Use a POST card for completely dead systems. Document everything.",key:["interview","back up","POST","cables","BIOS","memory diagnostic","document","simple","event viewer"]},
+  {type:"sa",q:"What must be true for dual-channel memory to work properly?",ans:"The motherboard and DIMMs must both support dual-channel. The pair of DIMMs must be identical in size, speed, and features. They must be installed in the correct color-coded slot pairs as shown in the motherboard manual. Using the same manufacturer is recommended though not strictly required.",key:["motherboard","DIMMs","identical","size","speed","color-coded slots","manufacturer","matching"]},
+  {type:"sa",q:"Explain the differences between DDR3, DDR4, and DDR5 RAM.",ans:"DDR3 uses 240 pins and supports dual and triple channels. DDR4 uses 288 pins, is faster and uses less power than DDR3, and supports dual and quad channels. DDR5 is faster than DDR4, uses less power, offers up to 64 Gb per module, and also uses 288 pins. None are physically compatible with each other due to different notch positions and pin counts.",key:["DDR3 240","DDR4 288","DDR5","faster","less power","64 Gb","not compatible","notch","quad channel"]},
+  {type:"sa",q:"What is the purpose of applying thermal compound when installing a CPU cooler?",ans:"Thermal compound fills the microscopic air gaps and surface imperfections between the processor and the cooler's heat sink. Air is a very poor conductor of heat — thermal compound is much better, dramatically improving heat transfer from CPU to cooler. Never use thermal compound AND a thermal pad at the same time, and never stack thermal pads.",key:["air gaps","heat transfer","conduct","cooler","heat sink","not both","thermal pad","microscopic"]},
+  {type:"sa",q:"Describe the key symptoms of a failing or overheating computer.",ans:"Overheating symptoms: system hangs or freezes at odd times, BSOD during boot, fans making whining sounds or not running, no airflow from vents. General hardware failure symptoms: system begins to boot then powers down, memory errors reported, components not working, intermittent Windows errors or hard drive errors.",key:["hangs","BSOD","fans","no airflow","powers down","memory errors","intermittent","freezes"]},
+  {type:"sa",q:"What are the ATX power supply connector types and their purposes?",ans:"The 24-pin (or 20+4-pin) P1 connector is the main motherboard power connector. The 4-pin and 8-pin auxiliary connectors provide additional 12V power for the CPU. The 6-pin and 8-pin PCIe connectors power video cards directly. SATA power connectors power SATA drives. The 4-pin Molex connector is a legacy connector used by some older devices and fans.",key:["24-pin","P1","auxiliary","12V","CPU","PCIe","6-pin","8-pin","video card","SATA","Molex"]},
+  {type:"sa",q:"Explain the RAID 5 setup process using three SATA drives.",ans:"Install the three drives and connect each to the motherboard. Boot and enter BIOS/UEFI — verify the drives are recognized, then set the SATA configuration to RAID. Reboot and enter BIOS again, go to the Intel Rapid Storage Technology page and select Create RAID Volume. Select RAID 5 (Parity), set the strip size and volume size, then select Create Volume to complete the configuration.",key:["three drives","BIOS","SATA","RAID","Intel Rapid Storage","Create RAID Volume","parity","strip size"]},
+  {type:"sa",q:"What steps would you take to diagnose and fix a system that is overheating?",ans:"Go into BIOS/UEFI and check the CPU temperature monitor — it should not exceed the manufacturer's recommended maximum. Use compressed air to remove dust from the PSU and vents. Check that all fans are running. Install extra case fans if needed. Add a chassis air guide. Ensure the cooler is properly seated on the processor. Make sure the case has a few inches of clearance on sides and top. Check if the CPU is being overclocked.",key:["BIOS","temperature","compressed air","fans","cooler","clearance","overclocked","dust","chassis air guide"]},
+  {type:"sa",q:"What is the difference between a magnetic hard drive and a solid-state drive (SSD)?",ans:"Magnetic hard drives use spinning platters with read/write heads controlled by an actuator. Data is organized in tracks divided into sectors. SSDs use NAND flash memory with no moving parts, making them faster, more reliable, and more power efficient. SSDs are measured by TBW (TeraBytes Written) or DWPD (Drive Writes Per Day) for lifespan. SSDs cost more per GB but are becoming standard.",key:["spinning platters","read/write heads","NAND flash","no moving parts","faster","reliable","TBW","DWPD","sectors","tracks"]},
+  {type:"sa",q:"Explain the process and considerations for upgrading RAM in a laptop.",ans:"First check if the laptop is still under warranty before opening it, as opening may void it. Determine how much memory the laptop supports and what type (DDR4, DDR3L, or DDR3 SO-DIMM). Purchase matching compatible memory. Power down, remove AC adapter and battery. Access the memory compartment (usually a panel on the bottom). Remove old modules and insert new ones at an angle then press down to lock. Verify in BIOS/UEFI after boot.",key:["warranty","SO-DIMM","DDR4","DDR3","compatible","battery","angle","BIOS","panel"]},
+];
 
-Student s1 = new Student("Alice","Smith", 101);
-Student s2 = new Student("Bob","Jones", 101);
-System.out.println(s1.equals(s2));`,
-  opts:["true","false","Depends on Person.equals()","Compilation error"],
-  ans:0,
-  exp:"<strong>true</strong> — Student.equals() compares <em>student number only</em> (after the class check). Both have student number 101, so they are equal even with different names."
-},
-{
-  cat:"Inheritance", type:"Multiple Choice",
-  q:"What is the difference between instanceof and getClass() == when checking type?",
-  opts:[
-    "No difference — they are interchangeable",
-    "instanceof returns true for subclasses; getClass()==  requires exact same class",
-    "getClass()== returns true for subclasses; instanceof requires exact match",
-    "instanceof only works with interfaces"
-  ],
-  ans:1,
-  exp:"<strong>instanceof</strong> returns true for the class AND all its subclasses. <strong>getClass()==</strong> is strict — only exact same runtime type returns true."
-},
-{
-  cat:"Inheritance", type:"Code Output",
-  q:"What is printed?",
-  code:`ArrayList<Person> list = new ArrayList<>();
-list.add(new Person("John","Doe"));
-list.add(new Student("Jane","Doe",1));
-list.add(new Instructor("Bob","Smith","101A"));
-
-int count = 0;
-for(Person p : list) {
-    if(p instanceof Student) count++;
-}
-System.out.println(count);`,
-  opts:["0","1","2","3"],
-  ans:1,
-  exp:"<strong>1</strong> — Only one Student object is in the list. Instructor is not a Student (they are sibling subclasses)."
-},
-{
-  cat:"Inheritance", type:"Multiple Choice",
-  q:"Given Car's constructor: `this.doors = nDoors>=2 && nDoors<=4 ? nDoors : 2;` — what happens if you pass 6 doors?",
-  opts:["doors is set to 6","doors is set to 2","Throws IllegalArgumentException","Compilation error"],
-  ans:1,
-  exp:"<strong>doors is set to 2</strong> — the ternary defaults invalid values to 2. No exception is thrown."
-},
-{
-  cat:"Inheritance", type:"Multiple Choice",
-  q:"Which statement about Stack vs Stack2 (from chap11) is correct?",
-  opts:[
-    "Stack uses inheritance; Stack2 uses composition",
-    "Stack uses composition (has an ArrayList); Stack2 uses inheritance (extends ArrayList)",
-    "Both use composition",
-    "Both use inheritance"
-  ],
-  ans:1,
-  exp:"<strong>Stack</strong> has a private ArrayList field (composition). <strong>Stack2 extends ArrayList</strong> (inheritance). Both provide push/pop/peek but through different design patterns."
-},
-{
-  cat:"Inheritance", type:"Code Output",
-  q:"What does this Stack operation return?",
-  code:`Stack s = new Stack();
-s.push("A");
-s.push("B");
-s.push("C");
-System.out.println(s.pop());
-System.out.println(s.peek());`,
-  opts:["C then B","A then B","C then C","B then B"],
-  ans:0,
-  exp:"<strong>C then B</strong> — pop() removes and returns the top (C). peek() looks at the new top (B) without removing it."
-},
-
-// ──────────── ABSTRACT & INTERFACES (chap13) ────────────
-{
-  cat:"Abstract", type:"Multiple Choice",
-  q:"Which of the following is true about an abstract class in Java?",
-  opts:[
-    "It cannot have any concrete (non-abstract) methods",
-    "It can have both abstract and concrete methods, and cannot be instantiated directly",
-    "It can be instantiated using new AbstractClass()",
-    "Abstract classes cannot have constructors"
-  ],
-  ans:1,
-  exp:"Abstract classes can have both abstract and concrete methods. They <strong>cannot be instantiated</strong> directly but can have constructors (called via super())."
-},
-{
-  cat:"Abstract", type:"Multiple Choice",
-  q:"In chap13, class Animal is abstract with abstract method sound(). Class Chicken extends Animal and implements Edible. What must Chicken provide?",
-  opts:[
-    "Only sound()",
-    "Only howToEat() and getCalories()",
-    "sound(), howToEat(), and getCalories()",
-    "Nothing — abstract methods are optional"
-  ],
-  ans:2,
-  exp:"Chicken must implement <strong>all abstract methods</strong>: sound() from Animal, and howToEat() + getCalories() from the Edible interface."
-},
-{
-  cat:"Abstract", type:"True/False",
-  q:"An interface field declared as `int nCount = 19;` is implicitly public, static, and final.",
-  opts:["True","False"],
-  ans:0,
-  exp:"<strong>True.</strong> All fields in an interface are implicitly <code>public static final</code>. They are constants."
-},
-{
-  cat:"Abstract", type:"Code Output",
-  q:"What happens when this code runs?",
-  code:`public abstract class Animal {
-    public abstract String sound();
-    public String describe() {
-        return "I say: " + sound();
-    }
-}
-public class Dog extends Animal {
-    public String sound() { return "Woof"; }
-}
-// In main:
-Animal a = new Dog();
-System.out.println(a.describe());`,
-  opts:["I say: Woof","I say: null","Compilation error — cannot use abstract type","Runtime error — abstract method"],
-  ans:0,
-  exp:"<strong>I say: Woof</strong> — Animal reference holds a Dog object. describe() calls sound() which dispatches polymorphically to Dog.sound()."
-},
-{
-  cat:"Abstract", type:"Multiple Choice",
-  q:"Comparator's compare(a, b) returns a negative number. What does this mean for sorting?",
-  opts:["a comes after b","a comes before b","a equals b","The sort is descending"],
-  ans:1,
-  exp:"Negative return means <strong>a comes before b</strong>. Positive means a after b. Zero means equal."
-},
-{
-  cat:"Abstract", type:"Code Output",
-  q:"compAgeDesc sorts horses in descending age order. What does its compare() return?",
-  code:`// compAgeDesc implements Comparator<Horse>
-public int compare(Horse h1, Horse h2) {
-    return h2.getAge() - h1.getAge();
-}
-// h1.getAge() = 5,  h2.getAge() = 8
-// What does compare(h1, h2) return?`,
-  opts:["3 (positive, so h1 after h2)","−3 (negative, so h1 before h2)","0","−5"],
-  ans:0,
-  exp:"<strong>3</strong> — h2.getAge() − h1.getAge() = 8 − 5 = 3 (positive). Positive means h1 goes after h2, placing the older horse first. This achieves descending order."
-},
-{
-  cat:"Abstract", type:"Multiple Choice",
-  q:"A class implements both Comparable<Monster> and is abstract. A subclass Greek extends Monster. Which statement is correct?",
-  opts:[
-    "Greek must implement compareTo() because Monster declared it abstract",
-    "Greek inherits compareTo() from Monster if Monster provides a concrete implementation",
-    "Comparable cannot be used with abstract classes",
-    "Greek automatically becomes abstract too"
-  ],
-  ans:1,
-  exp:"If Monster provides a <strong>concrete compareTo()</strong> implementation, Greek inherits it and does not need to override it."
-},
-{
-  cat:"Abstract", type:"Multiple Choice",
-  q:"What is a marker interface in Java?",
-  opts:[
-    "An interface with exactly one abstract method",
-    "An interface with no methods — used to tag a class",
-    "An interface that extends another interface",
-    "An interface with only static methods"
-  ],
-  ans:1,
-  exp:"A <strong>marker interface</strong> has no methods. Serializable is the classic example — implementing it just signals a capability to the JVM."
-},
-{
-  cat:"Abstract", type:"True/False",
-  q:"A class can implement multiple interfaces at the same time.",
-  opts:["True","False"],
-  ans:0,
-  exp:"<strong>True.</strong> Java supports multiple interface implementation. Example: <code>class Chicken extends Animal implements Edible, Serializable</code>"
-},
-{
-  cat:"Abstract", type:"Multiple Choice",
-  q:"Class Monster is abstract and implements Comparable<Monster>. Class Greek extends Monster. Greek does NOT provide its own compareTo(). What happens when you call compareTo() on a Greek object?",
-  opts:[
-    "Compilation error — Greek must override compareTo()",
-    "Monster's concrete compareTo() is inherited and runs",
-    "Comparable's default compareTo() runs",
-    "A NullPointerException is thrown at runtime"
-  ],
-  ans:1,
-  exp:"If <strong>Monster provides a concrete compareTo()</strong> implementation, Greek inherits it just like any other non-abstract method. Greek only needs to override it if it wants different behavior."
-},
-
-// ──────────── COLLECTIONS & COMPARATORS (chap11, chap13, chap17) ────────────
-{
-  cat:"Collections", type:"Multiple Choice",
-  q:"What happens when you call ArrayList.remove() with an object argument (not an index)?",
-  opts:[
-    "Removes by index always",
-    "Removes the first element that equals() the argument",
-    "Removes all matching elements",
-    "Throws UnsupportedOperationException"
-  ],
-  ans:1,
-  exp:"<code>remove(Object o)</code> uses <strong>equals()</strong> to find and remove the first matching element. This is why overriding equals() matters."
-},
-{
-  cat:"Collections", type:"Code Output",
-  q:"Person.equals() only compares last name. What is the list size after?",
-  code:`ArrayList<Person> list = new ArrayList<>();
-list.add(new Person("John","Smith"));
-list.add(new Person("Jane","Smith"));
-list.add(new Person("Bob","Jones"));
-list.remove(new Person("Mike","Smith"));
-System.out.println(list.size());`,
-  opts:["3","2","1","0"],
-  ans:1,
-  exp:"<strong>2</strong> — remove() uses equals() which only checks last name. The first Person with last name \"Smith\" (John) is removed, leaving Jane Smith and Bob Jones."
-},
-{
-  cat:"Collections", type:"Multiple Choice",
-  q:"What is the correct way to sort an ArrayList<Horse> by speed using a Comparator?",
-  opts:[
-    "horses.sort(new CompSpeed())",
-    "Collections.sort(horses, new CompSpeed())",
-    "Both A and B are valid",
-    "Comparator.sort(horses)"
-  ],
-  ans:2,
-  exp:"Both <code>list.sort(comparator)</code> and <code>Collections.sort(list, comparator)</code> are valid in modern Java."
-},
-{
-  cat:"Collections", type:"Multiple Choice",
-  q:"What does Comparable differ from Comparator?",
-  opts:[
-    "Comparable defines natural ordering inside the class; Comparator is a separate class for custom ordering",
-    "Comparator defines natural ordering inside the class; Comparable is external",
-    "They are the same thing",
-    "Comparable is for primitives; Comparator is for objects"
-  ],
-  ans:0,
-  exp:"<strong>Comparable</strong> is implemented by the class itself (compareTo) for its natural order. <strong>Comparator</strong> is a separate object for alternative sorting strategies."
-},
-{
-  cat:"Collections", type:"Code Output",
-  q:"What does this Comparator do when passed to Collections.sort()?",
-  code:`public int compare(Horse h1, Horse h2) {
-    return h1.getSpeedFactor() - h2.getSpeedFactor();
-}`,
-  opts:[
-    "Sorts horses in descending speed order",
-    "Sorts horses in ascending speed order",
-    "Sorts horses by name",
-    "Nothing — compare() isn't used by Collections.sort()"
-  ],
-  ans:1,
-  exp:"<strong>Ascending order.</strong> Subtracting h1 − h2: if h1 is slower (smaller), result is negative → h1 comes first. Reverse the subtraction for descending."
-},
-{
-  cat:"Collections", type:"True/False",
-  q:"A class implementing Comparable<T> must have a compareTo(T other) method that returns an int.",
-  opts:["True","False"],
-  ans:0,
-  exp:"<strong>True.</strong> <code>compareTo()</code> returns negative (this < other), 0 (equal), or positive (this > other)."
-},
-{
-  cat:"Collections", type:"Multiple Choice",
-  q:"In chap17, Car has REC_SIZE = 2*FRAME_SIZE + Integer.BYTES + Double.BYTES, where FRAME_SIZE=20. What is REC_SIZE in bytes?",
-  opts:["44","48","52","56"],
-  ans:1,
-  exp:"<strong>48</strong> — 2×20 (strings) + 4 (int) + 8 (double) = 48 bytes per record."
-},
-{
-  cat:"Collections", type:"Multiple Choice",
-  q:"What is the purpose of serialVersionUID in a Serializable class?",
-  opts:[
-    "It sets the object's hash code",
-    "It verifies class compatibility when deserializing",
-    "It controls the sorting order",
-    "It is required for all Java classes"
-  ],
-  ans:1,
-  exp:"<strong>serialVersionUID</strong> is used during deserialization to verify that the stored class and the loaded class match. A mismatch throws InvalidClassException."
-},
-{
-  cat:"Collections", type:"Multiple Choice",
-  q:"When seeking to the 3rd record (0-indexed: record #2) in a RandomAccessFile with fixed record size REC_SIZE, what is the byte offset?",
-  opts:["REC_SIZE","2 * REC_SIZE","3 * REC_SIZE","REC_SIZE / 2"],
-  ans:1,
-  exp:"<code>raf.seek(2 * REC_SIZE)</code> — record index × record size gives the byte offset. Record 0 is at 0, record 1 at REC_SIZE, record 2 at 2*REC_SIZE."
-},
-
-// ──────────── LINKED LISTS & TREES (chap19) ────────────
-{
-  cat:"LinkedLists", type:"Multiple Choice",
-  q:"In the course's LList<T>, how is add(T data) implemented?",
-  opts:[
-    "Iteratively — loops until end and adds",
-    "Recursively — recAdd() traverses to end and appends a new Node",
-    "Inserts at the head for O(1) performance",
-    "Uses Java's built-in LinkedList internally"
-  ],
-  ans:1,
-  exp:"<strong>Recursively</strong>. recAdd() takes the current node; if null (end of list), returns new Node(data); otherwise recurses on next and returns current."
-},
-{
-  cat:"LinkedLists", type:"Code Output",
-  q:"Trace this recursive recAdd — what does the final list look like after add(\"A\"), add(\"B\"), add(\"C\")?",
-  code:`// recAdd: if current==null → return new Node(data)
-//         else current.setNext(recAdd(current.getNext(), data)); return current;
-// head starts null; each add calls head = recAdd(head, data)`,
-  opts:["C → B → A","A → B → C","B → A → C","C → A → B"],
-  ans:1,
-  exp:"<strong>A → B → C</strong> — recAdd appends at the end, so insertion order is preserved."
-},
-{
-  cat:"LinkedLists", type:"Multiple Choice",
-  q:"What is the key difference between LList<T> (unordered) and OLList<T> (ordered) in the course?",
-  opts:[
-    "OLList uses an array internally; LList uses nodes",
-    "OLList inserts in sorted position using compareTo(); LList appends at the end",
-    "LList can store duplicates; OLList cannot",
-    "There is no difference — they are the same class"
-  ],
-  ans:1,
-  exp:"<strong>OLList</strong> maintains sorted order by inserting each element at the correct position using compareTo(). <strong>LList</strong> just appends to the end."
-},
-{
-  cat:"LinkedLists", type:"Multiple Choice",
-  q:"OLList<T> has the type bound `<T extends Comparable>`. Why is this required?",
-  opts:[
-    "So T can be printed with toString()",
-    "So elements can be compared with compareTo() during sorted insertion",
-    "So T can be cloned",
-    "So the list can be serialized"
-  ],
-  ans:1,
-  exp:"The bound <code>T extends Comparable</code> ensures every element has a <strong>compareTo()</strong> method, which OLList uses to find the correct insertion position."
-},
-{
-  cat:"LinkedLists", type:"True/False",
-  q:"In an ordered linked list (OLList), the find() method can return null early (before reaching the end) if the search has gone past where the value would be.",
-  opts:["True","False"],
-  ans:0,
-  exp:"<strong>True.</strong> Since the list is sorted, if current.compareTo(target) > 0, the target cannot exist later in the list, so find() returns null early — more efficient than LList."
-},
-{
-  cat:"LinkedLists", type:"Multiple Choice",
-  q:"LLIterator<T> implements Iterator<T>. What does hasNext() return?",
-  opts:[
-    "current.getData() != null",
-    "current != null",
-    "head != null",
-    "current.getNext() != null"
-  ],
-  ans:1,
-  exp:"<code>hasNext()</code> returns <strong>current != null</strong>. When current is null, there are no more nodes to iterate."
-},
-{
-  cat:"LinkedLists", type:"Multiple Choice",
-  q:"For a Binary Search Tree, which traversal produces elements in sorted (ascending) order?",
-  opts:["Pre-order (root, left, right)","In-order (left, root, right)","Post-order (left, right, root)","Level-order (BFS)"],
-  ans:1,
-  exp:"<strong>In-order</strong> traversal visits left subtree, then root, then right subtree — producing sorted ascending output for a BST."
-},
-{
-  cat:"LinkedLists", type:"Code Output",
-  q:"Given a BST with root 5, left child 3, right child 7. What does in-order traversal print?",
-  code:`// BST:    5
-//       /   \\
-//      3     7`,
-  opts:["5 3 7","3 5 7","7 5 3","3 7 5"],
-  ans:1,
-  exp:"<strong>3 5 7</strong> — In-order goes left (3), root (5), right (7). For BSTs this always produces sorted output."
-},
-{
-  cat:"LinkedLists", type:"Multiple Choice",
-  q:"BinaryTree.balanceInsert() takes a sorted array. How does it pick the root element?",
-  opts:[
-    "First element (index 0)",
-    "Last element",
-    "Middle element: (start + end) / 2",
-    "Random element"
-  ],
-  ans:2,
-  exp:"<strong>Middle element</strong> — nMid = (nStart + nEnd) / 2. Inserting the middle first creates a balanced tree; then recursing on left and right halves."
-},
-{
-  cat:"LinkedLists", type:"Multiple Choice",
-  q:"What does the height() method return for a single-node tree?",
-  opts:["0","1","2","null"],
-  ans:1,
-  exp:"<strong>1</strong> — height returns 1 + max(leftHeight, rightHeight). A leaf has no children (height 0 each), so 1 + max(0,0) = 1."
-},
-{
-  cat:"LinkedLists", type:"Multiple Choice",
-  q:"In the course's LList, what instance variable trick is used to return the removed item from recRemove()?",
-  opts:[
-    "A static field on Node",
-    "An instance variable obReturn on LList that recRemove sets before returning",
-    "The return type of recRemove is T (the data)",
-    "A separate stack to track removals"
-  ],
-  ans:1,
-  exp:"<strong>obReturn</strong> is an instance variable on LList. recRemove() sets it to the data being removed, so the caller can access the removed item after the recursive call completes."
-},
-
-// ──────────── GENERICS (chap20, Assign3) ────────────
-{
-  cat:"Generics", type:"Multiple Choice",
-  q:"What is the type bound `<T extends Comparable<T>>` doing in a generic method?",
-  opts:[
-    "T must be a subclass of Comparable class",
-    "T must implement the Comparable<T> interface, enabling compareTo()",
-    "T must extend the Comparable abstract class",
-    "It restricts T to only String and Integer"
-  ],
-  ans:1,
-  exp:"<code>&lt;T extends Comparable&lt;T&gt;&gt;</code> means T must implement <strong>Comparable&lt;T&gt;</strong>, guaranteeing a <code>compareTo(T)</code> method is available."
-},
-{
-  cat:"Generics", type:"Code Output",
-  q:"What happens when you try to add to a List.of() list?",
-  code:`List<String> lst = List.of("Alpha","Beta","Gamma");
-lst.add("Delta");
-System.out.println(lst.size());`,
-  opts:["4","3","Compilation error","Throws UnsupportedOperationException at runtime"],
-  ans:3,
-  exp:"<strong>UnsupportedOperationException</strong> — List.of() creates an <em>immutable</em> list. To add elements, wrap it: <code>new ArrayList&lt;&gt;(List.of(...))</code>"
-},
-{
-  cat:"Generics", type:"Multiple Choice",
-  q:"In chap20's Utils.genCSVRead(), the type bound is `<T extends CopyIt<T>>`. Why does CopyIt need a copy() method?",
-  opts:[
-    "To compare objects for sorting",
-    "Because the same sample object is reused — copy() creates a new instance with the current field values",
-    "To serialize the object to a file",
-    "To print the object's fields"
-  ],
-  ans:1,
-  exp:"<strong>copy()</strong> creates a new independent instance. Since genCSVRead() calls setVals() on the <em>same</em> sample object each iteration, copy() is called to snapshot that state into a new object before the next row overwrites it."
-},
-{
-  cat:"Generics", type:"Multiple Choice",
-  q:"What is the difference between `ArrayList<Animal>` and `ArrayList<? extends Animal>`?",
-  opts:[
-    "No difference",
-    "ArrayList<Animal> only holds Animal; the wildcard version can hold Animal or any subtype but is read-only",
-    "The wildcard version can only hold subclasses, not Animal itself",
-    "ArrayList<Animal> is slower"
-  ],
-  ans:1,
-  exp:"<code>ArrayList&lt;? extends Animal&gt;</code> is a <strong>read-only wildcard</strong> — you can read from it, but you cannot add to it (compiler doesn't know which subtype it actually holds)."
-},
-{
-  cat:"Generics", type:"True/False",
-  q:"A generic class `Box<T>` can use T as a return type, parameter type, and field type.",
-  opts:["True","False"],
-  ans:0,
-  exp:"<strong>True.</strong> The type parameter T can be used anywhere in the class body — fields, method parameters, and return types."
-},
-{
-  cat:"Generics", type:"Multiple Choice",
-  q:"In Assign3, a generic binary search method has signature: `public static <T extends Comparable<T>> int binSearch(T[] arr, T target)`. Which call is valid?",
-  opts:[
-    "binSearch(new int[]{1,2,3}, 2)",
-    "binSearch(new Integer[]{1,2,3}, 2)",
-    "binSearch(new Object[]{1,2,3}, 2)",
-    "binSearch(new String[]{\"a\"}, 1)"
-  ],
-  ans:1,
-  exp:"<strong>Integer[]</strong> works because Integer implements Comparable&lt;Integer&gt;. Primitive int[] doesn't work with generics — you need the wrapper type."
-},
-{
-  cat:"Generics", type:"Multiple Choice",
-  q:"ShowLL uses LinkedList<BBShip> with a ListIterator. What can a ListIterator do that a regular Iterator cannot?",
-  opts:[
-    "Iterate forward",
-    "Check hasNext()",
-    "Traverse backwards with hasPrevious() and previous()",
-    "Remove elements"
-  ],
-  ans:2,
-  exp:"<strong>ListIterator</strong> supports bidirectional traversal — hasPrevious() and previous() in addition to hasNext() and next()."
-},
-{
-  cat:"Generics", type:"Code Output",
-  q:"What is printed?",
-  code:`public static <T> void printFirst(T[] arr) {
-    System.out.println(arr[0]);
-}
-// In main:
-printFirst(new String[]{"Hello","World"});
-printFirst(new Integer[]{10,20,30});`,
-  opts:["Hello then 10","World then 30","Hello then World","Compilation error"],
-  ans:0,
-  exp:"<strong>Hello</strong> then <strong>10</strong> — the generic method works for any array type, printing arr[0] each time."
-},
-
-// ──────────── FUNCTIONAL & STREAMS (Functional folder, chap19) ────────────
-{
-  cat:"Functional", type:"Multiple Choice",
-  q:"Which stream operation is a TERMINAL operation (consumes the stream)?",
-  opts:["filter()","map()","sorted()","collect()"],
-  ans:3,
-  exp:"<strong>collect()</strong> is terminal — it produces a result and ends the stream pipeline. filter(), map(), and sorted() are intermediate (lazy, return a new Stream)."
-},
-{
-  cat:"Functional", type:"Multiple Choice",
-  q:"What does `stream.filter(x -> x > 5).count()` return for the list [1,3,6,8,2]?",
-  opts:["2","3","5","0"],
-  ans:0,
-  exp:"<strong>2</strong> — Only 6 and 8 are greater than 5. count() is a terminal operation returning a long."
-},
-{
-  cat:"Functional", type:"Code Output",
-  q:"What does this stream chain produce?",
-  code:`List<String> words = List.of("apple","banana","cherry","avocado","blueberry");
-List<String> result = words.stream()
-    .filter(w -> w.startsWith("a"))
-    .map(String::toUpperCase)
-    .toList();
-System.out.println(result);`,
-  opts:["[apple, avocado]","[APPLE, AVOCADO]","[APPLE, BANANA, CHERRY, AVOCADO, BLUEBERRY]","[apple, avocado, banana]"],
-  ans:1,
-  exp:"<strong>[APPLE, AVOCADO]</strong> — filter keeps only \"a\"-starting words, map converts them to uppercase, toList() collects the result."
-},
-{
-  cat:"Functional", type:"Multiple Choice",
-  q:"What is the correct lambda syntax for a Comparator that sorts strings by length?",
-  opts:[
-    "(a, b) -> a.length() - b.length()",
-    "a -> a.length()",
-    "(a, b) { return a.length() - b.length(); }",
-    "Comparator(a.length() - b.length())"
-  ],
-  ans:0,
-  exp:"<strong>(a, b) -> a.length() - b.length()</strong> — Two-parameter lambda. Negative result means a comes before b (shorter first)."
-},
-{
-  cat:"Functional", type:"Multiple Choice",
-  q:"What does `Collectors.groupingBy(BBShip::getNavy, Collectors.counting())` return?",
-  opts:[
-    "List<BBShip>",
-    "Map<String, Long> where keys are navy names and values are counts",
-    "Map<BBShip, Integer>",
-    "Long (total count)"
-  ],
-  ans:1,
-  exp:"<strong>Map&lt;String, Long&gt;</strong> — groupingBy groups by the navy name key, and counting() counts how many ships per navy."
-},
-{
-  cat:"Functional", type:"Code Output",
-  q:"What does reduce produce here?",
-  code:`List<Integer> nums = List.of(1,2,3,4,5);
-int result = nums.stream().reduce(0, Integer::sum);
-System.out.println(result);`,
-  opts:["10","15","0","120"],
-  ans:1,
-  exp:"<strong>15</strong> — reduce(0, Integer::sum) starts with identity 0 and accumulates: 0+1+2+3+4+5 = 15."
-},
-{
-  cat:"Functional", type:"Multiple Choice",
-  q:"What is the difference between `stream.map()` and `stream.flatMap()`?",
-  opts:[
-    "map() transforms each element; flatMap() transforms and flattens nested streams into one",
-    "flatMap() filters elements; map() transforms them",
-    "They are the same",
-    "map() is terminal; flatMap() is intermediate"
-  ],
-  ans:0,
-  exp:"<strong>map()</strong> produces one output per input. <strong>flatMap()</strong> produces zero or more outputs per input and merges all resulting streams into a single stream."
-},
-{
-  cat:"Functional", type:"Code Output",
-  q:"What does this Optional code print?",
-  code:`Optional<String> opt = Optional.empty();
-System.out.println(opt.isPresent());
-System.out.println(opt.isEmpty());`,
-  opts:["true then false","false then true","false then false","true then true"],
-  ans:1,
-  exp:"<strong>false then true</strong> — isPresent() returns false for an empty Optional; isEmpty() returns true."
-},
-{
-  cat:"Functional", type:"Multiple Choice",
-  q:"Which is the correct method reference equivalent to `x -> x.toUpperCase()`?",
-  opts:["String::toUpperCase","String::toUpperCase()","toUpperCase::String","x::toUpperCase"],
-  ans:0,
-  exp:"<strong>String::toUpperCase</strong> is the instance method reference. No parentheses after the method name in method references."
-},
-{
-  cat:"Functional", type:"True/False",
-  q:"Once a terminal operation is called on a stream, the stream can be reused for another pipeline.",
-  opts:["True","False"],
-  ans:1,
-  exp:"<strong>False.</strong> Streams are single-use. After a terminal operation, the stream is consumed. You must create a new stream from the source."
-},
-{
-  cat:"Functional", type:"Multiple Choice",
-  q:"What does `Collectors.joining(\",\", \"[\", \"]\")` do?",
-  opts:[
-    "Joins elements with comma, wrapping in brackets: [a,b,c]",
-    "Creates a List of strings joined by comma",
-    "Splits a string by comma",
-    "Joins only strings that start with a bracket"
-  ],
-  ans:0,
-  exp:"<strong>[a,b,c]</strong> format — joining(delimiter, prefix, suffix) concatenates all strings with the delimiter between them and the prefix/suffix wrapping the result."
-},
-{
-  cat:"Functional", type:"Code Output",
-  q:"What does this stream produce?",
-  code:`List<Integer> nums = List.of(3,1,4,1,5,9,2,6,5);
-long result = nums.stream()
-    .distinct()
-    .filter(n -> n > 3)
-    .count();
-System.out.println(result);`,
-  opts:["3","4","5","6"],
-  ans:1,
-  exp:"<strong>4</strong> — distinct() gives [3,1,4,5,9,2,6], filter(>3) gives [4,5,9,6], count() = 4."
-},
-{
-  cat:"Functional", type:"Multiple Choice",
-  q:"What is the type of a lambda `x -> x > 5` when stored in a functional interface variable?",
-  opts:["Function<Integer, Integer>","Predicate<Integer>","Consumer<Integer>","Supplier<Integer>"],
-  ans:1,
-  exp:"<strong>Predicate&lt;Integer&gt;</strong> — a Predicate takes one input and returns boolean. `x > 5` is a boolean expression. Function returns a non-boolean value; Consumer returns void; Supplier takes no arguments."
-},
-{
-  cat:"Functional", type:"Multiple Choice",
-  q:"In the Functional module, `Collectors.summarizingInt()` produces an IntSummaryStatistics object. Which method gives the average?",
-  opts:[".average()",".getAverage()",".mean()",".avg()"],
-  ans:1,
-  exp:"<strong>getAverage()</strong> — IntSummaryStatistics has getAverage(), getMax(), getMin(), getSum(), getCount()."
-},
-{
-  cat:"Functional", type:"Code Output",
-  q:"What does this code output?",
-  code:`List<String> lst = List.of("cat","dog","elephant","ox");
-String result = lst.stream()
-    .sorted((a,b) -> a.length() - b.length())
-    .limit(2)
-    .collect(Collectors.joining(", "));
-System.out.println(result);`,
-  opts:["cat, ox","ox, cat","dog, cat","elephant, dog"],
-  ans:1,
-  exp:"<strong>ox, cat</strong> — sorted by length ascending: ox(2), cat(3), dog(3), elephant(8). limit(2) keeps ox, cat. joining gives \"ox, cat\"."
-},
-{
-  cat:"Functional", type:"Multiple Choice",
-  q:"What is a Predicate<T> in Java?",
-  opts:[
-    "A function that takes T and returns T",
-    "A function that takes T and returns boolean",
-    "A function that takes no args and returns T",
-    "A function that takes two T values"
-  ],
-  ans:1,
-  exp:"<strong>Predicate&lt;T&gt;</strong> represents a single-argument function returning boolean. Its abstract method is <code>boolean test(T t)</code>."
-},
-{
-  cat:"Functional", type:"True/False",
-  q:"`stream.filter()` is eager — it immediately processes all elements when called.",
-  opts:["True","False"],
-  ans:1,
-  exp:"<strong>False.</strong> filter() is <em>lazy</em> (intermediate). Processing is deferred until a terminal operation is called. This allows the JVM to optimize the pipeline."
-},
-
-// ──────────── MIXED / TRICKY ────────────
-{
-  cat:"Inheritance", type:"Multiple Choice",
-  q:"What is printed by this polymorphic code?",
-  code:`Vehicle v = new Car("Toyota","Camry",25000.0, DriveTrain.GASOLINE, 4);
-System.out.println(v instanceof Car);
-System.out.println(v instanceof Vehicle);`,
-  opts:["false then false","true then true","true then false","false then true"],
-  ans:1,
-  exp:"<strong>true then true</strong> — A Car IS-A Vehicle (instanceof checks the entire inheritance chain). Both return true."
-},
-{
-  cat:"Abstract", type:"Code Output",
-  q:"Animal is abstract with abstract sound(). Edible is an interface with abstract howToEat(). Chicken extends Animal and implements Edible. What happens?",
-  code:`public abstract class Animal { public abstract String sound(); }
-public interface Edible    { String howToEat(); }
-
-public class Chicken extends Animal implements Edible {
-    public String sound()   { return "Cluck"; }
-    public String howToEat(){ return "Fry it"; }
-}
-// In main:
-Animal a = new Chicken();
-System.out.println(a.sound());`,
-  opts:["Cluck","Fry it","Compilation error — cannot assign Chicken to Animal","null"],
-  ans:0,
-  exp:"<strong>Cluck</strong> — Animal reference can hold a Chicken (polymorphism). sound() is declared on Animal so the compiler allows the call. At runtime it dispatches to Chicken.sound()."
-},
-{
-  cat:"Collections", type:"Multiple Choice",
-  q:"In chap17, you binary-search a RandomAccessFile of fixed-size Car records. To jump to record index nMid, you call:",
-  opts:["raf.seek(nMid)","raf.seek(nMid + REC_SIZE)","raf.seek(nMid * REC_SIZE)","raf.seek(REC_SIZE / nMid)"],
-  ans:2,
-  exp:"<strong>raf.seek(nMid * REC_SIZE)</strong> — each record occupies exactly REC_SIZE bytes, so multiplying the 0-based index by the record size gives the correct byte offset."
-},
-{
-  cat:"LinkedLists", type:"Multiple Choice",
-  q:"What is the time complexity of finding an element in an unordered linked list LList?",
-  opts:["O(1)","O(log n)","O(n)","O(n log n)"],
-  ans:2,
-  exp:"<strong>O(n)</strong> — must traverse from head, potentially visiting every node. No binary search is possible without sorted order and random access."
-},
-{
-  cat:"Generics", type:"Multiple Choice",
-  q:"The `CopyIt<T>` interface requires copy() returns T. Why can't copy() just return Object?",
-  opts:[
-    "Object doesn't support cloning",
-    "Returning T allows the caller to use the result without casting",
-    "Interfaces cannot return Object",
-    "There is no difference"
-  ],
-  ans:1,
-  exp:"Returning <strong>T</strong> (the generic type) preserves type safety — the caller gets back the correct type without needing an unchecked cast. Returning Object would require casting everywhere."
-},
-{
-  cat:"Functional", type:"Multiple Choice",
-  q:"In Assign4, Files.lines(Paths.get(\"file.csv\")).skip(1).map(...).collect(...) — what does skip(1) do?",
-  opts:[
-    "Skips the last line",
-    "Skips the header row (first line) of the CSV",
-    "Skips every other line",
-    "Skips blank lines"
-  ],
-  ans:1,
-  exp:"<strong>skip(1)</strong> skips the first element — in a CSV context, this skips the header row so data rows are processed correctly."
-},
-{
-  cat:"Inheritance", type:"True/False",
-  q:"In Java, constructors are inherited — a subclass automatically gets all constructors of its parent.",
-  opts:["True","False"],
-  ans:1,
-  exp:"<strong>False.</strong> Constructors are NOT inherited. A subclass must define its own constructors, though it can call parent constructors via super()."
-},
-{
-  cat:"Abstract", type:"Multiple Choice",
-  q:"You have `ArrayList<Animal> list`. You add a Tiger and Chicken. Calling `list.get(0).sound()` works because:",
-  opts:[
-    "ArrayList stores concrete types",
-    "sound() is defined as abstract in Animal — all Animal references are guaranteed to have it",
-    "Tiger is cast automatically",
-    "It doesn't work — you must cast first"
-  ],
-  ans:1,
-  exp:"<strong>Polymorphism + abstract method guarantee.</strong> sound() is declared in Animal (abstract), so the compiler allows the call on any Animal reference. At runtime, the correct subclass method executes."
-},
-{
-  cat:"Functional", type:"Code Output",
-  q:"What is printed?",
-  code:`List<String> names = List.of("Alice","Bob","Charlie","Anna","Brian");
-Map<Character, Long> result = names.stream()
-    .collect(Collectors.groupingBy(s -> s.charAt(0), Collectors.counting()));
-System.out.println(result.get('A'));
-System.out.println(result.get('B'));`,
-  opts:["1 then 1","2 then 2","2 then 1","1 then 2"],
-  ans:1,
-  exp:"<strong>2 then 2</strong> — 'A': Alice, Anna (2). 'B': Bob, Brian (2)."
-},
-{
-  cat:"Generics", type:"True/False",
-  q:"Generic type information is fully available at runtime due to Java's type system.",
-  opts:["True","False"],
-  ans:1,
-  exp:"<strong>False.</strong> Java uses <em>type erasure</em> — generic type info is removed at compile time. At runtime, <code>List&lt;String&gt;</code> and <code>List&lt;Integer&gt;</code> are both just <code>List</code>."
-},
-{
-  cat:"LinkedLists", type:"Multiple Choice",
-  q:"Pre-order traversal visits nodes in which order?",
-  opts:[
-    "Left, Root, Right",
-    "Root, Left, Right",
-    "Left, Right, Root",
-    "Right, Root, Left"
-  ],
-  ans:1,
-  exp:"<strong>Root, Left, Right</strong> — Pre-order visits the root first, then left subtree, then right subtree. Useful for copying or serializing a tree."
-},
-{
-  cat:"Collections", type:"Multiple Choice",
-  q:"When writing a String to a RandomAccessFile with a fixed FRAME_SIZE of 20, what must you handle?",
-  opts:[
-    "Nothing special — Java handles it automatically",
-    "Strings shorter than 20 chars must be padded; longer strings must be truncated",
-    "Strings must be converted to int first",
-    "Only UTF-8 encoded strings work"
-  ],
-  ans:1,
-  exp:"Fixed-size RAF records require <strong>padding</strong> short strings and <strong>truncating</strong> long ones so every record occupies exactly the same number of bytes."
-},
-{
-  cat:"Functional", type:"Multiple Choice",
-  q:"What does `Optional.get()` do if the Optional is empty?",
-  opts:[
-    "Returns null",
-    "Returns the default value",
-    "Throws NoSuchElementException",
-    "Returns an empty string"
-  ],
-  ans:2,
-  exp:"<strong>NoSuchElementException</strong> — always check isPresent() or use orElse() before calling get() on an Optional."
-},
-{
-  cat:"Inheritance", type:"Multiple Choice",
-  q:"Given Person.toString() returns \"last,first\", Student.toString() returns super.toString() + \" #\" + id. What pattern does this demonstrate?",
-  opts:[
-    "Method hiding",
-    "Method overriding with super delegation",
-    "Constructor chaining",
-    "Interface default method"
-  ],
-  ans:1,
-  exp:"<strong>Method overriding with super delegation</strong> — Student overrides toString() but reuses the parent's version via super.toString(), then appends its own information."
-},
-{
-  cat:"Abstract", type:"Multiple Choice",
-  q:"The Greek class constructor checks: `name.matches(\"[FLO].*\") && name.length() < 5`. What happens if name is \"Zeus\"?",
-  opts:[
-    "name is kept as \"Zeus\"",
-    "name is set to \"Minotaur\"",
-    "Throws IllegalArgumentException",
-    "name is set to \"ZeusZ\""
-  ],
-  ans:0,
-  exp:"<strong>\"Zeus\" is kept</strong> — 'Z' does not match [FLO] (F, L, or O start), so the condition is false and the name remains \"Zeus\"."
-}
-
-]; // end QUESTIONS
-
-// ═══════════════════════════════════════════════════
-//  APP STATE
-// ═══════════════════════════════════════════════════
-let mode = "all";
-let queue = [];
-let current = 0;
-let score = 0;
-let selected = null;
-let answered = false;
-let results = []; // {q, chosen, correct}
-let missedIds = JSON.parse(localStorage.getItem("cosc182_missed") || "[]");
-
-function selectMode(el, m) {
-  document.querySelectorAll(".mode-card").forEach(c=>c.classList.remove("selected"));
-  el.classList.add("selected");
-  mode = m;
-}
-
-function startQuiz() {
-  let indices = [...Array(QUESTIONS.length).keys()];
-  if (mode === "random") indices = shuffle(indices);
-  else if (mode === "quick") indices = shuffle(indices).slice(0,30);
-  else if (mode === "missed") {
-    indices = missedIds.length ? missedIds : shuffle(indices).slice(0,30);
-  }
-  queue = indices;
-  current = 0; score = 0; selected = null; answered = false; results = [];
-  document.getElementById("splash").style.display = "none";
-  document.getElementById("quiz").style.display = "block";
-  renderQuestion();
-}
+const QUIZ_SIZE = 20;
+let usedIndices = [];
+let currentQuiz = [];
+let answers = [];
+let submitted = false;
 
 function shuffle(arr) {
-  const a = [...arr];
-  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  let a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
   return a;
 }
 
-const CAT_COLORS = {
-  "Inheritance":"#ffd166","Abstract":"#a29bfe","Collections":"#43d9ad",
-  "LinkedLists":"#ff9f43","Generics":"#6c63ff","Functional":"#fd79a8"
-};
-
-function renderQuestion() {
-  const qi = queue[current];
-  const q = QUESTIONS[qi];
-  const total = queue.length;
-
-  document.getElementById("prog").style.width = (current/total*100)+"%";
-  document.getElementById("q-counter").textContent = `${current+1} / ${total}`;
-  document.getElementById("score-display").textContent = `${score} pts`;
-
-  const tag = document.getElementById("cat-tag");
-  tag.textContent = q.cat;
-  tag.style.background = CAT_COLORS[q.cat]+"33";
-  tag.style.color = CAT_COLORS[q.cat];
-
-  document.getElementById("q-type").textContent = q.type;
-  document.getElementById("q-text").textContent = q.q;
-
-  const cw = document.getElementById("code-wrap");
-  if(q.code) {
-    cw.innerHTML = `<pre class="code-block">${syntaxHL(q.code)}</pre>`;
-  } else { cw.innerHTML = ""; }
-
-  const opts = document.getElementById("options");
-  opts.innerHTML = "";
-  const letters = ["A","B","C","D"];
-  q.opts.forEach((o,i)=>{
-    const div = document.createElement("div");
-    div.className = "option";
-    div.innerHTML = `<span class="opt-letter">${letters[i]}</span><span>${o}</span>`;
-    div.onclick = () => selectOption(i);
-    opts.appendChild(div);
-  });
-
-  document.getElementById("feedback").className = "feedback";
-  document.getElementById("feedback").innerHTML = "";
-  document.getElementById("btn-check").disabled = true;
-  document.getElementById("btn-check").style.display = "inline-block";
-  document.getElementById("btn-next").style.display = "none";
-  selected = null; answered = false;
-}
-
-function selectOption(i) {
-  if(answered) return;
-  selected = i;
-  document.querySelectorAll(".option").forEach((o,idx)=>{
-    o.classList.toggle("selected", idx===i);
-  });
-  document.getElementById("btn-check").disabled = false;
-}
-
-function checkAnswer() {
-  if(selected === null || answered) return;
-  answered = true;
-  const qi = queue[current];
-  const q = QUESTIONS[qi];
-  const correct = q.ans;
-  const isCorrect = selected === correct;
-
-  document.querySelectorAll(".option").forEach((o,i)=>{
-    o.classList.add("locked");
-    if(i === correct) o.classList.add("correct");
-    else if(i === selected && !isCorrect) o.classList.add("wrong");
-  });
-
-  const fb = document.getElementById("feedback");
-  if(isCorrect) {
-    score++;
-    document.getElementById("score-display").textContent = `${score} pts`;
-    fb.className = "feedback correct-fb show";
-    fb.innerHTML = `<strong>Correct!</strong>${q.exp}`;
-  } else {
-    fb.className = "feedback wrong-fb show";
-    fb.innerHTML = `<strong>Incorrect.</strong>${q.exp}`;
+function startNewQuiz() {
+  submitted = false;
+  if (usedIndices.length + QUIZ_SIZE > ALL_QUESTIONS.length) {
+    usedIndices = [];
   }
-
-  results.push({qi, chosen: selected, correct: isCorrect});
-
-  document.getElementById("btn-check").style.display = "none";
-  document.getElementById("btn-next").style.display = "inline-block";
+  let available = ALL_QUESTIONS.map((_, i) => i).filter(i => !usedIndices.includes(i));
+  let shuffled = shuffle(available);
+  let chosen = shuffled.slice(0, QUIZ_SIZE);
+  usedIndices = usedIndices.concat(chosen);
+  currentQuiz = chosen.map(i => ({ ...ALL_QUESTIONS[i] }));
+  currentQuiz = shuffle(currentQuiz);
+  answers = new Array(QUIZ_SIZE).fill(null);
+  renderQuiz();
+  window.scrollTo(0, 0);
 }
 
-function nextQuestion() {
-  current++;
-  if(current >= queue.length) { endQuiz(); return; }
-  renderQuestion();
-}
-
-function endQuiz() {
-  // save missed
-  const newMissed = results.filter(r=>!r.correct).map(r=>r.qi);
-  const existing = JSON.parse(localStorage.getItem("cosc182_missed")||"[]");
-  const merged = [...new Set([...existing,...newMissed])];
-  localStorage.setItem("cosc182_missed", JSON.stringify(merged));
-
-  document.getElementById("quiz").style.display = "none";
-  document.getElementById("results").style.display = "block";
-  renderResults();
-}
-
-function renderResults() {
-  const total = results.length;
-  const pct = total ? Math.round(score/total*100) : 0;
-  document.getElementById("final-score").textContent = `${pct}%`;
-  let msg = pct>=90?"Excellent! You're ready for the final 🎯":
-            pct>=75?"Good work — review the missed topics":
-            pct>=60?"Keep studying — focus on weak areas":"Keep going — practice makes perfect!";
-  document.getElementById("final-msg").textContent = `${score} / ${total} correct  •  ${msg}`;
-
-  // per-category breakdown
-  const cats = {};
-  results.forEach(r=>{
-    const q = QUESTIONS[r.qi];
-    if(!cats[q.cat]) cats[q.cat]={total:0,correct:0};
-    cats[q.cat].total++;
-    if(r.correct) cats[q.cat].correct++;
+function selectMC(qIdx, optIdx) {
+  if (submitted) return;
+  answers[qIdx] = optIdx;
+  updateAnswerCount();
+  let card = document.getElementById('q-' + qIdx);
+  card.querySelectorAll('.opt').forEach((el, i) => {
+    el.className = 'opt' + (i === optIdx ? ' selected' : '');
   });
-  const bd = document.getElementById("cat-breakdown");
-  bd.innerHTML = "";
-  Object.entries(cats).forEach(([cat,s])=>{
-    const p = Math.round(s.correct/s.total*100);
-    const bar = document.createElement("div");
-    bar.className = "cat-card";
-    bar.style.borderColor = CAT_COLORS[cat]+"66";
-    bar.innerHTML = `<h4>${cat}</h4>
-      <div class="cat-score" style="color:${CAT_COLORS[cat]}">${p}%</div>
-      <div style="font-size:.75rem;color:var(--muted);margin-top:.2rem">${s.correct}/${s.total} correct</div>`;
-    bd.appendChild(bar);
+  card.classList.add('answered');
+}
+
+function updateAnswerCount() {
+  let answered = answers.filter((a, i) => {
+    if (currentQuiz[i].type === 'mc') return a !== null;
+    return a !== null && a !== '';
+  }).length;
+  document.getElementById('ans-count').textContent = answered;
+  document.getElementById('prog-fill').style.width = (answered / QUIZ_SIZE * 100) + '%';
+}
+
+function getSAGrade(userAns, q) {
+  if (!userAns || userAns.trim().length < 5) return { grade: 'wrong', score: 0 };
+  let u = userAns.toLowerCase();
+  let matched = q.key.filter(k => u.includes(k.toLowerCase())).length;
+  let ratio = matched / q.key.length;
+  if (ratio >= 0.55) return { grade: 'correct', score: 1 };
+  if (ratio >= 0.25) return { grade: 'partial', score: 0.5 };
+  return { grade: 'wrong', score: 0 };
+}
+
+function submitQuiz() {
+  submitted = true;
+  let score = 0;
+  currentQuiz.forEach((q, i) => {
+    if (q.type === 'mc') {
+      if (answers[i] === q.ans) score++;
+    } else {
+      score += getSAGrade(answers[i] || '', q).score;
+    }
   });
 
-  // review list
-  const rl = document.getElementById("review-list");
-  rl.innerHTML = "";
-  results.forEach(r=>{
-    const q = QUESTIONS[r.qi];
-    const letters = ["A","B","C","D"];
-    const div = document.createElement("div");
-    div.className = `review-item ${r.correct?"r-correct":"r-wrong"}`;
-    div.innerHTML = `
-      <div class="r-q"><strong>[${q.cat}]</strong> ${q.q}</div>
-      <div class="r-ans">
-        ${r.correct ? `<span class="r-correct-ans">✓ ${letters[r.chosen]}: ${q.opts[r.chosen]}</span>` :
-          `<span class="r-your">✗ Your answer: ${letters[r.chosen]}: ${q.opts[r.chosen]}</span>
-           <span class="r-correct-ans">✓ Correct: ${letters[q.ans]}: ${q.opts[q.ans]}</span>`}
+  let correct = 0, partial = 0, wrong = 0;
+  let reviewHTML = '';
+  currentQuiz.forEach((q, i) => {
+    if (q.type === 'mc') {
+      let isCorrect = answers[i] === q.ans;
+      if (isCorrect) correct++; else wrong++;
+      let ua = answers[i] !== null ? q.opts[answers[i]] : '(no answer)';
+      reviewHTML += `<div class="review-item ${isCorrect ? 'ri-correct' : 'ri-wrong'}">
+        <div class="ri-q">${i + 1}. ${q.q}</div>
+        <div class="ri-detail">Your answer: <em>${ua}</em></div>
+        ${!isCorrect ? `<div class="ri-detail ri-correct-ans">Correct: ${q.opts[q.ans]}</div>` : ''}
+        <div class="ri-detail ri-exp">${q.exp}</div>
       </div>`;
-    rl.appendChild(div);
+    } else {
+      let g = getSAGrade(answers[i] || '', q);
+      if (g.grade === 'correct') correct++;
+      else if (g.grade === 'partial') partial++;
+      else wrong++;
+      reviewHTML += `<div class="review-item ri-${g.grade}">
+        <div class="ri-q">${i + 1}. ${q.q}</div>
+        <div class="ri-detail">Your answer: <em>${answers[i] || '(no answer)'}</em></div>
+        <div class="ri-detail ri-correct-ans">Model answer: ${q.ans}</div>
+      </div>`;
+    }
   });
-}
 
-// ═══════════════════════════════════════════════════
-//  CODING CHALLENGES
-// ═══════════════════════════════════════════════════
-const CHALLENGES = [
-{
-  cat:"Inheritance", diff:"Beginner",
-  title:"Write the Vehicle and Car classes",
-  blurb:"Build a two-level inheritance hierarchy. Start with a parent <code>Vehicle</code> class that holds the shared fields, then write a <code>Car</code> subclass that adds a door count — making sure an invalid number silently defaults to 2.",
-  prompt:`// Vehicle has: String make, model; double price; DriveTrain drive
-// - Full constructor, getters, toString() → "make model $price"
-// Car extends Vehicle:
-// - Adds int doors (validated: must be 2–4, default 2)
-// - Full constructor calling super(), getter, toString() calling super`,
-  hints:["Use super(make, model, price, drive) in Car's constructor","Validate doors with a ternary: condition ? valid : 2","Car.toString() should call super.toString() and append doors"],
-  solution:
-`public class Vehicle {
-    private String make, model;
-    private double price;
-    private DriveTrain drive;
+  let pct = Math.round((score / QUIZ_SIZE) * 100);
+  let emoji = pct >= 80 ? '🎉' : pct >= 60 ? '📚' : '💪';
 
-    public Vehicle(String make, String model, double price, DriveTrain drive) {
-        this.make = make; this.model = model;
-        this.price = price; this.drive = drive;
-    }
-    public String getMake()  { return make; }
-    public String getModel() { return model; }
-    public double getPrice() { return price; }
-    public DriveTrain getDrive() { return drive; }
-
-    public String toString() {
-        return make + " " + model + " $" + price;
-    }
-}
-
-public class Car extends Vehicle {
-    private int doors;
-
-    public Car(String make, String model, double price,
-               DriveTrain drive, int doors) {
-        super(make, model, price, drive);
-        this.doors = (doors >= 2 && doors <= 4) ? doors : 2;
-    }
-    public int getDoors() { return doors; }
-
-    public String toString() {
-        return super.toString() + " (" + doors + " doors)";
-    }
-}`,
-  notes:"Key points: super() must be the <em>first</em> statement in Car's constructor. Ternary validation keeps the constructor concise. toString() delegation avoids duplicating field printing."
-},
-{
-  cat:"Inheritance", diff:"Beginner",
-  title:"Override equals() in Student",
-  blurb:"Practice writing a proper <code>equals()</code> override. Two Student objects should only be considered equal if they are exactly the same class <em>and</em> share the same student ID number — not just the same name.",
-  prompt:`// Student extends Person (Person has String first, last)
-// Student adds int studentNumber
-// Write Student.equals() so that:
-//   - Returns false if obj is not exactly a Student (use getClass())
-//   - Returns true only if studentNumbers match`,
-  hints:["Cast obOther to Student after the class check","Use this.getClass() == obOther.getClass(), NOT instanceof","Compare studentNumber fields after casting"],
-  solution:
-`@Override
-public boolean equals(Object obOther) {
-    if (obOther == null) return false;
-    if (this.getClass() != obOther.getClass()) return false;
-    Student obStudent = (Student) obOther;
-    return this.studentNumber == obStudent.getStudentNumber();
-}`,
-  notes:"<code>getClass()</code> is stricter than <code>instanceof</code> — it rejects subclasses. If you used instanceof, a GraduateStudent would equal a Student with the same ID, which is probably wrong."
-},
-{
-  cat:"Abstract", diff:"Beginner",
-  title:"Write an abstract Animal class with a concrete subclass",
-  blurb:"Define an <code>abstract</code> class that enforces a contract on its subclasses. <code>Animal</code> should have a shared concrete method that calls an abstract one — demonstrating how polymorphism lets the parent class use behaviour it doesn't define itself.",
-  prompt:`// Abstract class Animal:
-//   - double weight field, constructor, getter
-//   - abstract method: String sound()
-//   - concrete method: describe() returns "I weigh Xkg and say: [sound()]"
-// Concrete class Dog extends Animal:
-//   - constructor passing weight to super
-//   - implements sound() → returns "Woof"`,
-  hints:["Use the abstract keyword on both the class and the method","describe() can call sound() directly — polymorphism handles the rest","Dog must use super(weight) in its constructor"],
-  solution:
-`public abstract class Animal {
-    private double weight;
-
-    public Animal(double weight) { this.weight = weight; }
-    public double getWeight() { return weight; }
-
-    public abstract String sound();
-
-    public String describe() {
-        return "I weigh " + weight + "kg and say: " + sound();
-    }
-}
-
-public class Dog extends Animal {
-    public Dog(double weight) { super(weight); }
-
-    @Override
-    public String sound() { return "Woof"; }
-}`,
-  notes:"Abstract classes <em>can</em> have constructors — they're called via super() from subclasses. The concrete describe() method safely calls the abstract sound() because every instantiated Animal is guaranteed to have an implementation."
-},
-{
-  cat:"Abstract", diff:"Intermediate",
-  title:"Write a Comparator for descending age sort",
-  blurb:"Write a standalone <code>Comparator</code> class that sorts a list of people oldest-first. The key is understanding which way to subtract — get it backwards and your sort order flips.",
-  prompt:`// Write class compAgeDesc that implements Comparator<Person>
-// Person has int age (getAge())
-// Sorting with this Comparator should put OLDEST person first
-// (descending order)`,
-  hints:["Descending order: subtract h1 from h2, not h2 from h1","compare(a,b) returning positive means a goes AFTER b","Returning h2.getAge() - h1.getAge() gives descending"],
-  solution:
-`import java.util.Comparator;
-
-public class compAgeDesc implements Comparator<Person> {
-    @Override
-    public int compare(Person p1, Person p2) {
-        return p2.getAge() - p1.getAge();
-    }
-}`,
-  notes:"The trick: for <em>descending</em> order, swap the operands — <code>p2 - p1</code> instead of <code>p1 - p2</code>. When p2 is older (bigger), the result is positive, which tells sort to place p1 <em>after</em> p2."
-},
-{
-  cat:"Abstract", diff:"Intermediate",
-  title:"Implement Comparable in a Horse class",
-  blurb:"Give the <code>Horse</code> class a natural sort order by implementing <code>Comparable</code> directly on it. This is different from a Comparator — the ordering logic lives inside the class itself and is used automatically by <code>Collections.sort()</code>.",
-  prompt:`// From chap13 — the Horse class needs a natural sort order by speed.
-// Implement Comparable<Horse> so horses sort from slowest to fastest.
-// Horse has: String name, int speedFactor
-// compareTo() sorts ascending by speedFactor
-// Also add an isChampion() method that returns true if speedFactor > 90`,
-  hints:["Implement Comparable<Horse> on the class declaration","compareTo: return this.speedFactor - other.getSpeedFactor()","isChampion: return speedFactor > 90"],
-  solution:
-`public class Horse implements Comparable<Horse> {
-    private String name;
-    private int speedFactor;
-
-    public Horse(String name, int speedFactor) {
-        this.name = name;
-        this.speedFactor = speedFactor;
-    }
-    public String getName()      { return name; }
-    public int getSpeedFactor()  { return speedFactor; }
-
-    public boolean isChampion() {
-        return speedFactor > 90;
-    }
-
-    @Override
-    public int compareTo(Horse other) {
-        return this.speedFactor - other.getSpeedFactor();
-    }
-
-    public String toString() {
-        return name + " (speed: " + speedFactor + ")";
-    }
-}`,
-  notes:"Comparable defines the <em>natural</em> ordering — what Collections.sort() uses by default. Subtracting this - other gives ascending order. For a Comparator (separate class) you'd use the same subtraction logic but in a compare(a,b) method."
-},
-{
-  cat:"Collections", diff:"Beginner",
-  title:"Write push(), pop(), and peek() using an ArrayList",
-  blurb:"Build a generic <code>Stack</code> using composition — your class <em>has</em> an ArrayList internally rather than extending it. Focus on which end of the list acts as the top of the stack, and make sure <code>pop()</code> both removes and returns in one line.",
-  prompt:`// Class Stack<T> — uses a private ArrayList<T> internally
-// push(T item)  — add to top (end of list)
-// pop()         — remove and return top item
-// peek()        — return top item WITHOUT removing
-// isEmpty()     — return true if empty`,
-  hints:["Top of stack = last element = index size()-1","pop() removes AND returns in one line","Use obList.remove(obList.size()-1) for pop()"],
-  solution:
-`import java.util.ArrayList;
-
-public class Stack<T> {
-    private ArrayList<T> obList = new ArrayList<>();
-
-    public void push(T item) {
-        obList.add(item);
-    }
-
-    public T pop() {
-        return obList.remove(obList.size() - 1);
-    }
-
-    public T peek() {
-        return obList.get(obList.size() - 1);
-    }
-
-    public boolean isEmpty() {
-        return obList.isEmpty();
-    }
-}`,
-  notes:"pop() uses <code>remove(int index)</code> which both removes and returns — one clean line. peek() uses <code>get()</code> which does not remove. This is the composition approach (Stack <em>has-a</em> ArrayList) vs Stack2 which <em>extends</em> ArrayList."
-},
-{
-  cat:"LinkedLists", diff:"Intermediate",
-  title:"Write the Node class and recursive add() for LList",
-  blurb:"This is the foundation of linked lists in this course. Write the generic <code>Node</code> class, then implement the recursive <code>add()</code> that appends to the end by returning the modified node chain back up the call stack.",
-  prompt:`// Generic Node<T>: T data, Node<T> next
-//   - constructor sets next = null
-//   - getData(), getNext(), setNext()
-// In LList<T>, write:
-//   - add(T data) — public entry point
-//   - recAdd(Node<T> current, T data) — recursive helper
-//     Base case: current == null → return new Node<>(data)
-//     Else: recurse on current.getNext(), setNext, return current`,
-  hints:["recAdd returns a Node<T> — the potentially new/modified node","head = recAdd(head, data) is how add() calls it","If current is null you're at the end — return the new node"],
-  solution:
-`public class Node<T> {
-    private T data;
-    private Node<T> next;
-
-    public Node(T data) { this.data = data; this.next = null; }
-    public T getData()          { return data; }
-    public Node<T> getNext()    { return next; }
-    public void setNext(Node<T> next) { this.next = next; }
-}
-
-public class LList<T> {
-    private Node<T> head;
-
-    public void add(T data) {
-        head = recAdd(head, data);
-    }
-
-    private Node<T> recAdd(Node<T> current, T data) {
-        if (current == null) return new Node<>(data);
-        current.setNext(recAdd(current.getNext(), data));
-        return current;
-    }
-}`,
-  notes:"The recursive pattern works by <em>returning</em> the node chain back up the call stack. Each frame sets its own next pointer to whatever the recursive call returns. When the base case fires, a new node bubbles back up and gets attached."
-},
-{
-  cat:"LinkedLists", diff:"Hard",
-  title:"Write recAdd() for an Ordered Linked List (OLList)",
-  blurb:"The trickiest recursive method in chap19 — inserting into a <em>sorted</em> linked list. Unlike a regular append, you need two base cases: reaching the end of the list, and finding the spot where the new value belongs <em>before</em> the current node.",
-  prompt:`// OLList<T extends Comparable> — maintains sorted ascending order
-// Write recAdd(Node<T> current, T obNew):
-//   Base case 1: current == null  → return new Node<>(obNew)
-//   Base case 2: obNew.compareTo(current.getData()) < 0
-//                → new node goes BEFORE current
-//                → new node's next = current, return new node
-//   Recursive case: recurse forward, return current`,
-  hints:["Two base cases — end of list, OR we've found the insertion point","When inserting before current: new node's next = current","Return the new node (not current) when inserting at this position"],
-  solution:
-`private Node<T> recAdd(Node<T> current, T obNew) {
-    // End of list — append here
-    if (current == null) return new Node<>(obNew);
-
-    // New value belongs before current node
-    if (obNew.compareTo(current.getData()) < 0) {
-        Node<T> newNode = new Node<>(obNew);
-        newNode.setNext(current);
-        return newNode;
-    }
-
-    // Keep traversing
-    current.setNext(recAdd(current.getNext(), obNew));
-    return current;
-}`,
-  notes:"This is the trickiest part of OLList. When inserting <em>before</em> current, you create the new node, point it at current, and return the new node — so the previous frame's setNext() attaches to the new node instead of the old current."
-},
-{
-  cat:"LinkedLists", diff:"Intermediate",
-  title:"Write an Iterator for a linked list",
-  blurb:"Implement the <code>Iterator&lt;T&gt;</code> interface so your linked list can be used in a for-each loop. You only need to track one thing: which node you're currently on.",
-  prompt:`// LLIterator<T> implements Iterator<T>
-// Constructor takes Node<T> head
-// hasNext() → true if current node is not null
-// next()    → return current node's data, then advance current`,
-  hints:["Store current as a Node<T> field, initialized to head","hasNext() is just: return current != null","next() saves data, advances current, returns saved data"],
-  solution:
-`import java.util.Iterator;
-
-public class LLIterator<T> implements Iterator<T> {
-    private Node<T> current;
-
-    public LLIterator(Node<T> head) {
-        this.current = head;
-    }
-
-    @Override
-    public boolean hasNext() {
-        return current != null;
-    }
-
-    @Override
-    public T next() {
-        T data = current.getData();
-        current = current.getNext();
-        return data;
-    }
-}`,
-  notes:"The pattern: save first, advance second, return saved. If you advance before saving you lose the reference to the current data. LList.iterator() just returns <code>new LLIterator&lt;&gt;(head)</code>."
-},
-{
-  cat:"LinkedLists", diff:"Hard",
-  title:"Write in-order traversal for a Binary Tree",
-  blurb:"Write two recursive methods on a Binary Search Tree: an in-order traversal that prints all values in sorted order, and a height calculation. Both follow the same recursive skeleton — handle the null case, then recurse left and right.",
-  prompt:`// BinaryTree has BNode<T> root
-// BNode<T> has: T data, BNode<T> left, BNode<T> right
-// Write inOrder(BNode<T> node) that prints all values
-//   in sorted (ascending) order
-// Also write height(BNode<T> node):
-//   returns 0 if null, else 1 + max(left height, right height)`,
-  hints:["In-order: left → node → right","height base case: if node == null return 0","Use Math.max(height(node.getLeft()), height(node.getRight()))"],
-  solution:
-`public void inOrder() { inOrder(root); }
-
-private void inOrder(BNode<T> node) {
-    if (node == null) return;
-    inOrder(node.getLeft());
-    System.out.println(node.getData());
-    inOrder(node.getRight());
-}
-
-public int height() { return height(root); }
-
-private int height(BNode<T> node) {
-    if (node == null) return 0;
-    return 1 + Math.max(height(node.getLeft()),
-                        height(node.getRight()));
-}`,
-  notes:"In-order always processes left subtree first — that's what produces sorted output for a BST. height() hits the null sentinel (returns 0) and builds back up. A single leaf returns 1 + max(0,0) = 1."
-},
-{
-  cat:"Generics", diff:"Intermediate",
-  title:"Write a generic binary search method",
-  blurb:"Write a static generic method that can binary search any sorted array — Strings, Integers, or any Comparable type. The type bound is what makes it work without knowing the actual type at compile time.",
-  prompt:`// public static <T extends Comparable<T>> int binSearch(T[] arr, T target)
-// Assumes arr is sorted ascending
-// Returns index of target, or -1 if not found
-// Use nLow, nHigh, nMid pattern`,
-  hints:["nLow=0, nHigh=arr.length-1, loop while nLow<=nHigh","nMid = (nLow + nHigh) / 2","Use target.compareTo(arr[nMid]) to compare"],
-  solution:
-`public static <T extends Comparable<T>> int binSearch(T[] arr, T target) {
-    int nLow = 0, nHigh = arr.length - 1;
-
-    while (nLow <= nHigh) {
-        int nMid = (nLow + nHigh) / 2;
-        int cmp = target.compareTo(arr[nMid]);
-
-        if (cmp == 0) return nMid;
-        else if (cmp < 0) nHigh = nMid - 1;
-        else              nLow  = nMid + 1;
-    }
-    return -1;
-}`,
-  notes:"The bound <code>T extends Comparable&lt;T&gt;</code> guarantees compareTo() is available. If cmp < 0, target is smaller so search the left half (nHigh moves down). If cmp > 0, search right half (nLow moves up)."
-},
-{
-  cat:"Generics", diff:"Intermediate",
-  title:"Implement the CopyIt interface and genCSVRead pattern",
-  blurb:"This is the pattern from chap20's generic CSV loader. Define the <code>CopyIt&lt;T&gt;</code> interface, then implement it on a class. The tricky part is <code>copy()</code> — it needs to snapshot the object's current state into a brand-new instance.",
-  prompt:`// Interface CopyIt<T>:
-//   setVals(String[] vals)  — populate fields from CSV tokens
-//   T copy()                — return a new object with same field values
-//
-// Class Spaceship implements CopyIt<Spaceship>:
-//   fields: String name, int crew
-//   Implement both interface methods
-//   Write toString()`,
-  hints:["copy() should return new Spaceship(this.name, this.crew)","setVals: name = vals[0], crew = Integer.parseInt(vals[1])","toString returns name + \" (crew: \" + crew + \")\""],
-  solution:
-`public interface CopyIt<T> {
-    void setVals(String[] vals);
-    T copy();
-}
-
-public class Spaceship implements CopyIt<Spaceship> {
-    private String name;
-    private int crew;
-
-    public Spaceship() {}
-    public Spaceship(String name, int crew) {
-        this.name = name; this.crew = crew;
-    }
-
-    @Override
-    public void setVals(String[] vals) {
-        name = vals[0];
-        crew = Integer.parseInt(vals[1].trim());
-    }
-
-    @Override
-    public Spaceship copy() {
-        return new Spaceship(name, crew);
-    }
-
-    @Override
-    public String toString() {
-        return name + " (crew: " + crew + ")";
-    }
-}`,
-  notes:"The copy pattern is needed because genCSVRead() reuses <em>one</em> sample object — calling setVals() on it each row, then copy() to snapshot it. Without copy(), every entry in the list would point to the same mutated object."
-},
-{
-  cat:"Functional", diff:"Beginner",
-  title:"Write three stream pipelines",
-  blurb:"Practice chaining the most common stream operations. Each pipeline is one fluent chain — pick the right intermediate operations (filter, map, sorted) and finish with the right terminal (forEach, count, toList).",
-  prompt:`// Given: List<String> words = List.of("apple","banana","cherry","avocado","fig","blueberry");
-// 1. Print all words longer than 5 characters, uppercased
-// 2. Count how many words start with 'b'
-// 3. Collect words sorted by length into a new List<String>`,
-  hints:["filter + map + forEach for #1","filter + count() for #2","sorted with a length comparator + toList() for #3"],
-  solution:
-`// 1. Print words longer than 5 chars, uppercased
-words.stream()
-     .filter(w -> w.length() > 5)
-     .map(String::toUpperCase)
-     .forEach(System.out::println);
-
-// 2. Count words starting with 'b'
-long count = words.stream()
-                  .filter(w -> w.startsWith("b"))
-                  .count();
-System.out.println(count); // 2
-
-// 3. Sorted by length
-List<String> sorted = words.stream()
-    .sorted((a, b) -> a.length() - b.length())
-    .toList();
-System.out.println(sorted);`,
-  notes:"filter() and map() are lazy intermediates — nothing runs until a terminal (forEach, count, toList) is called. Method reference <code>String::toUpperCase</code> is shorthand for <code>w -> w.toUpperCase()</code>."
-},
-{
-  cat:"Functional", diff:"Intermediate",
-  title:"Write a groupingBy stream and iterate the result",
-  blurb:"Use <code>Collectors.groupingBy()</code> to bucket a list into a Map, then iterate over the result. This is one of the most commonly tested stream patterns — know what type the Map comes back as and how to loop it.",
-  prompt:`// Given List<String> names = List.of("Alice","Bob","Charlie","Anna","Brian","Carol");
-// 1. Use Collectors.groupingBy to group names by their first character
-//    Result type: Map<Character, List<String>>
-// 2. Print each key and the names under it
-//    e.g.  A → [Alice, Anna]`,
-  hints:["groupingBy(s -> s.charAt(0)) — no second collector needed for List grouping","Iterate with map.entrySet() or map.keySet()","entrySet() gives Map.Entry<K,V> with getKey() and getValue()"],
-  solution:
-`Map<Character, List<String>> grouped = names.stream()
-    .collect(Collectors.groupingBy(s -> s.charAt(0)));
-
-for (Map.Entry<Character, List<String>> entry : grouped.entrySet()) {
-    System.out.println(entry.getKey() + " → " + entry.getValue());
-}`,
-  notes:"When no downstream collector is provided, groupingBy defaults to <code>Collectors.toList()</code>. To get counts instead, add <code>Collectors.counting()</code> as the second argument — that gives <code>Map&lt;Character, Long&gt;</code>."
-},
-{
-  cat:"Functional", diff:"Intermediate",
-  title:"Write a generic method that accepts a Predicate",
-  blurb:"Write a utility method that takes a list and a <code>Predicate</code> and prints anything that matches. This separates the <em>how to filter</em> from the <em>what to filter</em> — the caller passes in the condition as a lambda.",
-  prompt:`// Write a generic static method:
-//   printMatches(List<T> list, Predicate<T> condition)
-// It should print every element where condition.test(element) is true
-//
-// Then call it twice on List<Integer> nums = List.of(1,2,3,4,5,6,7,8):
-//   - once to print even numbers
-//   - once to print numbers greater than 5`,
-  hints:["Method signature: public static <T> void printMatches(List<T> list, Predicate<T> condition)","Use condition.test(item) inside a for-each loop","Even: n -> n % 2 == 0 | Greater than 5: n -> n > 5"],
-  solution:
-`public static <T> void printMatches(List<T> list, Predicate<T> condition) {
-    for (T item : list) {
-        if (condition.test(item)) {
-            System.out.println(item);
-        }
-    }
-}
-
-// Calls:
-List<Integer> nums = List.of(1,2,3,4,5,6,7,8);
-printMatches(nums, n -> n % 2 == 0);   // 2 4 6 8
-printMatches(nums, n -> n > 5);         // 6 7 8`,
-  notes:"Predicate&lt;T&gt; decouples the <em>what to print</em> from the <em>how to decide</em>. The lambda passed at the call site is the implementation of <code>test()</code>. This is the core idea behind functional interfaces."
-},
-{
-  cat:"Functional", diff:"Hard",
-  title:"Write a reduce and a collect with summarizing",
-  blurb:"Two advanced terminal operations in one challenge. Use <code>reduce()</code> to manually accumulate a result across a stream, then use <code>summarizingInt()</code> to get full statistics (min, max, average, sum, count) in a single pass.",
-  prompt:`// Given List<Integer> scores = List.of(88, 72, 95, 61, 84, 90, 77);
-// 1. Use reduce() to find the maximum score (no Math.max shortcut — use reduce)
-// 2. Use Collectors.summarizingInt() to get an IntSummaryStatistics object
-//    and print: count, sum, min, max, average`,
-  hints:["reduce(scores.get(0), (a,b) -> a > b ? a : b) OR reduce(Integer.MIN_VALUE, ...)",  "Collectors.summarizingInt(x -> x) for a List<Integer>","IntSummaryStatistics has getCount(), getSum(), getMin(), getMax(), getAverage()"],
-  solution:
-`// 1. reduce to find maximum
-int max = scores.stream()
-               .reduce(Integer.MIN_VALUE, (a, b) -> a > b ? a : b);
-System.out.println("Max: " + max); // 95
-
-// 2. summarizingInt for full stats
-IntSummaryStatistics stats = scores.stream()
-    .collect(Collectors.summarizingInt(x -> x));
-
-System.out.println("Count:   " + stats.getCount());
-System.out.println("Sum:     " + stats.getSum());
-System.out.println("Min:     " + stats.getMin());
-System.out.println("Max:     " + stats.getMax());
-System.out.println("Average: " + stats.getAverage());`,
-  notes:"reduce() identity for max should be Integer.MIN_VALUE so any real value beats it. summarizingInt() is a one-shot collector that computes all statistics in a single pass — more efficient than running five separate streams."
-},
-{
-  cat:"Collections", diff:"Intermediate",
-  title:"Write a RandomAccessFile record writer and reader",
-  blurb:"From chap17 — write fixed-size records to a <code>RandomAccessFile</code> so any record can be jumped to directly by index. The key challenge is handling the String field: it must always occupy exactly <code>FRAME</code> characters, padded or truncated.",
-  prompt:`// Class Item: String name (frame 20 chars), int quantity, double price
-// static final int FRAME = 20
-// static final int REC_SIZE = FRAME + Integer.BYTES + Double.BYTES
-// Write:
-//   void writeToRAF(RandomAccessFile raf) — pad/truncate name to FRAME
-//   static Item readFromRAF(RandomAccessFile raf) — read back an Item`,
-  hints:["Pad name: while(name.length() < FRAME) name += ' '  then substring(0,FRAME)","raf.writeInt(quantity), raf.writeDouble(price)","readFromRAF: char[] buf = new char[FRAME]; for loop reading chars"],
-  solution:
-`public static final int FRAME = 20;
-public static final int REC_SIZE = FRAME + Integer.BYTES + Double.BYTES;
-
-public void writeToRAF(RandomAccessFile raf) throws IOException {
-    String padded = name;
-    while (padded.length() < FRAME) padded += ' ';
-    padded = padded.substring(0, FRAME);
-    for (char c : padded.toCharArray()) raf.writeChar(c);
-    raf.writeInt(quantity);
-    raf.writeDouble(price);
-}
-
-public static Item readFromRAF(RandomAccessFile raf) throws IOException {
-    char[] buf = new char[FRAME];
-    for (int i = 0; i < FRAME; i++) buf[i] = raf.readChar();
-    String name = new String(buf).trim();
-    int qty    = raf.readInt();
-    double pr  = raf.readDouble();
-    return new Item(name, qty, pr);
-}`,
-  notes:"Each char in Java is 2 bytes (UTF-16), so FRAME=20 chars = 40 bytes for the string part. REC_SIZE = 40 + 4 + 8 = 52. Always trim() the string after reading to remove padding spaces."
-},
-{
-  cat:"Inheritance", diff:"Hard",
-  title:"Write toString() and equals() for a full hierarchy",
-  blurb:"Chain <code>toString()</code> and <code>equals()</code> across three levels of inheritance. Each class should call <code>super.toString()</code> and just append its own piece — no duplicated field printing. Notice how <code>GraduateStudent</code> can reuse Student's <code>equals()</code> without rewriting it.",
-  prompt:`// Person: String first, last  →  toString: "last, first"
-// Student extends Person: int id
-//   toString: "last, first  [ID: nnn]"
-//   equals: exact class match + same id
-// GraduateStudent extends Student: String thesis
-//   toString: "last, first  [ID: nnn]  Thesis: ..."
-//   equals: same as Student (id match is enough)`,
-  hints:["Each toString() calls super.toString() and appends its own part","Student.equals() uses getClass() == other.getClass()","GraduateStudent can reuse Student.equals() by calling super.equals()"],
-  solution:
-`public class Person {
-    private String first, last;
-    public Person(String first, String last) { this.first=first; this.last=last; }
-    public String toString() { return last + ", " + first; }
-}
-
-public class Student extends Person {
-    private int id;
-    public Student(String first, String last, int id) { super(first,last); this.id=id; }
-    public int getId() { return id; }
-    public String toString() { return super.toString() + "  [ID: " + id + "]"; }
-    public boolean equals(Object o) {
-        if (o == null || this.getClass() != o.getClass()) return false;
-        return this.id == ((Student) o).getId();
-    }
-}
-
-public class GraduateStudent extends Student {
-    private String thesis;
-    public GraduateStudent(String f, String l, int id, String thesis) {
-        super(f,l,id); this.thesis=thesis;
-    }
-    public String toString() { return super.toString() + "  Thesis: " + thesis; }
-    // equals() inherited from Student — same logic applies
-}`,
-  notes:"Each layer calls super.toString() — this chains cleanly without duplicating field printing. GraduateStudent deliberately inherits equals() from Student rather than re-implementing it, because the ID is still the right identity key."
-}
-];
-
-let chGot = 0, chTotal = 0;
-
-function startCoding() {
-  document.getElementById("splash").style.display = "none";
-  document.getElementById("coding").style.display = "block";
-  renderChallenges();
-}
-
-function renderChallenges() {
-  const container = document.getElementById("ch-list");
-  container.innerHTML = "";
-  CHALLENGES.forEach((ch, i) => {
-    const color = CAT_COLORS[ch.cat] || "#aaa";
-    const div = document.createElement("div");
-    div.className = "challenge-card";
-    div.id = `ch-card-${i}`;
-    div.innerHTML = `
-      <div class="ch-meta">
-        <span class="ch-tag" style="background:${color}22;color:${color}">${ch.cat}</span>
-        <span class="ch-diff">${ch.diff}</span>
-        <span style="font-size:.72rem;color:var(--muted);margin-left:auto">#${i+1} of ${CHALLENGES.length}</span>
+  document.getElementById('app').innerHTML = `
+    <div class="top-bar">
+      <h1>Hardware Final — Results</h1>
+      <div class="top-stats">
+        <span>Pool: <strong>${usedIndices.length}/${ALL_QUESTIONS.length}</strong> used</span>
       </div>
-      <h3>${ch.title}</h3>
-      ${ch.blurb ? `<p style="font-size:.9rem;color:var(--muted);line-height:1.6;margin-bottom:.9rem">${ch.blurb}</p>` : ""}
-      <pre class="ch-prompt">${ch.prompt.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</pre>
-      <div class="ch-hints">
-        <span>Hints:</span> ${ch.hints.map(h=>`<br>• ${h}`).join("")}
-      </div>
-      <textarea class="code-input" id="ta-${i}" placeholder="Write your Java here…" spellcheck="false"
-        onkeydown="handleTab(event)"></textarea>
-      <div class="btn-row" style="margin-top:.8rem">
-        <button class="btn btn-secondary" onclick="revealSolution(${i})">Reveal Solution</button>
-      </div>
-      <div class="solution-block" id="sol-${i}">
-        <div class="sol-label">Model Solution</div>
-        <pre id="sol-code-${i}"></pre>
-        <div class="sol-notes">${ch.notes}</div>
-        <div class="self-check-row">
-          <span class="sc-label">How did you do?</span>
-          <button class="btn btn-got" onclick="markChallenge(${i}, true)">Got it</button>
-          <button class="btn btn-missed-it" onclick="markChallenge(${i}, false)">Missed it</button>
+    </div>
+    <div class="container">
+      <div class="score-hero">
+        <div class="score-pct">${pct}%</div>
+        <div class="score-label">${score.toFixed(1)} / ${QUIZ_SIZE} correct ${emoji}</div>
+        <div class="score-grid">
+          <div class="score-cell"><div class="val val-correct">${correct}</div><div class="lbl">Correct</div></div>
+          <div class="score-cell"><div class="val val-partial">${partial}</div><div class="lbl">Partial</div></div>
+          <div class="score-cell"><div class="val val-wrong">${wrong}</div><div class="lbl">Wrong</div></div>
         </div>
-      </div>`;
-    container.appendChild(div);
-    document.getElementById(`sol-code-${i}`).textContent = ch.solution;
-  });
+      </div>
+      <div style="text-align:center;margin-bottom:24px;">
+        <button class="btn btn-primary" onclick="startNewQuiz()">New Quiz →</button>
+      </div>
+      <div class="review-section">
+        <h3>Answer Review</h3>
+        ${reviewHTML}
+      </div>
+      <div style="text-align:center;margin-top:24px;">
+        <button class="btn btn-primary" onclick="startNewQuiz()">New Quiz →</button>
+      </div>
+    </div>
+  `;
+  window.scrollTo(0, 0);
 }
 
-function handleTab(e) {
-  if (e.key === "Tab") {
-    e.preventDefault();
-    const ta = e.target;
-    const start = ta.selectionStart, end = ta.selectionEnd;
-    ta.value = ta.value.substring(0,start) + "    " + ta.value.substring(end);
-    ta.selectionStart = ta.selectionEnd = start + 4;
-  }
+function renderQuiz() {
+  let questionsHTML = currentQuiz.map((q, i) => {
+    let bodyHTML = '';
+    if (q.type === 'mc') {
+      let opts = q.opts.map((o, oi) =>
+        `<div class="opt" onclick="selectMC(${i},${oi})"><span class="opt-letter">${'ABCD'[oi]}.</span><span>${o}</span></div>`
+      ).join('');
+      bodyHTML = `<div class="options">${opts}</div>`;
+    } else {
+      bodyHTML = `<textarea class="sa-box" id="sa-${i}" placeholder="Write your answer here — try to include key concepts..." oninput="answers[${i}]=this.value;updateAnswerCount()"></textarea>`;
+    }
+    return `<div class="question-card" id="q-${i}">
+      <div class="q-header">
+        <span class="q-num">Question ${i + 1} of ${QUIZ_SIZE}</span>
+        <span class="q-badge ${q.type === 'mc' ? 'badge-mc' : 'badge-sa'}">${q.type === 'mc' ? 'Multiple Choice' : 'Short Answer'}</span>
+      </div>
+      <div class="q-text">${q.q}</div>
+      ${bodyHTML}
+    </div>`;
+  }).join('');
+
+  document.getElementById('app').innerHTML = `
+    <div class="top-bar">
+      <h1>Hardware Final — Practice Quiz</h1>
+      <div class="top-stats">
+        <span>Answered: <strong id="ans-count">0</strong>/${QUIZ_SIZE}</span>
+        <span>Pool: <strong>${usedIndices.length}/${ALL_QUESTIONS.length}</strong> used</span>
+      </div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+    <div class="container">
+      ${questionsHTML}
+    </div>
+    <div class="bottom-bar">
+      <button class="btn btn-primary" onclick="submitQuiz()">Submit & See Results</button>
+      <button class="btn btn-secondary" onclick="startNewQuiz()">Skip → New Quiz</button>
+    </div>
+  `;
 }
 
-function revealSolution(i) {
-  const sol = document.getElementById(`sol-${i}`);
-  sol.classList.add("show");
-}
-
-function markChallenge(i, got) {
-  const card = document.getElementById(`ch-card-${i}`);
-  const sol = document.getElementById(`sol-${i}`);
-  // disable both buttons
-  sol.querySelectorAll(".btn-got,.btn-missed-it").forEach(b => {
-    b.disabled = true; b.style.opacity = ".4";
-  });
-  card.classList.remove("ch-done-got","ch-done-missed");
-  card.classList.add(got ? "ch-done-got" : "ch-done-missed");
-
-  chGot += got ? 1 : 0;
-  chTotal++;
-  document.getElementById("ch-counter").textContent = `${chTotal} / ${CHALLENGES.length} marked`;
-
-  if (chTotal === CHALLENGES.length) showCodingSummary();
-}
-
-function showCodingSummary() {
-  const pct = Math.round(chGot / CHALLENGES.length * 100);
-  document.getElementById("ch-final").textContent = `${chGot} / ${CHALLENGES.length}  (${pct}%)`;
-  const msgs = [
-    [90,"Outstanding — you know this cold!"],
-    [75,"Solid work. Review the ones you missed."],
-    [50,"Getting there — focus on the harder categories."],
-    [0, "Keep practising — re-read the solution notes carefully."]
-  ];
-  document.getElementById("ch-msg").textContent = msgs.find(([t])=>pct>=t)[1];
-  document.getElementById("ch-summary").style.display = "block";
-  document.getElementById("ch-summary").scrollIntoView({behavior:"smooth"});
-}
-
-function syntaxHL(code) {
-  return code.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-}
+startNewQuiz();
 </script>
 </body>
 </html>
